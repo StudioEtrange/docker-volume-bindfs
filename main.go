@@ -93,7 +93,7 @@ func (d *bindfsDriver) Create(r *volume.CreateRequest) error {
 	if v.Sourcepath == "" {
 		return logError("'sourcePath' option required")
 	}
-	v.Mountpoint = filepath.Join(d.root, fmt.Sprintf("%x%x", md5.Sum([]byte(r.name),md5.Sum([]byte(v.Sourcepath))))
+	v.Mountpoint = filepath.Join(d.root, fmt.Sprintf("%x%x", md5.Sum([]byte(r.Name)),md5.Sum([]byte(v.Sourcepath))))
 
 	d.volumes[r.Name] = v
 

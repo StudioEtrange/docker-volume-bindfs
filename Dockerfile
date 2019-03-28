@@ -5,7 +5,7 @@ RUN set -ex && go install --ldflags '-extldflags "-static"'
 CMD ["/go/bin/docker-volume-bindfs"]
 
 FROM debian
-RUN apt-get update && apt-get sudo install curl git libfuse-dev -y
+RUN apt-get update && apt-get install sudo curl git libfuse-dev -y
 RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes /mnt/host/ /work
 # install bindfs
 ARG BINDFS_VERSION
