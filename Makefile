@@ -1,5 +1,6 @@
-PLUGIN_NAME = lebokus/bindfs
+PLUGIN_NAME = studioetrange/bindfs
 PLUGIN_TAG ?= latest
+BINDFS_VERSION ?=1_13_10
 
 all: clean rootfs create
 
@@ -9,7 +10,7 @@ clean:
 
 rootfs:
 	@echo "### docker build: rootfs image with docker-volume-bindfs"
-	@docker build -q -t ${PLUGIN_NAME}:rootfs .
+	@docker build --build-arg BINDFS_VERSION=${BINDFS_VERSION} -q -t ${PLUGIN_NAME}:rootfs .
 	@echo "### create rootfs directory in ./plugin/rootfs"
 	@mkdir -p ./plugin/rootfs
 	@docker create --name tmp ${PLUGIN_NAME}:rootfs
@@ -24,8 +25,8 @@ create:
 	@echo "### create new plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
 	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
 
-enable:		
-	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"		
+enable:
+	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	@docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}
 
 push:  clean rootfs create enable

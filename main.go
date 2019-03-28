@@ -153,7 +153,7 @@ func (d *bindfsDriver) Mount(r *volume.MountRequest) (*volume.MountResponse, err
 		fi, err := os.Lstat(v.Mountpoint)
 		if os.IsNotExist(err) {
 			if err := os.MkdirAll(v.Mountpoint, 0755); err != nil {
-				return &volume.MountResponse{}, logError("test test test test")
+				return &volume.MountResponse{}, logError(err.Error())
 			}
 		} else if err != nil {
 			return &volume.MountResponse{}, logError(err.Error())
