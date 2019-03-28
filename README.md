@@ -56,6 +56,11 @@ You can fix a TAG for plugin version and choose a bindfs version with
 make PLUGIN_TAG=1.0 BINDFS_VERSION=1_13_10
 ```
 
+## publish plugin
+```
+make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar push
+```
+
 ## docker-compose example
 ```
 export EUID=$(id -u)

@@ -1,6 +1,8 @@
 PLUGIN_NAME = studioetrange/bindfs
 PLUGIN_TAG ?= latest
 BINDFS_VERSION ?=1_13_10
+DOCKER_LOGIN ?=
+DOCKER_PASSWORD ?=
 
 all: clean rootfs create
 
@@ -29,6 +31,8 @@ enable:
 	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	@docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}
 
-push:  clean rootfs create enable
+push:
+	@echo "### log into docker hub"
+	@docker login -u ${DOCKER_LOGIN} -p ${DOCKER_PASSWORD}
 	@echo "### push plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	@docker plugin push ${PLUGIN_NAME}:${PLUGIN_TAG}
