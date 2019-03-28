@@ -10,7 +10,7 @@ clean:
 
 rootfs:
 	@echo "### docker build: rootfs image with docker-volume-bindfs"
-	@docker build --build-arg BINDFS_VERSION=${BINDFS_VERSION} -q -t ${PLUGIN_NAME}:rootfs .
+	@docker build --build-arg BINDFS_VERSION=${BINDFS_VERSION} -t ${PLUGIN_NAME}:rootfs .
 	@echo "### create rootfs directory in ./plugin/rootfs"
 	@mkdir -p ./plugin/rootfs
 	@docker create --name tmp ${PLUGIN_NAME}:rootfs
