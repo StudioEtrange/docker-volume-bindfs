@@ -4,7 +4,7 @@ WORKDIR /go/src/github.com/studioetrange/docker-volume-bindfs
 RUN set -ex && go install --ldflags '-extldflags "-static"'
 CMD ["/go/bin/docker-volume-bindfs"]
 
-FROM debian
+FROM debian:jessie
 RUN apt-get update && apt-get install sudo curl git libfuse-dev -y
 RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes /mnt/host/ /work
 # install bindfs
