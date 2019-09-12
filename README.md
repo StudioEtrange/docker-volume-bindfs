@@ -58,7 +58,7 @@ make PLUGIN_TAG=1.0 BINDFS_VERSION=1_13_10
 
 ## publish plugin
 ```
-make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar push
+make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=1.0 push
 ```
 
 ## docker-compose example
