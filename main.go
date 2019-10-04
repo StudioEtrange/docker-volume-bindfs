@@ -14,6 +14,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/docker/go-plugins-helpers/volume"
+	reaper "github.com/ramr/go-reaper"
 )
 
 const socketAddress = "/run/docker/plugins/bindfs.sock"
@@ -35,6 +36,8 @@ type bindfsDriver struct {
 
 func newBindfsDriver(root string) (*bindfsDriver, error) {
 	logrus.WithField("method", "new driver").Debug(root)
+
+	go reaper.Reap()
 
 	d := &bindfsDriver{
 		root:      filepath.Join(root, "volumes"),
