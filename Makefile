@@ -1,6 +1,6 @@
 PLUGIN_NAME = studioetrange/bindfs
 PLUGIN_TAG ?= latest
-BINDFS_VERSION ?=1_13_10
+BINDFS_VERSION ?=1_13_11
 DOCKER_LOGIN ?=
 DOCKER_PASSWORD ?=
 
@@ -12,7 +12,7 @@ clean:
 
 rootfs:
 	@echo "### docker build: rootfs image with docker-volume-bindfs"
-	@docker build --no-cache --build-arg BINDFS_VERSION=${BINDFS_VERSION} -t ${PLUGIN_NAME}:rootfs .
+	@docker build --no-cache --build-arg BINDFS_VERSION=${BINDFS_VERSION} --build-arg PLUGIN_TAG=${PLUGIN_TAG} -t ${PLUGIN_NAME}:rootfs .
 	@echo "### create rootfs directory in ./plugin/rootfs"
 	@mkdir -p ./plugin/rootfs
 	@docker create --name tmp ${PLUGIN_NAME}:rootfs

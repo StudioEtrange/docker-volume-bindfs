@@ -14,6 +14,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/docker/go-plugins-helpers/volume"
+	version_pkg "github.com/StudioEtrange/docker-volume-bindfs/version"
 )
 
 const socketAddress = "/run/docker/plugins/bindfs.sock"
@@ -38,7 +39,7 @@ func newBindfsDriver(root string) (*bindfsDriver, error) {
 
 	d := &bindfsDriver{
 		root:      filepath.Join(root, "volumes"),
-		statePath: filepath.Join(root, "state", "bindfs-state.json"),
+		statePath: filepath.Join(root, "state", "bindfs-state-" + version_pkg.Version + ".json"),
 		volumes:   map[string]*bindfsVolume{},
 	}
 
