@@ -13,7 +13,7 @@ import (
 	"sync"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/docker/go-plugins-helpers/volume"
+	"github.com/StudioEtrange/go-plugins-helpers/volume"
 	version_pkg "github.com/StudioEtrange/docker-volume-bindfs/version"
 )
 

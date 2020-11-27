@@ -1,0 +1,85 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "JwgBGTvRb0xHGRygTHGVo2gwgWg=",
+			"path": "github.com/Microsoft/go-winio",
+			"revision": "f314918fc79ca327a6ec660bbb9403623af4dce0",
+			"revisionTime": "2020-11-23T21:18:15Z"
+		},
+		{
+			"checksumSHA1": "hgIAHvJxD+yog1zQGS0rqRGGCWg=",
+			"path": "github.com/Microsoft/go-winio/pkg/guid",
+			"revision": "f314918fc79ca327a6ec660bbb9403623af4dce0",
+			"revisionTime": "2020-11-23T21:18:15Z"
+		},
+		{
+			"checksumSHA1": "BCmjskha6fhGDUxvgayGZnF8RUc=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "181d419aa9e2223811b824e8f0b4af96f9ba9302",
+			"revisionTime": "2017-07-28T07:42:14Z"
+		},
+		{
+			"checksumSHA1": "USObFa27+zuMeYQQEVvBG8pVufo=",
+			"path": "github.com/StudioEtrange/go-plugins-helpers/sdk",
+			"revision": "7ac3e2461ef08c874b1538208802e5a9e444b9ec",
+			"revisionTime": "2020-11-27T17:48:38Z"
+		},
+		{
+			"checksumSHA1": "0KWfpYy+25WnwJ1teXB1NngQ1Ig=",
+			"path": "github.com/StudioEtrange/go-plugins-helpers/volume",
+			"revision": "7ac3e2461ef08c874b1538208802e5a9e444b9ec",
+			"revisionTime": "2020-11-27T17:48:38Z"
+		},
+		{
+			"checksumSHA1": "zx3XLDZzMknp9rkqfUXKGYUHcgA=",
+			"path": "github.com/coreos/go-systemd/activation",
+			"revision": "87511f396ae9991f8589f6e6dcf58e28a91ba52b",
+			"revisionTime": "2020-11-23T09:29:00Z"
+		},
+		{
+			"checksumSHA1": "XFu6usY+3x0yaPcvNl6byub/8pc=",
+			"path": "github.com/docker/go-connections/sockets",
+			"revision": "09f47925228a97335b2462178c79669712efe44e",
+			"revisionTime": "2020-09-11T17:33:24Z"
+		},
+		{
+			"checksumSHA1": "duEcJaULRzejc7AXv+Etpn/Q/BU=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "c8d3bf9c5392d5f66747f112cd55055d7a530b19",
+			"revisionTime": "2020-11-22T21:41:03Z"
+		},
+		{
+			"checksumSHA1": "Ld0iviZSRGAKK6WSoti+3++1RmY=",
+			"path": "golang.org/x/sys/internal/unsafeheader",
+			"revision": "77190671981848ff71219ecfff38636c9add3b79",
+			"revisionTime": "2020-11-26T22:54:44Z"
+		},
+		{
+			"checksumSHA1": "h7GXb0bh/HGKf58hABBUvaLwvQs=",
+			"path": "golang.org/x/sys/plan9",
+			"revision": "77190671981848ff71219ecfff38636c9add3b79",
+			"revisionTime": "2020-11-26T22:54:44Z"
+		},
+		{
+			"checksumSHA1": "DNQPcojWvccmIBxdeL9NT7dtQn0=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "77190671981848ff71219ecfff38636c9add3b79",
+			"revisionTime": "2020-11-26T22:54:44Z"
+		},
+		{
+			"checksumSHA1": "OXhcKfnG3ziiW5Y61ng8AjERQjg=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "77190671981848ff71219ecfff38636c9add3b79",
+			"revisionTime": "2020-11-26T22:54:44Z"
+		},
+		{
+			"checksumSHA1": "Pq+mfMZasuV9z7gK6w5RwbHIh/s=",
+			"path": "golang.org/x/term",
+			"revision": "7de9c90e9dd184706b838f536a1cbf40a296ddb7",
+			"revisionTime": "2020-11-26T10:05:13Z"
+		}
+	],
+	"rootPath": "github.com/StudioEtrange/docker-volume-bindfs"
+}

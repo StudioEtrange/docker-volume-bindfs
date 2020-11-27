@@ -21,28 +21,29 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 This will install the plugin from pre-built versions
 
 ```
-docker plugin install studioetrange/bindfs:1.1
+docker plugin install studioetrange/bindfs:1.2
 ```
 
 Optional debug option while install
 ```
-docker plugin install studioetrange/bindfs:1.1 DEBUG=1
+docker plugin install studioetrange/bindfs:1.2 DEBUG=1
 ```
 
 ## Notes on available pre-built versions
 
 In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/bindfs) available versions are
 
-|PLUGIN NAME|BINDFS VERSION|NOTES|
+|PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|
-|studioetrange/bindfs:1.1|1.13.11|recommended|
-|studioetrange/bindfs:1.0|1.13.10|*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|
+|studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
+|studioetrange/bindfs:1.1|1.13.11|||
+|studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|
 
 
 ### Create a volume
 
 ```
-docker volume create -d studioetrange/bindfs:1.1 -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] bindfsvolume
+docker volume create -d studioetrange/bindfs:1.2 -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] bindfsvolume
 
 docker volume ls
 
@@ -78,7 +79,7 @@ services:
 
 volumes:
     data:
-        driver: studioetrange/bindfs:1.1
+        driver: studioetrange/bindfs:1.2
         driver_opts:
             sourcePath: "${PWD}"
             map: "${EUID}/0:@${EGID}/@0"
@@ -101,8 +102,9 @@ make
 Options : you can fix a TAG for the plugin version and choose a bindfs version
 
 ```
-make PLUGIN_TAG=1.1 BINDFS_VERSION=1_13_11
+make PLUGIN_TAG=1.2 BINDFS_VERSION=1_13_11
 ```
+
 
 
 ### Enable built plugin
@@ -116,7 +118,7 @@ make enable
 Option :
 
 ```
-make enable PLUGIN_TAG=1.1
+make enable PLUGIN_TAG=1.2
 ```
 
 
@@ -126,7 +128,44 @@ make enable PLUGIN_TAG=1.1
 Publis a built plugin to docker hub
 
 ```
-make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=1.1 push
+make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=1.2 push
+```
+
+
+
+
+
+### Dependency management
+
+* Add, Update OR Resync dependencies
+
+```
+git clone https://github.com/StudioEtrange/docker-volume-bindfs
+cd docker-volume-bindfs
+docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.14.12-stretch sh
+
+# FROM INSIDE CONTAINER
+go get github.com/StudioEtrange/govendor
+cd /go/src/github.com/StudioEtrange/docker-volume-bindfs
+
+
+# check status of used packaged from source code
+govendor list
+
+# INIT a vendor folder
+govendor init
+
+# ADD/UPDATE a package with a specific version into vendor and update vendor.json
+govendor fetch <dep>@<version>
+govendor fetch github.com/Sirupsen/logrus@181d419aa9e2223811b824e8f0b4af96f9ba930
+
+# SYNC package between vendor content and vendor.json 
+govendor sync
+
+# EXIT CONTAINER
+sudo chown -R $(id -u):$(id -g) vendor
+
+
 ```
 
 
