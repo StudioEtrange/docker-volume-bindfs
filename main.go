@@ -204,7 +204,8 @@ func (d *bindfsDriver) Get(r *volume.GetRequest) (*volume.GetResponse, error) {
 
 	v, ok := d.volumes[r.Name]
 	if !ok {
-		return &volume.GetResponse{}, logError("volume %s not found", r.Name)
+		logrus.Debugf("method Get : volume %s not found", r.Name)
+		return &volume.GetResponse{}, nil
 	}
 
 	return &volume.GetResponse{Volume: &volume.Volume{Name: r.Name, Mountpoint: v.Mountpoint}}, nil
