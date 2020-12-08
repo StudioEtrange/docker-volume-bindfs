@@ -4,9 +4,11 @@
 This project is based on vieux/docker-volume-sshfs.
 With this plugin you're able to mount a given path and remap its owner and group.
 
-This is a fork of https://github.com/lebokus/docker-volume-bindfs
 
 ## About this fork
+
+
+This is a fork of https://github.com/lebokus/docker-volume-bindfs
 
 * support multiple volume with same mount points
 * can choose version of bindfs (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0c4d940b255faca281f0f40b24605c0ae23c0d4c/nix/pool/feature-recipe/feature_bindfs.sh)
@@ -34,7 +36,7 @@ docker plugin install studioetrange/bindfs:1.2 DEBUG=1
 In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/bindfs) available versions are
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
-|---|---|---|
+|---|---|---|---|
 |studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
 |studioetrange/bindfs:1.1|1.13.11|||
 |studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|
