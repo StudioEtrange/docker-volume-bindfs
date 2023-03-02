@@ -26,10 +26,6 @@ This will install the plugin from pre-built versions
 docker plugin install studioetrange/bindfs:1.2
 ```
 
-Optional debug option while install
-```
-docker plugin install studioetrange/bindfs:1.2 DEBUG=1
-```
 
 ## Notes on available pre-built versions
 
@@ -37,6 +33,7 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|---|
+|studioetrange/bindfs:1.3|1.17.2|1.20.1|upgrade version of bindfs and go|
 |studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
 |studioetrange/bindfs:1.1|1.13.11|||
 |studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|
@@ -93,83 +90,140 @@ volumes:
 ### Build plugin
 
 
-This will build plugin, tagged as latest, delete plugin if he already exists and install it
+* This will build plugin, tagged as latest, delete plugin if he already exists and install it
 
-```
-git clone https://github.com/StudioEtrange/docker-volume-bindfs
-cd docker-volume-bindfs
-make
-```
+    ```
+    git clone https://github.com/StudioEtrange/docker-volume-bindfs
+    cd docker-volume-bindfs
+    make all
+    ```
 
-Options : you can fix a TAG for the plugin version and choose a bindfs version
-
-```
-make PLUGIN_TAG=1.2 BINDFS_VERSION=1_13_11
-```
-
-
+* Options : you can fix a TAG for the plugin version and choose a bindfs version
+    ```
+    make PLUGIN_TAG=1.2 BINDFS_VERSION=1_13_11 all
+    # without using docker cache :
+    make PLUGIN_TAG=1.2 BINDFS_VERSION=1_13_11 all-nocache 
+    ```
 
 ### Enable built plugin
 
-This will enable the plugin, you need this before using it
+* This will enable the plugin, you need this before using it
 
-```
-make enable
-```
+    ```
+    make enable
+    ```
 
-Option :
+* Choose the version to enable
 
-```
-make enable PLUGIN_TAG=1.2
-```
+    ```
+    make enable PLUGIN_TAG=1.2
+    ```
+
+### Debug
+
+
+* Enable debug mode on the installed plugin
+
+    ```
+    make enable-debug
+    ```
+
+    OR
+
+    ```
+    docker plugin disable studioetrange/bindfs:latest
+    docker plugin set studioetrange/bindfs:latest DEBUG=1
+    docker plugin enable studioetrange/bindfs:latest
+    ```
+
+* Exec into the installed and running plugin
+
+    ```
+    sudo runc --root /run/docker/runtime-runc/plugins.moby list
+    sudo runc --root /run/docker/runtime-runc/plugins.moby exec -t <ID> sh
+    ```
+
+
+* Build and launch a new container with plugin binaries inside
+
+    ```
+    make test
+    # without using docker cache :
+    make test-nocache
+    ```
+
 
 
 
 ### Publish plugin
 
-Publis a built plugin to docker hub
+* Publish a built plugin to docker hub
 
-```
-make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=1.2 push
-```
-
-
+    ```
+    make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=1.2 push
+    ```
 
 
 
-### Dependency management
-
-* Add, Update OR Resync dependencies
-
-```
-git clone https://github.com/StudioEtrange/docker-volume-bindfs
-cd docker-volume-bindfs
-docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.14.12-stretch sh
-
-# FROM INSIDE CONTAINER
-go get github.com/StudioEtrange/govendor
-cd /go/src/github.com/StudioEtrange/docker-volume-bindfs
+### GO update version and dependency management
 
 
-# check status of used packaged from source code
-govendor list
+* For go 2.20 using standard Go Modules (without govendor) (project tag =>2.0)
 
-# INIT a vendor folder
-govendor init
+    ```
+    git clone https://github.com/StudioEtrange/docker-volume-bindfs
+    git checkout 2.0
+    cd docker-volume-bindfs
+    docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.20.1-bullseye bash
 
-# ADD/UPDATE a package with a specific version into vendor and update vendor.json
-govendor fetch <dep>@<version>
-govendor fetch github.com/Sirupsen/logrus@181d419aa9e2223811b824e8f0b4af96f9ba930
-
-# SYNC package between vendor content and vendor.json 
-govendor sync
-
-# EXIT CONTAINER
-sudo chown -R $(id -u):$(id -g) vendor
+    # FROM INSIDE CONTAINER
+    cd /go/src/github.com/StudioEtrange/docker-volume-bindfs
 
 
-```
+    # check status of used packaged from source code
+    go mod verify
 
+    # INIT Go modules management
+    go mod init
+
+    # SYNC package between vendor content and vendor.json 
+    go mod vendor
+
+    # FROM OUTSIDE CONTAINER
+    sudo chown -R $(id -u):$(id -g) vendor
+    sudo chown -R $(id -u):$(id -g) go.mod
+    sudo chown -R $(id -u):$(id -g) go.sum
+    ```
+
+* For go 1.14 with govendor (project tag <=1.2)
+
+    ```
+    git clone https://github.com/StudioEtrange/docker-volume-bindfs
+    git checkout 1.2
+    cd docker-volume-bindfs
+    docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.14.12-stretch bash
+
+    # FROM INSIDE CONTAINER
+    go get github.com/StudioEtrange/govendor
+    cd /go/src/github.com/StudioEtrange/docker-volume-bindfs
+
+
+    # check status of used packaged from source code
+    govendor list
+
+    # INIT a vendor folder
+    govendor init
+
+    # ADD/UPDATE a package with a specific version into vendor and update vendor.json
+    govendor fetch <dep>@<version>
+    govendor fetch github.com/Sirupsen/logrus@181d419aa9e2223811b824e8f0b4af96f9ba930
+
+    # SYNC package between vendor content and vendor.json 
+    govendor sync
+
+    # FROM OUTSIDE CONTAINER
+    sudo chown -R $(id -u):$(id -g) vendor
+    ```
 
 ## LICENSE
 
