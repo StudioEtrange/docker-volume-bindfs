@@ -4,6 +4,8 @@
 This project is based on vieux/docker-volume-sshfs.
 With this plugin you're able to mount a given path and remap its owner and group.
 
+The plugin is based on bindfs usage to mount folders. https://bindfs.org/
+
 
 ## About this fork
 
@@ -23,7 +25,7 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 This will install the plugin from pre-built versions
 
 ```
-docker plugin install studioetrange/bindfs:1.2
+docker plugin install studioetrange/bindfs:2.0
 ```
 
 
@@ -33,7 +35,7 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|---|
-|studioetrange/bindfs:1.3|1.17.2|1.20.1|upgrade version of bindfs and go|
+|studioetrange/bindfs:2.0|1.17.2|1.20.1|upgrade version of bindfs and go|
 |studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
 |studioetrange/bindfs:1.1|1.13.11|||
 |studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|
@@ -42,7 +44,7 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 ### Create a volume
 
 ```
-docker volume create -d studioetrange/bindfs:1.2 -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] bindfsvolume
+docker volume create -d studioetrange/bindfs:2.0 -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] bindfsvolume
 
 docker volume ls
 
@@ -78,7 +80,7 @@ services:
 
 volumes:
     data:
-        driver: studioetrange/bindfs:1.2
+        driver: studioetrange/bindfs:2.0
         driver_opts:
             sourcePath: "${PWD}"
             map: "${EUID}/0:@${EGID}/@0"
@@ -100,9 +102,9 @@ volumes:
 
 * Options : you can fix a TAG for the plugin version and choose a bindfs version
     ```
-    make PLUGIN_TAG=1.2 BINDFS_VERSION=1_13_11 all
+    make PLUGIN_TAG=2.0 BINDFS_VERSION=1_17_2 all
     # without using docker cache :
-    make PLUGIN_TAG=1.2 BINDFS_VERSION=1_13_11 all-nocache 
+    make PLUGIN_TAG=2.0 BINDFS_VERSION=1_17_2 all-nocache 
     ```
 
 ### Enable built plugin
@@ -116,7 +118,7 @@ volumes:
 * Choose the version to enable
 
     ```
-    make enable PLUGIN_TAG=1.2
+    make enable PLUGIN_TAG=2.0
     ```
 
 ### Debug
@@ -160,7 +162,7 @@ volumes:
 * Publish a built plugin to docker hub
 
     ```
-    make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=1.2 push
+    make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=2.0 push
     ```
 
 
