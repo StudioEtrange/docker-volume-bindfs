@@ -157,14 +157,15 @@ func (d *bindfsDriver) Remove(r *volume.RemoveRequest) error {
 		return fmt.Errorf(msg)
 	}
 
-	msg := fmt.Sprintf("calling os.RemoveAll method on mountpoint folder %s which was mapped to folder %s for volume named %s",v.Mountpoint, v.Sourcepath, r.Name )
-	log.Debugf(msg)
 
 	if v.connections > 0 {
 		msg := fmt.Sprintf("Can't remove volume %s because it is mounted by %d containers", r.Name, v.connections)
 		log.Error(msg)
 		return fmt.Errorf(msg)
 	}
+	
+	msg := fmt.Sprintf("calling os.Remove method on mountpoint folder %s which was mapped to folder %s for volume named %s",v.Mountpoint, v.Sourcepath, r.Name )
+	log.Debugf(msg)
 
 	if err := d.removeVolume(v); err != nil {
 		return err
