@@ -1,0 +1,7 @@
+# 1
+var1:VAR 1
+section1 var1:section 1 VAR 1
+# 2
+read_ini: invalid prefix 'PR:EFIX,'
+# 3
+read_ini: invalid prefix '1PREFIX'

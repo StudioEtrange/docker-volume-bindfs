@@ -1,0 +1,77 @@
+if [ ! "$_dump1090_INCLUDED_" = "1" ]; then
+_dump1090_INCLUDED_=1
+
+feature_dump1090() {
+	FEAT_NAME=dump1090
+	FEAT_LIST_SCHEMA="SNAPSHOT_MalcolmRobb:source"
+	FEAT_DEFAULT_ARCH=
+	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="Dump1090 is a simple Mode S decoder for RTLSDR devices"
+	FEAT_LINK="https://github.com/antirez/dump1090"
+}
+
+
+
+feature_dump1090_SNAPSHOT_MalcolmRobb() {
+	FEAT_VERSION=SNAPSHOT_MalcolmRobb
+
+
+	FEAT_SOURCE_DEPENDENCIES="rtl-sdr#SNAPSHOT libusb#1_0_21"
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://github.com/MalcolmRobb/dump1090
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=GIT
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_dump1090_link
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/dump1090
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+	FEAT_GIT_TAG="master"
+
+}
+
+feature_dump1090_link() {
+	__link_feature_library "rtl-sdr" "USE_PKG_CONFIG"
+	__link_feature_library "libusb"
+}
+
+
+
+feature_dump1090_install_source() {
+	INSTALL_DIR="$FEAT_INSTALL_ROOT"
+	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
+
+
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$SRC_DIR" "DEST_ERASE VERSION $FEAT_GIT_TAG"
+
+	__set_toolset "STANDARD"
+
+
+	AUTO_INSTALL_CONF_FLAG_PREFIX=
+	AUTO_INSTALL_CONF_FLAG_POSTFIX=
+	AUTO_INSTALL_BUILD_FLAG_PREFIX=
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+
+	__feature_callback
+
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD SOURCE_KEEP NO_INSTALL NO_CONFIG NO_FIX NO_CHECK"
+
+	__copy_folder_content_into "$SRC_DIR/" "$INSTALL_DIR/"
+
+	__del_folder "$SRC_DIR"
+
+	__inspect_and_fix_build "$INSTALL_DIR"
+
+}
+
+
+fi

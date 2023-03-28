@@ -25,7 +25,7 @@ RUN wget -O /dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.
 RUN cd /work \
     && git clone https://github.com/StudioEtrange/stella \
     && cd /work/stella \
-    && git checkout 396c1423932950c02e63b5a7a7fff3d03deaf5f2 \
+    && git checkout 5f9b6720cc76b6a8bde9495696e336ae212dc0a9 \
     && /work/stella/stella.sh sys install build-chain-standard \
     && /work/stella/stella.sh feature install bindfs#${BINDFS_VERSION} \
     && export BINDFS_PATH=$(STELLA_LOG_STATE=OFF /work/stella/stella.sh boot cmd local -- '$STELLA_API feature_info "bindfs" "BINDFS" && echo $BINDFS_FEAT_INSTALL_ROOT') \

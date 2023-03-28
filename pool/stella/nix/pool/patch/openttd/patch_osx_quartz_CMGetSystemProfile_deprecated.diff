@@ -1,0 +1,23 @@
+--- src/video/cocoa/wnd_quartz.mm.orig	2015-12-10 01:11:29.000000000 +0100
++++ src/video/cocoa/wnd_quartz.mm	2015-12-10 01:16:43.000000000 +0100
+@@ -110,6 +110,7 @@
+ 	static CGColorSpaceRef colorSpace = NULL;
+ 
+ 	if (colorSpace == NULL) {
++#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
+ 		CMProfileRef sysProfile;
+ 
+ 		if (CMGetSystemProfile(&sysProfile) == noErr) {
+@@ -118,7 +119,12 @@
+ 		} else {
+ 			colorSpace = CGColorSpaceCreateDeviceRGB();
+ 		}
++#else
++		colorSpace = ::CGDisplayCopyColorSpace(::CGMainDisplayID());
+ 
++		if (!colorSpace)
++    			colorSpace = CGColorSpaceCreateDeviceRGB();
++#endif
+ 		if (colorSpace == NULL) error("Could not get system colour space. You might need to recalibrate your monitor.");
+ 	}
+ 

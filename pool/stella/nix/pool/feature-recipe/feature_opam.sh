@@ -1,0 +1,67 @@
+if [ ! "$_opam_INCLUDED_" = "1" ]; then
+_opam_INCLUDED_=1
+
+# ocaml package manager
+# http://opam.ocaml.org/
+
+feature_opam() {
+	FEAT_NAME=opam
+	FEAT_LIST_SCHEMA="1_2_2@x64:binary 1_2_2@x86:binary"
+	FEAT_DEFAULT_VERSION=1_2_2
+	FEAT_DEFAULT_ARCH=x64
+	FEAT_DEFAULT_FLAVOUR="binary"
+}
+
+
+feature_opam_1_2_2() {
+	FEAT_VERSION=1_2_2
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_x86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
+
+		FEAT_BINARY_URL_x64=https://github.com/ocaml/opam/releases/download/1.2.2/opam-1.2.2-x86_64-Darwin
+		FEAT_BINARY_URL_FILENAME_x64=opam-1.2.2-x86_64-Darwin
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x86=https://github.com/ocaml/opam/releases/download/1.2.2/opam-1.2.2-i686-Linux
+		FEAT_BINARY_URL_FILENAME_x86=opam-1.2.2-i686-Linux
+		FEAT_BINARY_URL_PROTOCOL_x86=HTTP
+
+		FEAT_BINARY_URL_x64=https://github.com/ocaml/opam/releases/download/1.2.2/opam-1.2.2-x86_64-Linux
+		FEAT_BINARY_URL_FILENAME_x64=opam-1.2.2-x86_64-Linux
+		FEAT_BINARY_URL_PROTOCOL_x64=HTTP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/opam
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
+
+
+feature_opam_install_binary() {
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE"
+
+	chmod +x "$FEAT_INSTALL_ROOT"/$FEAT_BINARY_URL_FILENAME
+	cd "$FEAT_INSTALL_ROOT"
+	ln -s "$FEAT_INSTALL_ROOT"/$FEAT_BINARY_URL_FILENAME "$FEAT_INSTALL_ROOT"/opam
+
+}
+
+
+fi

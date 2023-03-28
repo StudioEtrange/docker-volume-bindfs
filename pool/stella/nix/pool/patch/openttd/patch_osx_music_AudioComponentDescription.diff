@@ -1,0 +1,11 @@
+--- src/music/cocoa_m.cpp.ori	2015-12-12 00:57:36.000000000 +0100
++++ src/music/cocoa_m.cpp	2015-12-12 00:58:23.000000000 +0100
+@@ -68,7 +68,7 @@
+ 			 * risk compilation errors. The header AudioComponent.h
+ 			 * was introduced in 10.6 so use it to decide which
+ 			 * type definition to use. */
+-#ifdef __AUDIOCOMPONENT_H__
++#if (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_6)
+ 			AudioComponentDescription desc;
+ #else
+ 			ComponentDescription desc;

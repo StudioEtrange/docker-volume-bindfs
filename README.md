@@ -13,7 +13,7 @@ The plugin is based on bindfs usage to mount folders. https://bindfs.org/
 This is a fork of https://github.com/lebokus/docker-volume-bindfs
 
 * support multiple volume with same mount points
-* can choose version of bindfs (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0c4d940b255faca281f0f40b24605c0ae23c0d4c/nix/pool/feature-recipe/feature_bindfs.sh)
+* can choose version of bindfs (consult available version from [here](https://github.com/StudioEtrange/stella/blob/5f9b6720cc76b6a8bde9495696e336ae212dc0a9/nix/pool/feature-recipe/feature_bindfs.sh)
 * add more info and clean build process
 * resolve bindfs defunct process each time a volume is destroyed
 * isolate bindfs-state.json state file for each plugin version
@@ -35,7 +35,8 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|---|
-|studioetrange/bindfs:2.0|1.17.2|1.20.1|upgrade version of bindfs and go|
+|studioetrange/bindfs:2.0b|1.13.11|1.20.1|upgrade plugin logic itself and version of go|
+|studioetrange/bindfs:2.0a|1.17.2|1.20.1|upgrade plugin logic itself and version of bindfs and go|
 |studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
 |studioetrange/bindfs:1.1|1.13.11|||
 |studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|
@@ -102,9 +103,11 @@ volumes:
 
 * Options : you can fix a TAG for the plugin version and choose a bindfs version
     ```
-    make PLUGIN_TAG=2.0 BINDFS_VERSION=1_17_2 all
+    make PLUGIN_TAG=2.0a BINDFS_VERSION=1_17_2 all
+    make PLUGIN_TAG=2.0b BINDFS_VERSION=1_13_11 all
+    
     # without using docker cache :
-    make PLUGIN_TAG=2.0 BINDFS_VERSION=1_17_2 all-nocache 
+    make PLUGIN_TAG=2.0a BINDFS_VERSION=1_17_2 all-nocache 
     ```
 
 ### Enable built plugin
@@ -141,7 +144,9 @@ volumes:
 * Exec into the installed and running plugin
 
     ```
-    sudo runc --root /run/docker/runtime-runc/plugins.moby list
+    # get ID of the plugin
+    sudo runc --root /run/docker/runtime-runc/plugins.moby list 
+    # exec shell into plugin
     sudo runc --root /run/docker/runtime-runc/plugins.moby exec -t <ID> sh
     ```
 
@@ -162,9 +167,8 @@ volumes:
 * Publish a built plugin to docker hub
 
     ```
-    make DOCKER_LOGIN=foo DOCKER_PASSWORD=bar PLUGIN_TAG=2.0 push
+    make DOCKER_LOGIN='foo' DOCKER_PASSWORD='bar' PLUGIN_TAG=2.0 push
     ```
-
 
 
 ### GO update version and dependency management

@@ -1,0 +1,74 @@
+if [ ! "_lddtreesh_INCLUDED_" = "1" ]; then
+_lddtreesh_INCLUDED_=1
+
+
+# implementation in bash of python lddtree (from pax-utils)
+
+# https://gitweb.gentoo.org/proj/lddtree.git
+
+feature_lddtree() {
+	FEAT_NAME=lddtree
+	FEAT_LIST_SCHEMA="SNAPSHOT:source SNAPSHOT-SE:source"
+	FEAT_DEFAULT_ARCH=
+	FEAT_DEFAULT_FLAVOUR="source"
+}
+
+
+feature_lddtree_SNAPSHOT-SE() {
+	FEAT_VERSION=SNAPSHOT-SE
+
+	FEAT_SOURCE_DEPENDENCIES=pax-utils
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://github.com/StudioEtrange/lddtree
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=GIT
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=feature_lddtree_setname
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lddtree.sh
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
+
+feature_lddtree_SNAPSHOT() {
+	FEAT_VERSION=SNAPSHOT
+
+	FEAT_SOURCE_DEPENDENCIES=pax-utils
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=https://github.com/ncopa/lddtree
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=GIT
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lddtree.sh
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
+
+feature_lddtree_install_source() {
+
+
+	__get_resource "$FEAT_NAME" "$FEAT_SOURCE_URL" "$FEAT_SOURCE_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE"
+
+
+	__feature_callback
+
+}
+
+
+fi

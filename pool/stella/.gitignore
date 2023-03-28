@@ -1,0 +1,8 @@
+.DS_Store
+VERSION
+workspace/
+cache/
+.stella-env
+.stella-ftp-credentials
+.bash_history
+.vagrant/
