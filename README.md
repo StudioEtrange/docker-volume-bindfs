@@ -231,6 +231,16 @@ volumes:
     sudo chown -R $(id -u):$(id -g) vendor
     ```
 
+## Things to think to do
+
+* migrate logrus to zerolog like in docker-volume-rclone for logging purpose
+    * https://github.com/rs/zerolog
+    * https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
+
+* change the path of the persistent file from `/var/lib/docker/plugins/` to `/etc/docker-volume-bindfs` ?
+
+* Protect the volume list with mutex for every driver operation : https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
+
 ## LICENSE
 
 MIT
