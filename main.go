@@ -123,7 +123,8 @@ func (d *bindfsDriver) Create(r *volume.CreateRequest) error {
 
 func (d *bindfsDriver) List() (*volume.ListResponse, error) {
 	log.Debugf("List Request")
-
+	// TODO : MUTEX ?
+	// https://github.com/fentas/docker-volume-davfs/blob/f927bf30c25505a9ca5996ce1029468d76a58c1e/main.go#L254
 	var vols []*volume.Volume
 	for name, v := range d.volumes {
 		vols = append(vols, 
@@ -134,7 +135,7 @@ func (d *bindfsDriver) List() (*volume.ListResponse, error) {
 
 func (d *bindfsDriver) Get(r *volume.GetRequest) (*volume.GetResponse, error) {
 	log.Debugf("Get Request %s", r)
-
+	// TODO : MUTEX ?
 	v, ok := d.volumes[r.Name]
 	if !ok {
 		msg := fmt.Sprintf("Failed to get volume %s because it doesn't exists", r.Name)
@@ -178,6 +179,7 @@ func (d *bindfsDriver) Remove(r *volume.RemoveRequest) error {
 
 func (d *bindfsDriver) Path(r *volume.PathRequest) (*volume.PathResponse, error) {
 	log.Debugf("Path Request %s", r)
+	// TODO : MUTEX ?
 	v, ok := d.volumes[r.Name]
 	if !ok {
 		msg := fmt.Sprintf("Failed to find path for volume %s because volume doesn't exists", r.Name)
