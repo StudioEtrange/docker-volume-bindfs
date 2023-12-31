@@ -239,7 +239,9 @@ volumes:
 
 * change the path of the persistent file from `/var/lib/docker/plugins/` to `/etc/docker-volume-bindfs` ?
 
-* Protect the volume list with mutex for every driver operation : https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
+* Protect the volume list with mutex for every driver operation : 
+    * https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
+    * https://github.com/fentas/docker-volume-davfs/blob/master/main.go
 
 ## LICENSE
 
