@@ -1,6 +1,6 @@
 module github.com/StudioEtrange/docker-volume-bindfs
 
-go 1.20
+go 1.21
 
 require github.com/Sirupsen/logrus v1.0.2-0.20170728074214-181d419aa9e2
 
