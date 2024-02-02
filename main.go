@@ -35,7 +35,8 @@ type bindfsVolume struct {
 }
 
 type bindfsDriver struct {
-	mutex      *sync.Mutex
+	//mutex      *sync.Mutex
+	mutex	   *sync.RWMutex
 	volumes    map[string]*bindfsVolume
 	volumePath string
 	statePath  string
@@ -58,7 +59,8 @@ func newBindfsDriver(basePath string) (*bindfsDriver, error) {
 		volumes:   map[string]*bindfsVolume{},
 		volumePath: volumePath,
 		statePath: statePath,
-		mutex:      &sync.Mutex{},
+		//mutex:      &sync.Mutex{},
+		mutex:      &sync.RWMutex{},
 	}
 
 	data, err := ioutil.ReadFile(driver.statePath)
@@ -123,6 +125,8 @@ func (d *bindfsDriver) Create(r *volume.CreateRequest) error {
 
 func (d *bindfsDriver) List() (*volume.ListResponse, error) {
 	log.Debugf("List Request")
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
 
 	var vols []*volume.Volume
 	for name, v := range d.volumes {
@@ -134,6 +138,8 @@ func (d *bindfsDriver) List() (*volume.ListResponse, error) {
 
 func (d *bindfsDriver) Get(r *volume.GetRequest) (*volume.GetResponse, error) {
 	log.Debugf("Get Request %s", r)
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
 
 	v, ok := d.volumes[r.Name]
 	if !ok {
@@ -178,6 +184,9 @@ func (d *bindfsDriver) Remove(r *volume.RemoveRequest) error {
 
 func (d *bindfsDriver) Path(r *volume.PathRequest) (*volume.PathResponse, error) {
 	log.Debugf("Path Request %s", r)
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
+
 	v, ok := d.volumes[r.Name]
 	if !ok {
 		msg := fmt.Sprintf("Failed to find path for volume %s because volume doesn't exists", r.Name)

@@ -1,4 +1,5 @@
-FROM golang:1.20.1-bullseye as builder
+FROM golang:1.21.6-bullseye as builder
+#FROM golang:1.20.1-bullseye as builder
 #FROM golang:1.14.12-stretch as builder
 #FROM golang:1.9-stretch as builder
 COPY . /go/src/github.com/StudioEtrange/docker-volume-bindfs

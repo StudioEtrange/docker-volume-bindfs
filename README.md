@@ -35,6 +35,7 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|---|
+|studioetrange/bindfs:2.1a|1.13.11|1.21.6|improve mutex to lock operation on driver when several access to it is made|
 |studioetrange/bindfs:2.0b|1.13.11|1.20.1|upgrade plugin logic itself and version of go|
 |studioetrange/bindfs:2.0a|1.17.2|1.20.1|upgrade plugin logic itself and version of bindfs and go|
 |studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
@@ -101,7 +102,7 @@ volumes:
     make all
     ```
 
-* Options : you can fix a TAG for the plugin version and choose a bindfs version
+* Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_13_11)
     ```
     make PLUGIN_TAG=2.0a BINDFS_VERSION=1_17_2 all
     make PLUGIN_TAG=2.0b BINDFS_VERSION=1_13_11 all
@@ -167,14 +168,17 @@ volumes:
 * Publish a built plugin to docker hub
 
     ```
-    make DOCKER_LOGIN='foo' DOCKER_PASSWORD='bar' PLUGIN_TAG=2.0 push
+    make DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='token' PLUGIN_TAG=2.1 push
     ```
 
 
 ### GO update version and dependency management
 
+* GO VERSION UPDATE :
+    * Edit Dockerfile and change FROM image with one from dockerhub https://hub.docker.com/_/golang/tags?page=1&name=bullseye based on debian bullseye (i.e : `FROM golang:1.21.6-bullseye as builder`)
+    * Use this version in dependencies management step   
 
-* For go 2.20 using standard Go Modules (without govendor) (project tag =>2.0)
+* DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor) (project tag =>2.0)
 
     ```
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
@@ -201,7 +205,7 @@ volumes:
     sudo chown -R $(id -u):$(id -g) go.sum
     ```
 
-* For go 1.14 with govendor (project tag <=1.2)
+* DEPENDENCIES MANAGEMEMENT : For go 1.14 with govendor (project tag <=1.2)
 
     ```
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
