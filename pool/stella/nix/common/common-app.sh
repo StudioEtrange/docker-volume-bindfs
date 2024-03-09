@@ -396,11 +396,20 @@ __get_features() {
 	__feature_install_list "$STELLA_APP_FEATURE_LIST"
 }
 
-
-__remove_features() {
-	__feature_install_list "$STELLA_APP_FEATURE_LIST"
+__install_features() {
+	__get_features
 }
 
+# option NON_DECLARED : do not remove features from properties file. It is like an "uninstall" behavior
+__remove_features() {
+	local _OPT="$1"
+
+	__feature_remove_list "$STELLA_APP_FEATURE_LIST" "$_OPT"
+}
+
+__uninstall_features() {
+	__remove_features "NON_DECLARED"
+}
 
 # install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
 __get_feature() {

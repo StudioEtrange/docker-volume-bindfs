@@ -181,7 +181,7 @@ if [ "$DOMAIN" = "feature" ]; then
 	case $ACTION in
 		remove)
 			__feature_remove "$ID";;
-	  install)
+	  	install)
 			[ ! "$BUILDARCH" = "" ] && __set_build_mode_default "ARCH" "$BUILDARCH"
 			_OPT=
 			[ "$DEPFORCE" = "1" ] && _OPT="$_OPT DEP_FORCE"

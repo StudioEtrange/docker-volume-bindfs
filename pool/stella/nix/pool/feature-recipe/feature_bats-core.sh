@@ -5,7 +5,7 @@ _batscore_INCLUDED_=1
 
 feature_bats-core() {
 	FEAT_NAME="bats-core"
-	FEAT_LIST_SCHEMA="1_7_0:source"
+	FEAT_LIST_SCHEMA="1_9_0:source 1_7_0:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -17,6 +17,23 @@ feature_bats-core() {
 get_bats_own_unit_test() {
 	cp -R "${SRC_DIR}/test" "${INSTALL_DIR}/test"
 }
+
+
+feature_bats-core_1_9_0() {
+	FEAT_VERSION="1_9_0"
+
+	FEAT_SOURCE_URL="https://github.com/bats-core/bats-core/archive/refs/tags/v1.9.0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bats-${FEAT_VERSION}.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK="get_bats_own_unit_test"
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/bin/bats"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}/bin"
+
+}
+
+
 
 
 feature_bats-core_1_7_0() {

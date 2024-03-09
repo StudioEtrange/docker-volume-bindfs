@@ -5,14 +5,31 @@ _batsassert_INCLUDED_=1
 
 feature_bats-assert() {
 	FEAT_NAME="bats-assert"
-	FEAT_LIST_SCHEMA="2_0_0:source"
+	FEAT_LIST_SCHEMA="2_1_0:source 2_0_0:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-assert is a helper library providing common assertions for bats"
-	FEAT_LINK="https://github.com/bats-assert/bats-assert"
+	FEAT_LINK="https://github.com/bats-core/bats-assert"
 }
 
+
+
+
+
+feature_bats-assert_2_1_0() {
+	FEAT_VERSION="2_1_0"
+
+	FEAT_SOURCE_URL="https://github.com/bats-core/bats-assert/archive/refs/tags/v2.1.0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bats-assert-${FEAT_VERSION}.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_ENV_CALLBACK="feature_bats-assert_setenv"
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/load.bash"
+	FEAT_SEARCH_PATH=
+
+}
 
 feature_bats-assert_2_0_0() {
 	FEAT_VERSION="2_0_0"

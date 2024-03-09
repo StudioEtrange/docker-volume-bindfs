@@ -1,9 +1,8 @@
 if [ ! "$_mambaforge_INCLUDED_" = "1" ]; then
 _mambaforge_INCLUDED_=1
 
-# miniforge3 project from https://github.com/conda-forge/miniforge can install different python env management tools
-#		Miniforge3 => install conda tool (see miniforge3 feature recipe)
-#		Mambaforge => install mamba and conda tools (this feature recipe)
+# mambaforge releases are into https://github.com/conda-forge/miniforge can install different python env management tools
+#		Miniforge3 and Mambaforge are identical "That said, if you had to start using one today, we recommend to stick to Miniforge."
 # all connected to conda-forge package repository
 
 

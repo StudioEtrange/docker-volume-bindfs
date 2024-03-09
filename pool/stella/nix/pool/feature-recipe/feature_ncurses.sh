@@ -9,7 +9,7 @@ _NCURSES_INCLUDED_=1
 
 feature_ncurses() {
 	FEAT_NAME="ncurses"
-	FEAT_LIST_SCHEMA="6_1:source 6_0:source 5_9:source"
+	FEAT_LIST_SCHEMA="6_4:source 6_3:source 6_2:source 6_1:source 6_0:source 5_9:source"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
@@ -17,6 +17,47 @@ feature_ncurses() {
 	FEAT_LINK="https://invisible-island.net/ncurses/"
 }
 
+
+
+feature_ncurses_6_4() {
+	FEAT_VERSION="6_4"
+
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.4.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ncurses-6.4.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_TEST="ncurses6-config"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+
+feature_ncurses_6_3() {
+	FEAT_VERSION="6_3"
+
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.3.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ncurses-6.3.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_TEST="ncurses6-config"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+feature_ncurses_6_2() {
+	FEAT_VERSION="6_2"
+
+	FEAT_SOURCE_URL="http://ftp.gnu.org/gnu/ncurses/ncurses-6.2.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ncurses-6.2.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_TEST="ncurses6-config"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
 
 feature_ncurses_6_1() {
 	FEAT_VERSION="6_1"

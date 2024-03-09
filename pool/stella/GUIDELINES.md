@@ -18,25 +18,25 @@ Stella is intended to work at least with `bash`. But we will try to stick when i
 
 * Tools
 
-http://man.he.net/man1/checkbashisms ===> test portability
-https://github.com/duggan/shlint ===> test portability
-https://github.com/SublimeLinter/SublimeLinter-shellcheck
-http://carlosbecker.com/posts/lint-shell-scripts
+    - http://man.he.net/man1/checkbashisms ===> test portability
+    - https://github.com/duggan/shlint ===> test portability
+    - https://github.com/SublimeLinter/SublimeLinter-shellcheck
+    - http://carlosbecker.com/posts/lint-shell-scripts
 
 * Bash to posix
 
-https://wiki.ubuntu.com/DashAsBinSh
-http://mywiki.wooledge.org/Bashism
-http://wiki.bash-hackers.org/scripting/obsolete
-https://github.com/koalaman/shellcheck/wiki/SC2039
+    - https://wiki.ubuntu.com/DashAsBinSh
+    - http://mywiki.wooledge.org/Bashism
+    - http://wiki.bash-hackers.org/scripting/obsolete
+    - https://github.com/koalaman/shellcheck/wiki/SC2039
 
 * Shebang
 
-http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-console-or-mac-terminal
+    - http://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-console-or-mac-terminal
 
 * Best practices
-
-https://github.com/progrium/bashstyle ==> for bash
-https://github.com/bahamas10/bash-style-guide ==> for bash
-https://github.com/openstack-dev/bashate ==> for shell
-http://www.etalabs.net/sh_tricks.html ==> POSIX shell tricks
+    - https://google.github.io/styleguide/shellguide.html google bash guidelines
+    - https://github.com/progrium/bashstyle ==> for bash
+    - https://github.com/bahamas10/bash-style-guide ==> for bash
+    - https://github.com/openstack-dev/bashate ==> for shell
+    - http://www.etalabs.net/sh_tricks.html ==> POSIX shell tricks

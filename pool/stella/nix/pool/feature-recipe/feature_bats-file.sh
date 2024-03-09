@@ -10,7 +10,7 @@ feature_bats-file() {
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-file is a helper library providing common filesystem related assertions and helpers for bats"
-	FEAT_LINK="https://github.com/bats-core/bats-files"
+	FEAT_LINK="https://github.com/bats-core/bats-file"
 }
 
 

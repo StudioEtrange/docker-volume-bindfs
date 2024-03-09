@@ -127,11 +127,13 @@ Mainly tested platforms are :
 * MacOs
 * Windows 7 / 10
 
+## Similar projects
 
+* poshlib : https://github.com/andrewgdotcom/poshlib
 
 ## License
 
-Copyright 2013-2017 Sylvain Boucault @ StudioEtrange
+Copyright 2013-2023 Sylvain Boucault @ StudioEtrange
 
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of

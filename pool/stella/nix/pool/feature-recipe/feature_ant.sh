@@ -5,7 +5,7 @@ _ANT_INCLUDED_=1
 
 feature_ant() {
 	FEAT_NAME=ant
-	FEAT_LIST_SCHEMA="1_9_5:binary"
+	FEAT_LIST_SCHEMA="1_9_16:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
@@ -17,8 +17,8 @@ feature_ant_env() {
 
 
 
-feature_ant_1_9_5() {
-	FEAT_VERSION=1_9_5
+feature_ant_1_9_16() {
+	FEAT_VERSION=1_9_16
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
@@ -27,16 +27,16 @@ feature_ant_1_9_5() {
 	FEAT_SOURCE_URL_FILENAME=
 	FEAT_SOURCE_URL_PROTOCOL=
 
-	FEAT_BINARY_URL=http://www.eu.apache.org/dist/ant/binaries/apache-ant-1.9.5-bin.tar.gz
-	FEAT_BINARY_URL_FILENAME=apache-ant-1.9.5-bin.tar.gz
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+	FEAT_BINARY_URL="https://downloads.apache.org/ant/binaries/apache-ant-1.9.16-bin.tar.gz"
+	FEAT_BINARY_URL_FILENAME="apache-ant-1.9.16-bin.tar.gz"
+	FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_SOURCE_CALLBACK=
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=feature_ant_env
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/ant
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/ant"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 

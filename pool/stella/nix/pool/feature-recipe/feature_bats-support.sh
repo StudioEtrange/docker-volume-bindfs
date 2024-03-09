@@ -10,7 +10,7 @@ feature_bats-support() {
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-support is a helper library providing common functions for bats"
-	FEAT_LINK="https://github.com/bats-support/bats-support https://bats-support.readthedocs.io/"
+	FEAT_LINK="https://github.com/bats-core/bats-support https://bats-support.readthedocs.io/"
 }
 
 

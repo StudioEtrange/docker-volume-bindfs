@@ -23,7 +23,7 @@ __list_feature_version() {
 
 
 __feature_init() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 	local _OPT="$2"
 	local _opt_hidden_feature=OFF
 
@@ -67,7 +67,7 @@ __feature_init() {
 				fi
 
 				if [ "$_origin" = "STELLA" ]; then
-					__feature_init ${dep}
+					__feature_init "${dep}"
 					# if some deps are missing, this might not be an error, because we have merged FEAT_SOURCE_DEPENDENCIES and FEAT_BINARY_DEPENDENCIES
 					#if [ "$TEST_FEATURE" = "0" ]; then
 					#	__log "DEBUG" "** ${_current_feat} dependency $dep seems can not be initialized or is not installed."
@@ -118,6 +118,7 @@ __feature_init() {
 		fi
 
 	fi
+
 }
 
 
@@ -284,7 +285,6 @@ __feature_match_installed() {
 		# 	__internal_feature_context
 		# fi
 
-
 		if [ ! "${_version_matched}" = "" ]; then
 			# we fix the found version with the flavour of the requested schema
 			if [ ! "$__VAR_FEATURE_FLAVOUR" = "" ]; then
@@ -307,14 +307,88 @@ __feature_match_installed() {
 
 # save context before calling __feature_inspect, in case we use it inside a schema context
 __push_schema_context() {
-	__stack_push "$TEST_FEATURE"
-	__stack_push "$FEAT_SCHEMA_SELECTED"
+
+	__stack_push "STELLA" "$FEAT_ARCH"
+	__stack_push "STELLA" "$FEAT_BINARY_CALLBACK"
+	__stack_push "STELLA" "$FEAT_BINARY_DEPENDENCIES"
+	__stack_push "STELLA" "$FEAT_BINARY_URL_FILENAME"
+	__stack_push "STELLA" "$FEAT_BINARY_URL_PROTOCOL"
+	__stack_push "STELLA" "$FEAT_BINARY_URL"
+	__stack_push "STELLA" "$FEAT_BUNDLE_CALLBACK"
+	__stack_push "STELLA" "$FEAT_BUNDLE_ITEM"
+	__stack_push "STELLA" "$FEAT_BUNDLE_PATH"
+	__stack_push "STELLA" "$FEAT_BUNDLE"
+	__stack_push "STELLA" "$FEAT_DEFAULT_ARCH"
+	__stack_push "STELLA" "$FEAT_DEFAULT_FLAVOUR"
+	__stack_push "STELLA" "$FEAT_DEPENDENCIES"
+	__stack_push "STELLA" "$FEAT_DESC"
+	__stack_push "STELLA" "$FEAT_ENV_CALLBACK"
+	__stack_push "STELLA" "$FEAT_INSTALL_ROOT"
+	__stack_push "STELLA" "$FEAT_INSTALL_TEST"
+	__stack_push "STELLA" "$FEAT_LINK"
+	__stack_push "STELLA" "$FEAT_LIST_SCHEMA"
+	__stack_push "STELLA" "$FEAT_NAME"
+	__stack_push "STELLA" "$FEAT_SCHEMA_FLAVOUR"
+	__stack_push "STELLA" "$FEAT_SCHEMA_OS_EXCLUSION"
+	__stack_push "STELLA" "$FEAT_SCHEMA_OS_RESTRICTION"
+	__stack_push "STELLA" "$FEAT_SCHEMA_SELECTED"
+	__stack_push "STELLA" "$FEAT_SEARCH_PATH"
+	__stack_push "STELLA" "$FEAT_SOURCE_CALLBACK"
+	__stack_push "STELLA" "$FEAT_SOURCE_DEPENDENCIES"
+	__stack_push "STELLA" "$FEAT_SOURCE_URL_FILENAME"
+	__stack_push "STELLA" "$FEAT_SOURCE_URL_PROTOCOL"
+	__stack_push "STELLA" "$FEAT_SOURCE_URL"
+	__stack_push "STELLA" "$FEAT_VERSION"
+	
+	# __stack_push "STELLA" "$STELLA_APP_CACHE_DIR"
+	# __stack_push "STELLA" "$STELLA_APP_FEATURE_ROOT"
+	# __stack_push "STELLA" "$STELLA_APP_TEMP_DIR"
+	__stack_push "STELLA" "$TEST_FEATURE"
 }
 # load context before calling __feature_inspect, in case we use it inside a schema context
 __pop_schema_context() {
-	__stack_pop FEAT_SCHEMA_SELECTED
-	__internal_feature_context $FEAT_SCHEMA_SELECTED
-	__stack_pop TEST_FEATURE
+	#__stack_pop "STELLA" "FEAT_SCHEMA_SELECTED"
+	#__internal_feature_context "$FEAT_SCHEMA_SELECTED"
+	#__stack_pop "STELLA" TEST_FEATURE
+
+	__stack_pop "STELLA" "TEST_FEATURE"
+	# __stack_pop "STELLA" "STELLA_APP_TEMP_DIR"
+	# __stack_pop "STELLA" "STELLA_APP_FEATURE_ROOT"
+	# __stack_pop "STELLA" "STELLA_APP_CACHE_DIR"
+
+	__stack_pop "STELLA" "FEAT_VERSION"
+	__stack_pop "STELLA" "FEAT_SOURCE_URL"
+	__stack_pop "STELLA" "FEAT_SOURCE_URL_PROTOCOL"
+	__stack_pop "STELLA" "FEAT_SOURCE_URL_FILENAME"
+	__stack_pop "STELLA" "FEAT_SOURCE_DEPENDENCIES"
+	__stack_pop "STELLA" "FEAT_SOURCE_CALLBACK"
+	__stack_pop "STELLA" "FEAT_SEARCH_PATH"
+	__stack_pop "STELLA" "FEAT_SCHEMA_SELECTED"
+	__stack_pop "STELLA" "FEAT_SCHEMA_OS_RESTRICTION"
+	__stack_pop "STELLA" "FEAT_SCHEMA_OS_EXCLUSION"
+	__stack_pop "STELLA" "FEAT_SCHEMA_FLAVOUR"
+	__stack_pop "STELLA" "FEAT_NAME"
+	__stack_pop "STELLA" "FEAT_LIST_SCHEMA"
+	__stack_pop "STELLA" "FEAT_LINK"
+	__stack_pop "STELLA" "FEAT_INSTALL_TEST"
+	__stack_pop "STELLA" "FEAT_INSTALL_ROOT"
+	__stack_pop "STELLA" "FEAT_ENV_CALLBACK"
+	__stack_pop "STELLA" "FEAT_DESC"
+	__stack_pop "STELLA" "FEAT_DEPENDENCIES"
+	__stack_pop "STELLA" "FEAT_DEFAULT_FLAVOUR"
+	__stack_pop "STELLA" "FEAT_DEFAULT_ARCH"
+	__stack_pop "STELLA" "FEAT_BUNDLE"
+	__stack_pop "STELLA" "FEAT_BUNDLE_PATH"
+	__stack_pop "STELLA" "FEAT_BUNDLE_ITEM"
+	__stack_pop "STELLA" "FEAT_BUNDLE_CALLBACK"
+	__stack_pop "STELLA" "FEAT_BINARY_URL"
+	__stack_pop "STELLA" "FEAT_BINARY_URL_PROTOCOL"
+	__stack_pop "STELLA" "FEAT_BINARY_URL_FILENAME"
+	__stack_pop "STELLA" "FEAT_BINARY_DEPENDENCIES"
+	__stack_pop "STELLA" "FEAT_BINARY_CALLBACK"
+	__stack_pop "STELLA" "FEAT_ARCH"
+
+
 }
 
 
@@ -356,6 +430,7 @@ __feature_inspect() {
 	TEST_FEATURE=0
 
 	[ "$_SCHEMA" = "" ] && return
+
 	__feature_match_installed "$_SCHEMA"
 
 	if [ ! "$FEAT_SCHEMA_SELECTED" = "" ]; then
@@ -363,8 +438,10 @@ __feature_inspect() {
 			local p
 			local _t=1
 			__push_schema_context
-		
+
+			# activating bundle mode
 			FEAT_BUNDLE_MODE="$FEAT_BUNDLE"
+
 			for p in $FEAT_BUNDLE_ITEM; do
 				TEST_FEATURE=0
 				__feature_inspect $p
@@ -394,6 +471,7 @@ __feature_inspect() {
 	else
 		__feature_catalog_info $_SCHEMA
 	fi
+
 }
 
 
@@ -402,7 +480,7 @@ __feature_inspect() {
 
 # TODO : update FEATURE_LIST_ENABLED and FEATURE_LIST_ENABLED_VISIBLE ?
 __feature_remove() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 	local _OPT="$2"
 
 	local o
@@ -491,11 +569,13 @@ __feature_install_list() {
 	done
 }
 
+# option NON_DECLARED : do not remove features from properties file
 __feature_remove_list() {
 	local _list=$1
+	local _OPT="$2"
 
 	for f in $_list; do
-		__feature_remove $f
+		__feature_remove "$f" "$_OPT"
 	done
 }
 
@@ -513,7 +593,7 @@ __feature_choose_origin() {
 }
 
 __feature_install() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 	local _OPT="$2"
 
 	local o
@@ -695,8 +775,8 @@ __feature_install() {
 			if [ ! "$FEAT_BUNDLE" = "" ]; then
 
 				# save export/portable mode
-				__stack_push "$_export_mode"
-				__stack_push "$_portable_mode"
+				__stack_push "STELLA" "$_export_mode"
+				__stack_push "STELLA" "$_portable_mode"
 
 				if [ ! "$FEAT_BUNDLE_ITEM" = "" ]; then
 
@@ -736,8 +816,8 @@ __feature_install() {
 
 
 				# restore export/portable mode
-				__stack_pop "_portable_mode"
-				__stack_pop "_export_mode"
+				__stack_pop "STELLA" "_portable_mode"
+				__stack_pop "STELLA" "_export_mode"
 
 				# automatic call of bundle's callback after installation of all items
 				__feature_callback
@@ -758,11 +838,11 @@ __feature_install() {
 
 			if [ "$_export_mode" = "OFF" ]; then
 				if [ "$_portable_mode" = "OFF" ]; then
-					__feature_inspect $FEAT_SCHEMA_SELECTED
+					__feature_inspect "$FEAT_SCHEMA_SELECTED"
 
 					if [ "$TEST_FEATURE" = "1" ]; then
 						__log "INFO" "** Feature $_SCHEMA is installed"
-						__feature_init "$FEAT_SCHEMA_SELECTED" $_OPT
+						__feature_init "$FEAT_SCHEMA_SELECTED" "$_OPT"
 					else
 						__log "INFO" "** Error while installing feature $FEAT_SCHEMA_SELECTED"
 						#__del_folder $FEAT_INSTALL_ROOT
@@ -892,45 +972,49 @@ __feature_callback() {
 }
 
 # init feature context (properties, variables, ...)
+# all these variables can be saved/poped with __push_schema_context and __pop_schema_context
 __internal_feature_context() {
+	
 	local _SCHEMA="$1"
-
-	FEAT_ARCH=
 
 	local TMP_FEAT_SCHEMA_NAME=
 	local TMP_FEAT_SCHEMA_VERSION=
-	FEAT_SCHEMA_SELECTED=
-	FEAT_SCHEMA_FLAVOUR=
-	FEAT_SCHEMA_OS_RESTRICTION=
-	FEAT_SCHEMA_OS_EXCLUSION=
+	
+	# NOTE : FEAT_BUNDLE_PATH and FEAT_BUNDLE_MODE should not be initialized here. They are set outside when managing a bundle
 
-	FEAT_NAME=
-	FEAT_DESC=
-	FEAT_LINK=
-	FEAT_LIST_SCHEMA=
-	#FEAT_DEFAULT_VERSION=
-	FEAT_DEFAULT_ARCH=
-	FEAT_DEFAULT_FLAVOUR=
-	FEAT_VERSION=
-	FEAT_SOURCE_URL=
-	FEAT_SOURCE_URL_FILENAME=
-	FEAT_SOURCE_URL_PROTOCOL=
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_URL=
+	FEAT_ARCH=
+	FEAT_BINARY_CALLBACK=
+	FEAT_BINARY_DEPENDENCIES=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
-	FEAT_BINARY_DEPENDENCIES=
-	FEAT_BINARY_CALLBACK=
-	FEAT_DEPENDENCIES=
-	FEAT_INSTALL_TEST=
-	FEAT_INSTALL_ROOT=
-	FEAT_SEARCH_PATH=
-	FEAT_ENV_CALLBACK=
-	FEAT_BUNDLE_ITEM=
+	FEAT_BINARY_URL=
 	FEAT_BUNDLE_CALLBACK=
+	FEAT_BUNDLE_ITEM=
 	# MERGE / NESTED / LIST / MERGE_LIST
 	FEAT_BUNDLE=
+	FEAT_DEFAULT_ARCH=
+	FEAT_DEFAULT_FLAVOUR=
+	FEAT_DEPENDENCIES=
+	FEAT_DESC=
+	FEAT_ENV_CALLBACK=
+	FEAT_INSTALL_ROOT=
+	FEAT_INSTALL_TEST=
+	FEAT_LINK=
+	FEAT_LIST_SCHEMA=
+	FEAT_NAME=
+	FEAT_SCHEMA_FLAVOUR=
+	FEAT_SCHEMA_OS_EXCLUSION=
+	FEAT_SCHEMA_OS_RESTRICTION=
+	FEAT_SCHEMA_SELECTED=
+	FEAT_SEARCH_PATH=
+	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+	FEAT_SOURCE_URL=
+	FEAT_VERSION=
+	
+	# MERGE / NESTED / LIST / MERGE_LIST
 
 
 	if [ "$_SCHEMA" = "" ]; then
@@ -1018,10 +1102,11 @@ __internal_feature_context() {
 			FEAT_BINARY_DEPENDENCIES=${!_tmp}
 		fi
 	else
-		# we grab only os option
-		# TODO why we grab os option ?
+		# we grab only OS option
+		# TODO why we grab OS option ?
 		__translate_schema "$_SCHEMA" "NONE" "NONE" "NONE" "NONE" "FEAT_SCHEMA_OS_RESTRICTION" "FEAT_SCHEMA_OS_EXCLUSION"
 	fi
+
 }
 
 

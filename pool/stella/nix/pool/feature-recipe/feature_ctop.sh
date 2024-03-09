@@ -7,13 +7,37 @@ _ctop_INCLUDED_=1
 
 feature_ctop() {
 	FEAT_NAME=ctop
-	FEAT_LIST_SCHEMA="0_7_6:binary 0_7_2:binary 0_7_1:binary 0_6_1:binary"
+	FEAT_LIST_SCHEMA="0_7_7:binary 0_7_6:binary 0_7_2:binary 0_7_1:binary 0_6_1:binary"
 	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Top-like interface for container metrics"
 	FEAT_LINK="https://ctop.sh"
 }
+
+
+feature_ctop_0_7_7() {
+	FEAT_VERSION="0_7_7"
+
+
+	if [ "${STELLA_CURRENT_PLATFORM}" = "linux" ]; then
+		FEAT_BINARY_URL="https://github.com/bcicen/ctop/releases/download/v0.7.7/ctop-0.7.7-linux-amd64"
+		FEAT_BINARY_URL_FILENAME="ctop-0.7.7-linux-amd64"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+
+	if [ "${STELLA_CURRENT_PLATFORM}" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/bcicen/ctop/releases/download/0.7.7/ctop-0.7.7-darwin-amd64"
+		FEAT_BINARY_URL_FILENAME="ctop-0.7.7-darwin-amd64"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/ctop"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}"
+
+}
+
 
 feature_ctop_0_7_6() {
 	FEAT_VERSION="0_7_6"

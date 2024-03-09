@@ -747,11 +747,17 @@ __register_no_proxy() {
 # only temporary no proxy
 # will be reseted each time proxy values are read from env file
 __no_proxy_for() {
-	local _uri=$1
+	local _uri="$1"
 
+	if [ "$_uri" == "" ]; then
+		return
+	fi
 	__uri_parse "$_uri"
 	local _host="$__stella_uri_host"
 
+	if [ "$_host" == "" ]; then
+		return
+	fi
 
 	local _exist=
 	local _tmp_no_proxy="${STELLA_NO_PROXY//,/ }"

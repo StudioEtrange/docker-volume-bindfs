@@ -13,10 +13,11 @@ The plugin is based on bindfs usage to mount folders. https://bindfs.org/
 This is a fork of https://github.com/lebokus/docker-volume-bindfs
 
 * support multiple volume with same mount points
-* can choose version of bindfs (consult available version from [here](https://github.com/StudioEtrange/stella/blob/5f9b6720cc76b6a8bde9495696e336ae212dc0a9/nix/pool/feature-recipe/feature_bindfs.sh)
 * add more info and clean build process
 * resolve bindfs defunct process each time a volume is destroyed
 * isolate bindfs-state.json state file for each plugin version
+* make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
+* when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh). Require libfuse-dev.
 
 ## Usage
 
@@ -25,7 +26,7 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 This will install the plugin from pre-built versions
 
 ```
-docker plugin install studioetrange/bindfs:2.0
+docker plugin install studioetrange/bindfs:2.1
 ```
 
 
@@ -35,7 +36,8 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|---|
-|studioetrange/bindfs:2.1a|1.13.11|1.21.6|improve mutex to lock operation on driver when several access to it is made|
+|studioetrange/bindfs:2.1|1.13.11|1.22.1|improve mutex to lock operation on driver when concurrent access is made|
+|studioetrange/bindfs:2.1a|1.13.11|1.21.6|improve mutex to lock operation on driver when concurrent access is made|
 |studioetrange/bindfs:2.0b|1.13.11|1.20.1|upgrade plugin logic itself and version of go|
 |studioetrange/bindfs:2.0a|1.17.2|1.20.1|upgrade plugin logic itself and version of bindfs and go|
 |studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|
@@ -46,7 +48,7 @@ In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetran
 ### Create a volume
 
 ```
-docker volume create -d studioetrange/bindfs:2.0 -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] bindfsvolume
+docker volume create -d studioetrange/bindfs:2.1 -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] bindfsvolume
 
 docker volume ls
 
@@ -82,7 +84,7 @@ services:
 
 volumes:
     data:
-        driver: studioetrange/bindfs:2.0
+        driver: studioetrange/bindfs:2.1
         driver_opts:
             sourcePath: "${PWD}"
             map: "${EUID}/0:@${EGID}/@0"
@@ -104,11 +106,12 @@ volumes:
 
 * Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_13_11)
     ```
+    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_13_11 all
     make PLUGIN_TAG=2.0a BINDFS_VERSION=1_17_2 all
     make PLUGIN_TAG=2.0b BINDFS_VERSION=1_13_11 all
     
     # without using docker cache :
-    make PLUGIN_TAG=2.0a BINDFS_VERSION=1_17_2 all-nocache 
+    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_13_11 all-nocache 
     ```
 
 ### Enable built plugin
@@ -122,7 +125,7 @@ volumes:
 * Choose the version to enable
 
     ```
-    make enable PLUGIN_TAG=2.0
+    make enable PLUGIN_TAG=2.1
     ```
 
 ### Debug
@@ -178,11 +181,10 @@ volumes:
     * Edit Dockerfile and change FROM image with one from dockerhub https://hub.docker.com/_/golang/tags?page=1&name=bullseye based on debian bullseye (i.e : `FROM golang:1.21.6-bullseye as builder`)
     * Use this version in dependencies management step   
 
-* DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor) (project tag =>2.0)
+* NEW DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor) (project tag =>2.0)
 
     ```
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
-    git checkout 2.0
     cd docker-volume-bindfs
     docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.20.1-bullseye bash
 
@@ -205,7 +207,7 @@ volumes:
     sudo chown -R $(id -u):$(id -g) go.sum
     ```
 
-* DEPENDENCIES MANAGEMEMENT : For go 1.14 with govendor (project tag <=1.2)
+* OLD DEPENDENCIES MANAGEMEMENT : For go 1.14 with govendor (project tag <=1.2)
 
     ```
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
@@ -237,13 +239,13 @@ volumes:
 
 ## Things to think to do
 
-* migrate logrus to zerolog like in docker-volume-rclone for logging purpose
+* [ ] migrate logrus to zerolog like in docker-volume-rclone for logging purpose
     * https://github.com/rs/zerolog
     * https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
 
-* change the path of the persistent file from `/var/lib/docker/plugins/` to `/etc/docker-volume-bindfs` ?
+* [ ] change the path of the persistent file from `/var/lib/docker/plugins/` to `/etc/docker-volume-bindfs` ?
 
-* Protect the volume list with mutex for every driver operation : 
+* [X] Protect the volume list with mutex for every driver operation : 
     * https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
     * https://github.com/fentas/docker-volume-davfs/blob/master/main.go
 

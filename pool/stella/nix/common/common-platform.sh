@@ -260,6 +260,7 @@ __stella_requirement() {
 # Test if binary is present, if not :
 #		if binary is OPTIONAL, just print warn and guidelines to install it as a STELLA_FEATURE or as a package SYSTEM
 #		if binary is not OPTIONAL, it will install it as a STELLA_FEATURE or provide guideline to install it as a package SYSTEM
+#		INTERNAL will install it as a STELLA_FEATURE installed in stella feature workspace instead of current app workspace
 __require() {
 	local _artefact="$1" # binary to test
 	local _id="$2" # feature name (for stella) or sys name (for package manager)
@@ -270,15 +271,18 @@ __require() {
 	# OPTIONAL
 	# SYSTEM
 	# STELLA_FEATURE
+	# INTERNAL
 	local _opt_optional=OFF
 	local _opt_system=OFF
 	local _opt_stella_feature=ON
+	local _opt_internal=
 
 
 	for o in $_OPT; do
 		[ "$o" = "OPTIONAL" ] && _opt_optional=ON
 		[ "$o" = "SYSTEM" ] && _opt_system=ON && _opt_stella_feature=OFF && _opt_stella_toolset=OFF
 		[ "$o" = "STELLA_FEATURE" ] && _opt_system=OFF && _opt_stella_feature=ON && _opt_stella_toolset=OFF
+		[ "$o" = "INTERNAL" ] && _opt_system=OFF && _opt_stella_feature=ON && _opt_stella_toolset=OFF && _opt_internal="INTERNAL"
 	done
 
 	echo "** REQUIRE $_id ($_artefact)"
@@ -312,8 +316,17 @@ __require() {
 			else
 				if [ "$_opt_stella_feature" = "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
-					(__feature_install "$_id" "NON_DECLARED")
+					echo -------------------------------------------
+					( __feature_install "$_id" "NON_DECLARED $_opt_internal" )
+
+					echo REALLY ENABLED 1 ${FEATURE_LIST_ENABLED[@]}
+					echo $PATH
+
+					echo -------------------------------------------
 					__feature_init "$_id" "NON_DECLARED"
+					echo REALLY ENABLED 2 ${FEATURE_LIST_ENABLED[@]}
+					echo $PATH
+					echo -------------------------------------------
 				else
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"

@@ -5,13 +5,28 @@ _bats_INCLUDED_=1
 
 feature_bats() {
 	FEAT_NAME="bats"
-	FEAT_LIST_SCHEMA="1"
+	FEAT_LIST_SCHEMA="2 1"
 	FEAT_DEFAULT_ARCH=
 
 	FEAT_BUNDLE="NESTED"
 
 	FEAT_DESC="Bash Automated Testing System and its helper"
 	FEAT_LINK="https://github.com/bats-core/bats-core https://bats.readthedocs.io/"
+}
+
+
+
+feature_bats_2() {
+	FEAT_VERSION="2"
+	
+	FEAT_BUNDLE_ITEM="bats-core#1_9_0 bats-assert#2_1_0 bats-support#0_3_0 bats-file#0_3_0"
+
+	FEAT_ENV_CALLBACK="feature_bats_setenv"
+	FEAT_BUNDLE_CALLBACK=
+
+	FEAT_INSTALL_TEST=
+	FEAT_SEARCH_PATH=
+
 }
 
 

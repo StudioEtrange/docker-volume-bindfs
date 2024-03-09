@@ -45,8 +45,8 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 
 # STELLA INCLUDE ---------------------------------------------
 
-#shellcheck source=nix/common/stack.sh
-. $STELLA_COMMON/stack.sh
+#shellcheck source=nix/common/common-algorithm.sh
+. $STELLA_COMMON/common-algorithm.sh
 #shellcheck source=nix/common/common-log.sh
 . $STELLA_COMMON/common-log.sh
 #shellcheck source=nix/common/common-platform.sh
@@ -263,7 +263,7 @@ get_resource delete_resource update_resource revert_resource download_uncompress
 get_key get_keys add_key del_key mercurial_project_version git_project_version get_stella_version \
 make_sevenzip_sfx_bin make_targz_sfx_shell compress trim transfer_stella transfer_folder_rsync transfer_file_rsync md5"
 STELLA_API_API_PUBLIC="api_connect api_disconnect"
-STELLA_API_APP_PUBLIC="transfer_app get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features remove_features"
+STELLA_API_APP_PUBLIC="transfer_app get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features remove_features install_features uninstall_features"
 STELLA_API_FEATURE_PUBLIC="feature_add_repo feature_info list_feature_version feature_remove feature_remove_list feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
 STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check_binary_file tweak_binary_file"
 STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
@@ -271,6 +271,7 @@ STELLA_API_PLATFORM_PUBLIC="ansible_play ansible_play_localhost python_get_lib_d
 STELLA_API_NETWORK_PUBLIC="find_free_port get_ip_external check_tcp_port_open ssh_execute get_ip_from_hostname get_ip_from_interface proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
 STELLA_API_BOOT_PUBLIC="boot_stella_shell boot_stella_cmd boot_stella_script boot_app_shell boot_app_cmd boot_app_script"
 STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"
+STELLA_API_ALGORITHM_PUBLIC="stack_init stack_push stack_pop"
 
 # SAMPLE : to test a function that return an exit code :
 # 		if $($STELLA_API "is_dir_empty" "/bin"); then
