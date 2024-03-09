@@ -29,5 +29,5 @@ jobs:
               password: ${{ secrets.GITHUB_TOKEN }}
           - name: Push
             run: |
-              docker push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
-              docker push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
+              docker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
+              docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
