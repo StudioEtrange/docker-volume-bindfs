@@ -17,7 +17,7 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 * resolve bindfs defunct process each time a volume is destroyed
 * isolate bindfs-state.json state file for each plugin version
 * make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
-* when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh). Require libfuse-dev.
+* when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh).
 
 ## Usage
 

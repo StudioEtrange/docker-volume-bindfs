@@ -20,11 +20,11 @@ clean:
 
 image:
 	@echo "### docker build: build docker image"
-	@docker build --build-arg BINDFS_VERSION=${BINDFS_VERSION} --build-arg PLUGIN_TAG=${PLUGIN_TAG} -t ${PLUGIN_NAME}:rootfs .
+	@docker build --build-arg BINDFS_VERSION=${BINDFS_VERSION} --build-arg PLUGIN_TAG=${PLUGIN_TAG} -t ${PLUGIN_NAME}:rootfs -t ghcr.io/${PLUGIN_NAME}:rootfs .
 
 image-nocache:
 	@echo "### docker build: build docker image without using cache"
-	@docker build --no-cache --build-arg BINDFS_VERSION=${BINDFS_VERSION} --build-arg PLUGIN_TAG=${PLUGIN_TAG} -t ${PLUGIN_NAME}:rootfs .
+	@docker build --no-cache --build-arg BINDFS_VERSION=${BINDFS_VERSION} --build-arg PLUGIN_TAG=${PLUGIN_TAG} -t ${PLUGIN_NAME}:rootfs -t ghcr.io/${PLUGIN_NAME}:rootfs .
 
 run:
 	@echo "### docker run: launch docker image for test"
