@@ -26,13 +26,14 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 This will install the plugin from pre-built versions
 
 ```
-docker plugin install studioetrange/bindfs:2.1
+docker plugin install ghcr.io/studioetrange/bindfs:2.1
 ```
 
 
 ## Notes on available pre-built versions
 
-In docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/bindfs) available versions are
+In Github Container Registry 
+and in docker hub, under [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/bindfs) available versions are
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|
 |---|---|---|---|
@@ -84,7 +85,7 @@ services:
 
 volumes:
     data:
-        driver: studioetrange/bindfs:2.1
+        driver: ghcr.io/studioetrange/bindfs:2.1
         driver_opts:
             sourcePath: "${PWD}"
             map: "${EUID}/0:@${EGID}/@0"
