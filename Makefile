@@ -42,13 +42,17 @@ rootfs:
 create-plugin:
 	@echo "### unregister and remove existing plugin ${PLUGIN_NAME}:${PLUGIN_TAG} if any"
 	@docker plugin rm -f ${PLUGIN_NAME}:${PLUGIN_TAG} || true
-	@docker plugin rm -f ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} || true
 	@echo "### create plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
 	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
-	@echo "### create plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin-copy"
+
+create-plugin-ghcr:
+	@echo "### unregister and remove existing plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} if any"
+	@docker plugin rm -f ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} || true
+	@echo "### copy rootfs from ./plugin to ./plugin-copy"
 	@rm -Rf ./plugin-copy
 	@cp -R ./plugin plugin-copy
-	@docker plugin create ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin plugin-copy
+	@echo "### create plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin-copy"
+	@docker plugin create ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin-copy
 	@rm -Rf ./plugin-copy
 
 enable:
