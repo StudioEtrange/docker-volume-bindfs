@@ -1,3 +1,4 @@
 docker-volume-sshfs
 plugin/
+plugin-copy/
 .idea

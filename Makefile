@@ -45,7 +45,11 @@ create-plugin:
 	@docker plugin rm -f ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} || true
 	@echo "### create plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
 	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
-	@docker plugin create ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
+	@echo "### create plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin-copy"
+	@rm -Rf ./plugin-copy
+	@cp -R ./plugin plugin-copy
+	@docker plugin create ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin plugin-copy
+	@rm -Rf ./plugin-copy
 
 enable:
 	@echo "### enable plugin in standard mode ${PLUGIN_NAME}:${PLUGIN_TAG}"
