@@ -15,7 +15,7 @@ CMD ["/go/bin/docker-volume-bindfs"]
 
 #FROM debian:jessie
 FROM debian:bullseye
-RUN apt-get update && apt-get install sudo wget git libfuse-dev -y
+RUN apt-get update && apt-get install sudo wget git libfuse-dev build-essential dh-autoreconf -y
 RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes /mnt/host /work
 # install bindfs
 ARG BINDFS_VERSION
@@ -30,7 +30,7 @@ RUN cd /work \
     && git checkout 0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc \
     && /work/stella/stella.sh sys install build-chain-standard \
     && /work/stella/stella.sh feature install bindfs#${BINDFS_VERSION} \
-    && export BINDFS_PATH=$(STELLA_LOG_STATE=OFF /work/stella/stella.sh boot cmd local -- '$STELLA_API feature_info "bindfs" "BINDFS" && echo $BINDFS_FEAT_INSTALL_ROOT') \
+    && export BINDFS_PATH=$(STELLA_LOG_STATE=OFF /work/stella/stella.sh boot cmd local -- '$STELLA_API feature_info "bindfs" "BINDFS" && echo $BINDFS_FEAT_INSTALL_ROOT' | tail -1) \
     && echo copy bindfs from $BINDFS_PATH \
     && cp $BINDFS_PATH/bin/bindfs /bin/ \
     && cd / \
