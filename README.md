@@ -37,6 +37,7 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|GHCR|DOCKER HUB|
 |---|---|---|---|---|---|
+|studioetrange/bindfs:2.2|1.17.6|1.22.1|update bindfs version|YES|YES|
 |studioetrange/bindfs:2.2a|1.17.6|1.22.1|update bindfs version|NO|YES|
 |studioetrange/bindfs:2.1|1.13.11|1.22.1|improve mutex to lock operation on driver when concurrent access is made|YES|YES|
 |studioetrange/bindfs:2.1a|1.13.11|1.21.6|improve mutex to lock operation on driver when concurrent access is made|NO|YES|
@@ -46,6 +47,8 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 |studioetrange/bindfs:1.1|1.13.11|||NO|YES|
 |studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|NO|YES|
 
+
+* Github worflow will built and publish versions for Github Container Registry and docker hub when a git tag is created
 
 ### Create a volume
 

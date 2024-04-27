@@ -1,7 +1,7 @@
 PLUGIN_NAME = studioetrange/bindfs
 # docker plugin version
 PLUGIN_TAG ?= latest
-BINDFS_VERSION ?=1_13_11
+BINDFS_VERSION ?=1_17_6
 DOCKER_LOGIN ?=
 DOCKER_PASSWORD ?=
 

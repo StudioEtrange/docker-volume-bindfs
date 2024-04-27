@@ -1,8 +1,5 @@
 FROM golang:1.22.1-bullseye as builder
-#FROM golang:1.21.6-bullseye as builder
-#FROM golang:1.20.1-bullseye as builder
-#FROM golang:1.14.12-stretch as builder
-#FROM golang:1.9-stretch as builder
+
 COPY . /go/src/github.com/StudioEtrange/docker-volume-bindfs
 WORKDIR /go/src/github.com/StudioEtrange/docker-volume-bindfs
 ARG PLUGIN_TAG
@@ -13,7 +10,6 @@ RUN set -ex \
 CMD ["/go/bin/docker-volume-bindfs"]
 
 
-#FROM debian:jessie
 FROM debian:bullseye
 RUN apt-get update && apt-get install sudo wget git libfuse-dev -y
 RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes /mnt/host /work
