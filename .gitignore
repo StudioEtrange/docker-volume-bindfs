@@ -2,3 +2,5 @@ docker-volume-sshfs
 plugin/
 plugin-copy/
 .idea
+workspace/
+cache/

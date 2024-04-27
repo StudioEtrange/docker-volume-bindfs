@@ -75,6 +75,7 @@ feature_autoconf_2_69() {
 feature_autoconf_patch_for_autoconf_2_71() {
 
 	# https://savannah.gnu.org/support/index.php?110521
+	# https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/misc/autoconf/2.71.nix#L19C7-L19C57
 	__get_resource "autoconf_2_71 patch" "https://git.savannah.gnu.org/cgit/autoconf.git/patch/?id=3a9802d60156809c139e9b4620bf04917e143ee2" "HTTP" "$SRC_DIR" "FORCE_NAME autoconf-patch-fix-race.patch"
 	cd "$SRC_DIR"
 	patch -Np1 < autoconf-patch-fix-race.patch
