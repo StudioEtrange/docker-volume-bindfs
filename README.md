@@ -18,17 +18,26 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 * isolate bindfs-state.json state file for each plugin version
 * make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
 * when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh)).
-* support multi arch build for linux/amd64 and linux/arm64
+* support multi platform build for linux/amd64 and linux/arm64
 
 ## Usage
 
 ### Install the plugin
 
-This will install the plugin from pre-built versions
+* This will install the pre-built versions of the plugin.
 
-```
-docker plugin install ghcr.io/studioetrange/bindfs:latest
-```
+    ```
+    docker plugin install ghcr.io/studioetrange/bindfs:latest
+    ```
+
+* To choose an arch :
+
+    ```
+    docker plugin install ghcr.io/studioetrange/bindfs:latest-arm64
+    docker plugin install ghcr.io/studioetrange/bindfs:2.3a-arm64
+    docker plugin install ghcr.io/studioetrange/bindfs:latest-amd64
+    ```
+    NOTE : By default this is an amd64 image, when no arch is specified the tag name. (i.e : ghcr.io/studioetrange/bindfs:latest is an amd64 image)
 
 
 ## Notes on available pre-built versions
@@ -38,7 +47,7 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|GHCR|DOCKER HUB|AMD64|ARM64|
 |---|---|---|---|---|---|---|---|
-|studioetrange/bindfs:2.3a|1.17.6|1.22.1|update bindfs version|YES|YES|YES|YES|
+|studioetrange/bindfs:2.3a|1.17.6|1.22.1|first support of arm64 build|-|YES|YES|YES|
 |studioetrange/bindfs:2.2|1.17.6|1.22.1|update bindfs version|YES|YES|YES|-|
 |studioetrange/bindfs:2.2a|1.17.6|1.22.1|update bindfs version|-|YES|YES|-|
 |studioetrange/bindfs:2.1|1.13.11|1.22.1|improve mutex to lock operation on driver when concurrent access is made|YES|YES|YES|-|
@@ -113,10 +122,10 @@ volumes:
 
 * Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_17_6)
     ```
-    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_17_6 all
+    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
     
     # without using docker cache :
-    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_17_6 all-nocache 
+    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all-nocache 
     ```
 
 
@@ -126,10 +135,10 @@ volumes:
 * Available supported platforms : `linux/amd64` and `linux/arm64`. By default, the current host platform is used.
 * You can force to select a supported platforms using any make target by setting `PLATFORM` variable with `amd64` or `arm64`
     ```
-    make PLATFORM=amd64 PLUGIN_TAG=2.1 BINDFS_VERSION=1_17_6 all
-    make PLATFORM=arm64 PLUGIN_TAG=2.3a BINDFS_VERSION=1_17_6 all
+    make PLATFORM=amd64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
+    make PLATFORM=arm64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
     ```
-* The build target will generate an image tag merging `PLUGIN_TAG` and `PLATFORM` : `2.1-amd64`. If no `PLATFORM` is setted, then the image tag will not be merged : `2.1`
+* The build target will generate an image tag merging `PLUGIN_TAG` and `PLATFORM` : `2.3-amd64`. If no `PLATFORM` is setted, then the image tag will not be merged : `2.3`
 * If you select a platform different from the host, you have to use qemu emulators (see https://gist.github.com/StudioEtrange/ab9b118b778fac8e815c872826ed2cd8#run-multiplatorm-images)
     ```
     docker run --privileged --rm tonistiigi/binfmt -install linux/arm64
@@ -148,7 +157,7 @@ volumes:
 * Choose the version to enable
 
     ```
-    make enable PLUGIN_TAG=2.1
+    make enable PLUGIN_TAG=2.3
     ```
 
 ### Debug
@@ -191,7 +200,8 @@ volumes:
 * Publish a built plugin to docker hub
 
     ```
-    make DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.1 push
+    make DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.3 push
+    make PLATFORM=arm64 DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.3a push
     ```
 
 
