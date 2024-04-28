@@ -239,7 +239,7 @@ feature_cmake_install_source() {
 	__del_folder "$BUILD_DIR"
 
 
-	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER /share/"
+	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER $INSTALL_DIR/share"
 
 	__end_manual_build
 }
@@ -249,10 +249,10 @@ feature_cmake_install_binary() {
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/bin "$FEAT_INSTALL_ROOT"/bin
-		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/doc "$FEAT_INSTALL_ROOT"/doc
-		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/man "$FEAT_INSTALL_ROOT"/man
-		ln -s "$FEAT_INSTALL_ROOT"/"$CMAKE_FILE_APP"/Contents/share "$FEAT_INSTALL_ROOT"/share
+		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/bin" "$FEAT_INSTALL_ROOT/bin"
+		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/doc" "$FEAT_INSTALL_ROOT/doc"
+		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/man" "$FEAT_INSTALL_ROOT/man"
+		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/share" "$FEAT_INSTALL_ROOT/share"
 	fi
 }
 

@@ -231,7 +231,7 @@ feature_openssl_install_source() {
 	cd "$INSTALL_DIR"
 	rm -Rf "$SRC_DIR"
 
-	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER /share/"
+	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER $INSTALL_DIR/share"
 }
 
 

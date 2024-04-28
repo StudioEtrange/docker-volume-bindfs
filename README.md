@@ -18,6 +18,7 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 * isolate bindfs-state.json state file for each plugin version
 * make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
 * when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh)).
+* support multi arch build for linux/amd64 and linux/arm64
 
 ## Usage
 
@@ -35,17 +36,18 @@ docker plugin install ghcr.io/studioetrange/bindfs:latest
 In Github Container Registry [ghcr.io/studioetrange/bindfs](https://github.com/StudioEtrange/docker-volume-bindfs/pkgs/container/bindfs)
 and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/bindfs) available versions are
 
-|PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|GHCR|DOCKER HUB|
-|---|---|---|---|---|---|
-|studioetrange/bindfs:2.2|1.17.6|1.22.1|update bindfs version|YES|YES|
-|studioetrange/bindfs:2.2a|1.17.6|1.22.1|update bindfs version|NO|YES|
-|studioetrange/bindfs:2.1|1.13.11|1.22.1|improve mutex to lock operation on driver when concurrent access is made|YES|YES|
-|studioetrange/bindfs:2.1a|1.13.11|1.21.6|improve mutex to lock operation on driver when concurrent access is made|NO|YES|
-|studioetrange/bindfs:2.0b|1.13.11|1.20.1|upgrade plugin logic itself and version of go|NO|YES|
-|studioetrange/bindfs:2.0a|1.17.2|1.20.1|upgrade plugin logic itself and version of bindfs and go|NO|YES|
-|studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|NO|YES|
-|studioetrange/bindfs:1.1|1.13.11|||NO|YES|
-|studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|NO|YES|
+|PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|GHCR|DOCKER HUB|AMD64|ARM64|
+|---|---|---|---|---|---|---|---|
+|studioetrange/bindfs:2.3a|1.17.6|1.22.1|update bindfs version|YES|YES|YES|YES|
+|studioetrange/bindfs:2.2|1.17.6|1.22.1|update bindfs version|YES|YES|YES|-|
+|studioetrange/bindfs:2.2a|1.17.6|1.22.1|update bindfs version|-|YES|YES|-|
+|studioetrange/bindfs:2.1|1.13.11|1.22.1|improve mutex to lock operation on driver when concurrent access is made|YES|YES|YES|-|
+|studioetrange/bindfs:2.1a|1.13.11|1.21.6|improve mutex to lock operation on driver when concurrent access is made|-|YES|YES|-|
+|studioetrange/bindfs:2.0b|1.13.11|1.20.1|upgrade plugin logic itself and version of go|-|YES|YES|-|
+|studioetrange/bindfs:2.0a|1.17.2|1.20.1|upgrade plugin logic itself and version of bindfs and go|-|YES|YES|-|
+|studioetrange/bindfs:1.2|1.13.11|1.14.12|upgrade of docker go-plugin-helpers to remove useless docker log spam|-|YES|YES|-|
+|studioetrange/bindfs:1.1|1.13.11|||-|YES|YES|-|
+|studioetrange/bindfs:1.0|1.13.10||*DO NOT USE* : Have a bug, create bindfs defunct process when removing volume|-|YES|YES|-|
 
 
 * Github worflow will built and publish versions for Github Container Registry and docker hub when a git tag is created
@@ -109,13 +111,31 @@ volumes:
     make all
     ```
 
-* Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_13_11)
+* Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_17_6)
     ```
-    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_13_11 all
+    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_17_6 all
     
     # without using docker cache :
-    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_13_11 all-nocache 
+    make PLUGIN_TAG=2.1 BINDFS_VERSION=1_17_6 all-nocache 
     ```
+
+
+
+### Select a target platform
+
+* Available supported platforms : `linux/amd64` and `linux/arm64`. By default, the current host platform is used.
+* You can force to select a supported platforms using any make target by setting `PLATFORM` variable with `amd64` or `arm64`
+    ```
+    make PLATFORM=amd64 PLUGIN_TAG=2.1 BINDFS_VERSION=1_17_6 all
+    make PLATFORM=arm64 PLUGIN_TAG=2.3a BINDFS_VERSION=1_17_6 all
+    ```
+* The build target will generate an image tag merging `PLUGIN_TAG` and `PLATFORM` : `2.1-amd64`. If no `PLATFORM` is setted, then the image tag will not be merged : `2.1`
+* If you select a platform different from the host, you have to use qemu emulators (see https://gist.github.com/StudioEtrange/ab9b118b778fac8e815c872826ed2cd8#run-multiplatorm-images)
+    ```
+    docker run --privileged --rm tonistiigi/binfmt -install linux/arm64
+    docker run --privileged --rm tonistiigi/binfmt -install linux/amd64
+    ```
+
 
 ### Enable built plugin
 
@@ -165,9 +185,6 @@ volumes:
     # without using docker cache :
     make test-nocache
     ```
-
-
-
 
 ### Publish plugin
 

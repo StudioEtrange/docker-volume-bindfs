@@ -216,8 +216,8 @@ feature_vagrant_install_binary() {
 			[ -f "$payload/Payload" ] && tar xvzf "$payload/Payload"
 		done
 
-		__check_binary_file "$FEAT_INSTALL_ROOT"/bin
-		__check_binary_file "$FEAT_INSTALL_ROOT"/embedded/lib "EXCLUDE_FILTER python*|ruby*"
+		__check_binary_file "$FEAT_INSTALL_ROOT/bin"
+		__check_binary_file "$FEAT_INSTALL_ROOT/embedded/lib" "EXCLUDE_FILTER python*|ruby*"
 
 		#$FEAT_INSTALL_ROOT/bin/vagrant plugin repair
 	fi
@@ -235,10 +235,10 @@ feature_vagrant_install_binary() {
 
 			#__tweak_binary_file "$FEAT_INSTALL_ROOT"/bin "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
 
-			__tweak_binary_file "$FEAT_INSTALL_ROOT"/embedded/bin "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
-			__tweak_binary_file "$FEAT_INSTALL_ROOT"/embedded/lib "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
-			__check_binary_file "$FEAT_INSTALL_ROOT"/bin
-			__check_binary_file "$FEAT_INSTALL_ROOT"/embedded/lib "EXCLUDE_FILTER python*|ruby*"
+			__tweak_binary_file "$FEAT_INSTALL_ROOT/embedded/bin" "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
+			__tweak_binary_file "$FEAT_INSTALL_ROOT/embedded/lib" "FIX_LINKED_LIB $FEAT_INSTALL_ROOT/embedded/lib"
+			__check_binary_file "$FEAT_INSTALL_ROOT/bin"
+			__check_binary_file "$FEAT_INSTALL_ROOT/embedded/lib" "EXCLUDE_FILTER python*|ruby*"
 		else
 
 			echo "** WARN : only ubuntu linux supported for now"
