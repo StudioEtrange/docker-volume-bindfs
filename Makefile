@@ -62,16 +62,32 @@ create-plugin:
 	@echo "### create plugin ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} from ./plugin"
 	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} ./plugin
 
+
 # used only from github CI
-create-plugin-ghcr:
+# create another version of the built plugin for dockerhub
+# done by copying plugin folder or there will be an error when creating plugin
+create-plugin-copy-for-dockerhub:
+	@echo "### unregister and remove existing plugin ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} if any"
+	@docker plugin rm -f ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} || true
+	@echo "### copy rootfs from ./plugin to ./plugin-copy1"
+	@rm -Rf ./plugin-copy1
+	@cp -R ./plugin plugin-copy1
+	@echo "### create plugin ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} from ./plugin-copy1"
+	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} ./plugin-copy1
+	@rm -Rf ./plugin-copy1
+
+# used only from github CI
+# create another version of the built plugin for GHCR
+# done by copying plugin folder or there will be an error when creating plugin
+create-plugin-copy-for-ghcr:
 	@echo "### unregister and remove existing plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} if any"
 	@docker plugin rm -f ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} || true
-	@echo "### copy rootfs from ./plugin to ./plugin-copy"
-	@rm -Rf ./plugin-copy
-	@cp -R ./plugin plugin-copy
-	@echo "### create plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} from ./plugin-copy"
-	@docker plugin create ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} ./plugin-copy
-	@rm -Rf ./plugin-copy
+	@echo "### copy rootfs from ./plugin to ./plugin-copy2"
+	@rm -Rf ./plugin-copy2
+	@cp -R ./plugin plugin-copy2
+	@echo "### create plugin ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} from ./plugin-copy2"
+	@docker plugin create ghcr.io/${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} ./plugin-copy2
+	@rm -Rf ./plugin-copy2
 
 enable:
 	@echo "### enable plugin in standard mode ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG}"

@@ -36,19 +36,19 @@ jobs:
             run: make PLATFORM=amd64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} all
 
           - name: create an amd64 plugin version with no arch in tagname
-            run: make PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin
+            run: make PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-copy-for-dockerhub
 
           - name: create an amd64 plugin plugin version for ghcr with arch in tagname
-            run: make PLATFORM=amd64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-ghcr
+            run: make PLATFORM=amd64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-copy-for-ghcr
 
           - name: create an amd64 plugin plugin version for ghcr with no arch in tagname
-            run: make PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-ghcr
+            run: make PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-copy-for-ghcr
 
           - name: build an arm64 plugin with arch in tagname
             run: make PLATFORM=arm64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} all
 
           - name: create an arm64 plugin plugin version for ghcr with arch in tagname
-            run: make PLATFORM=arm64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-ghcr
+            run: make PLATFORM=arm64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-copy-for-ghcr
 
           - name: Login to DockerHub
             uses: docker/login-action@v1
