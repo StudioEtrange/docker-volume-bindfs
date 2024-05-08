@@ -97,7 +97,7 @@ feature_curseofwar_install_source() {
 	chmod +x "$INSTALL_DIR/curseofwar-sdl.sh"
 
 
-	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER /share/|/images/|/pixmaps/"
+	__inspect_and_fix_build "$INSTALL_DIR" "EXCLUDE_FILTER $INSTALL_DIR/share|$INSTALL_DIR/images|$INSTALL_DIR/pixmaps"
 	__del_folder "$SRC_DIR"
 
 

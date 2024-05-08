@@ -9,27 +9,65 @@ jobs:
         name: build and release docker images
         runs-on: ubuntu-latest
         steps:
+          - name: Set up QEMU arm emulator if we are on a x86 runner
+            if: ${{ runner.arch == 'X86' || runner.arch == 'X64' }}
+            id: qemu-arm64
+            uses: docker/setup-qemu-action@v3
+            with:
+              image: tonistiigi/binfmt:latest
+              platforms: linux/arm64
+
+          - name: Set up QEMU amd64 emulator if we are on an arm runner
+            if: ${{ runner.arch == 'ARM64'  }}
+            id: qemu-x86_64
+            uses: docker/setup-qemu-action@v3
+            with:
+              image: tonistiigi/binfmt:latest
+              platforms: linux/amd64
+
           - name: checkout code
             uses: actions/checkout@v2
+
           - name: determine image version tag
             id: image_tag
             run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-          - name: build plugin
-            run: make BINDFS_VERSION=1_13_11 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} all
-          - name: build a plugin version for ghcr
+
+          - name: build an amd64 plugin with arch in tagname
+            run: make PLATFORM=amd64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} all
+
+          - name: create an amd64 plugin version with no arch in tagname
+            run: make PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin
+
+          - name: create an amd64 plugin plugin version for ghcr with arch in tagname
+            run: make PLATFORM=amd64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-ghcr
+
+          - name: create an amd64 plugin plugin version for ghcr with no arch in tagname
             run: make PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-ghcr
+
+          - name: build an arm64 plugin with arch in tagname
+            run: make PLATFORM=arm64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} all
+
+          - name: create an arm64 plugin plugin version for ghcr with arch in tagname
+            run: make PLATFORM=arm64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-ghcr
+
           - name: Login to DockerHub
             uses: docker/login-action@v1
             with:
               username: ${{ secrets.DOCKERHUB_USERNAME }}
               password: ${{ secrets.DOCKERHUB_TOKEN }}
+
           - name: Login to Github Packages
             uses: docker/login-action@v1
             with:
               registry: ghcr.io
               username: ${{ github.actor }}
               password: ${{ secrets.GITHUB_TOKEN }}
+
           - name: Push
             run: |
               docker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
               docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
+              ocker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-amd64
+              docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-amd64
+              ocker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-arm64
+              docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-arm64

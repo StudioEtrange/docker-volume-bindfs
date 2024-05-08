@@ -107,7 +107,7 @@ feature_automake_install_source() {
 	__feature_callback
 
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "EXCLUDE_FILTER $FEAT_INSTALL_ROOT/share|$FEAT_INSTALL_ROOT/lib|$FEAT_INSTALL_ROOT/include"
 
 }
 

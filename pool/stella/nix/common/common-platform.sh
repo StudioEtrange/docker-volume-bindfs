@@ -23,39 +23,59 @@ _STELLA_PLATFORM_INCLUDED_=1
 
 __get_os_from_distro() {
 	local _distro=$1
-
+	
 	case $_distro in
-		"Red Hat Enterprise Linux")
-			echo "rhel"
-			;;
-		Ubuntu|ubuntu*)
-			echo "ubuntu"
-			;;
-		Debian|debian*)
-			echo "debian"
-			;;
-		CentOS*|centos*)
-			echo "centos"
-			;;
-		archlinux*)
-			echo "archlinux"
-			;;
-		boot2docker*)
-			echo "linuxgeneric"
-			;;
-		Alpine*|alpine*)
-			echo "alpine"
-			;;
 		"Mac OS X"|macos)
-			echo "macos"
-			;;
-		*Windows*|*windows*)
-			echo "windows"
-			;;
-		*)
-			echo "linuxgeneric"
-			;;
+	 		_distro="macos"
+	 		;;
 	esac
+
+	# minimize
+	_distro=$(echo "${_distro}" | tr '[:upper:]' '[:lower:]')
+
+	
+
+	# remove spaces
+	_distro="${_distro// /_}"
+
+	if [[ "${_distro}" = "unknown" ]] && [[ "${OSTYPE}" =~ "linux" ]]; then
+		_distro="linuxgeneric"
+	fi
+
+	echo $_distro
+
+	# case $_distro in
+	# 	"Red Hat Enterprise Linux")
+	# 		echo "rhel"
+	# 		;;
+	# 	Ubuntu|ubuntu*)
+	# 		echo "ubuntu"
+	# 		;;
+	# 	Debian|debian*)
+	# 		echo "debian"
+	# 		;;
+	# 	CentOS*|centos*)
+	# 		echo "centos"
+	# 		;;
+	# 	archlinux*)
+	# 		echo "archlinux"
+	# 		;;
+	# 	boot2docker*)
+	# 		echo "linuxgeneric"
+	# 		;;
+	# 	Alpine*|alpine*)
+	# 		echo "alpine"
+	# 		;;
+	# 	"Mac OS X"|macos)
+	# 		echo "macos"
+	# 		;;
+	# 	*Windows*|*windows*)
+	# 		echo "windows"
+	# 		;;
+	# 	*)
+	# 		echo "linuxgeneric"
+	# 		;;
+	# esac
 }
 
 
@@ -65,20 +85,43 @@ __get_os_from_distro() {
 __get_platform_from_os() {
 	local _os=$1
 
-	case $_os in
-		centos|archlinux|ubuntu|debian|linuxgeneric|rhel|alpine)
-			echo "linux"
-			;;
-		macos)
-			echo "darwin"
-			;;
+	if [[ "${OSTYPE}" =~ "linux" ]]; then
+		echo "linux"
+		return
+	fi
+
+	if [[ "${OSTYPE}" =~ "darwin" ]]; then
+		echo "darwin"
+		return
+	fi
+
+	case ${_os} in
 		windows)
 			echo "windows"
+			;;
+		unknown)
+			echo "unknown"
 			;;
 		*)
 			echo "unknown"
 			;;
 	esac
+
+
+	# case $_os in
+	# 	centos|archlinux|ubuntu|debian|linuxgeneric|rhel|alpine)
+	# 		echo "linux"
+	# 		;;
+	# 	macos)
+	# 		echo "darwin"
+	# 		;;
+	# 	windows)
+	# 		echo "windows"
+	# 		;;
+	# 	*)
+	# 		echo "unknown"
+	# 		;;
+	# esac
 }
 
 __get_platform_suffix() {
@@ -104,7 +147,7 @@ __get_platform_suffix() {
 __get_os_env_from_kernel() {
 	local _kernel=$1
 
-	case $kernel in
+	case $_kernel in
 		*MINGW64*)
 			echo "msys2-mingw64"
 			;;
@@ -140,10 +183,14 @@ __set_current_platform_info() {
 
 
 	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
+	# TODO do not know what is the purpose of STELLA_CURRENT_OS_ENV
 	STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
+	# current running arch of the os : x86_64, aarch64 ...
+	STELLA_CURRENT_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+	[ "$STELLA_CURRENT_ARCH " = "" ] && STELLA_CURRENT_ARCH="unknown-arch"
 
 	if type nproc &>/dev/null; then
 		STELLA_NB_CPU=$(nproc)
@@ -164,7 +211,7 @@ __set_current_platform_info() {
 	# CPU 64Bits capable
 	STELLA_CPU_ARCH=
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		grep -q -o -w 'lm' /proc/cpuinfo && STELLA_CPU_ARCH=64 || echo STELLA_CPU_ARCH=32
+		grep -q -o -w 'lm' /proc/cpuinfo && STELLA_CPU_ARCH=64 || STELLA_CPU_ARCH=32
 	fi
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
@@ -973,7 +1020,12 @@ __sys_install_build-chain-standard() {
 
 	else
 		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+		# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
+		if [ "$STELLA_CURRENT_ARCH" = "aarch64" ]; then 
+			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+		else
+			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+		fi
 	fi
 }
 __sys_remove_build-chain-standard() {

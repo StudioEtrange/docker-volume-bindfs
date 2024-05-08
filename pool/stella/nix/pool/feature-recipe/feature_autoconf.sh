@@ -49,7 +49,7 @@ feature_autoconf_2_71() {
 feature_autoconf_2_69() {
 	FEAT_VERSION="2_69"
 
-	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_SOURCE_DEPENDENCIES="texinfo#5_1"
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz"
@@ -61,7 +61,7 @@ feature_autoconf_2_69() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=
+	FEAT_SOURCE_CALLBACK="feature_autoconf_patch_for_autoconf_2_69"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
@@ -85,6 +85,24 @@ feature_autoconf_patch_for_autoconf_2_71() {
 
 }
 
+feature_autoconf_patch_for_autoconf_2_69() {
+
+	# debian patches https://sources.debian.org/patches/autoconf/2.69-14/
+	# see list https://sources.debian.org/src/autoconf/2.69-14/debian/patches/series/
+	patches_url="https://sources.debian.org/data/main/a/autoconf/2.69-14/debian/patches"
+	patches_list="atomic.patch stricter-versioning.patch texinfo.patch avoid-undefined-behavior-for-32bit-off_t.patch \
+AM_PROG_LIBTOOL.patch add-runstatedir.patch unescaped-left-brace-warning-fix.patch mmap-leak-fix.patch remove-build-date-from-autoconf.texi-clo.patch"
+
+	for p in $patches_list; do
+		echo "---- begin apply patch $p"
+		__get_resource "patch $p" "${patches_url}/${p}" "HTTP" "$SRC_DIR" "FORCE_NAME ${FEAT_NAME}_${FEAT_VERSION}-patch-${p}"
+		cd "$SRC_DIR"
+		patch -Np1 < ${FEAT_NAME}_${FEAT_VERSION}-patch-${p}
+		echo "---- end patch $p"
+	done
+
+}
+
 feature_autoconf_install_source() {
 	INSTALL_DIR="$FEAT_INSTALL_ROOT"
 	SRC_DIR="$STELLA_APP_FEATURE_ROOT/$FEAT_NAME-$FEAT_VERSION-src"
@@ -101,7 +119,7 @@ feature_autoconf_install_source() {
 
 	__feature_callback
 
-	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"
+	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "EXCLUDE_FILTER $FEAT_INSTALL_ROOT/share|$FEAT_INSTALL_ROOT/lib|$FEAT_INSTALL_ROOT/include"
 
 }
 

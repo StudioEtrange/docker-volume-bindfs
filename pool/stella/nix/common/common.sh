@@ -1738,13 +1738,15 @@ __filter_list() {
 	local _result_list=
 
 	[ -z "$_list" ] && return
-
 	# INCLUDE_TAG -- option name of include option -- must be setted before using	 INCLUDE_TAG
 	# EXCLUDE_TAG -- option name of exclude option -- must be setted before using EXCLUDE_TAG
-	# ${INCLUDE_TAG} <expr> -- include these items
-	# ${EXCLUDE_TAG} <expr> -- exclude these items
+	# ${INCLUDE_TAG} <expr> -- include these items 
+	# ${EXCLUDE_TAG} <expr> -- exclude these items 
 	# ${INCLUDE_TAG} is apply first, before ${EXCLUDE_TAG}
+	# 	ie : __filter_list "/foo/lib /foo/bin /foo/share" "EXCLUDE_TAG EXCLUDE_FILTER EXCLUDE_FILTER /foo/lib|/foo/share"
+	#	=>	/foo/bin
 
+	
 	local _tag_include=
 	local _flag_tag_include=OFF
 	local _tag_exclude=
