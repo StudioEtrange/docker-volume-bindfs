@@ -48,6 +48,7 @@ run:
 
 rootfs:
 	@echo "### create rootfs directory in ./plugin/rootfs"
+	@rm -Rf ./plugin
 	@mkdir -p ./plugin/rootfs
 	@docker create --name tmp ${PLUGIN_NAME}:rootfs${PLATFORM_TAG}
 	@docker export tmp | tar -x -C ./plugin/rootfs

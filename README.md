@@ -10,7 +10,8 @@ The plugin is based on bindfs usage to mount folders. https://bindfs.org/
 ## About this fork
 
 
-This is a fork of https://github.com/lebokus/docker-volume-bindfs
+This is a fork of https://github.com/clecherbauer/docker-volume-bindfs
+
 
 * support multiple volume with same mount points
 * add more info and clean build process
@@ -18,6 +19,7 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
 * isolate bindfs-state.json state file for each plugin version
 * make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
 * when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh)).
+* available plugin versions for linux/amd64 and linux/arm64 platform
 * support multi platform build for linux/amd64 and linux/arm64
 
 ## Usage
@@ -40,14 +42,17 @@ This is a fork of https://github.com/lebokus/docker-volume-bindfs
     NOTE : By default this is an amd64 image, when no arch is specified the tag name. (i.e : ghcr.io/studioetrange/bindfs:latest is an amd64 image)
 
 
-## Notes on available pre-built versions
+## Official repository and available built versions
+
+The __main repository__ for this plugin is Github Container Registry. DockerHub may contains some other test versions and may have a restricted acces.
 
 In Github Container Registry [ghcr.io/studioetrange/bindfs](https://github.com/StudioEtrange/docker-volume-bindfs/pkgs/container/bindfs)
 and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/bindfs) available versions are
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|GHCR|DOCKER HUB|AMD64|ARM64|
 |---|---|---|---|---|---|---|---|
-|studioetrange/bindfs:2.3a|1.17.6|1.22.1|first support of arm64 build|-|YES|YES|YES|
+|studioetrange/bindfs:2.3|1.17.6|1.22.1|support of arm64/amd64 build|YES|YES|YES|YES|
+|studioetrange/bindfs:2.3a|1.17.6|1.22.1|first support of arm64 build|-|YES|-|YES|
 |studioetrange/bindfs:2.2|1.17.6|1.22.1|update bindfs version|YES|YES|YES|-|
 |studioetrange/bindfs:2.2a|1.17.6|1.22.1|update bindfs version|-|YES|YES|-|
 |studioetrange/bindfs:2.1|1.13.11|1.22.1|improve mutex to lock operation on driver when concurrent access is made|YES|YES|YES|-|
@@ -61,18 +66,26 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 
 * Github worflow will built and publish versions for Github Container Registry and docker hub when a git tag is created
 
+* ARM64/AMD64 versions are identified with "-arm64" and "-amd64"  in tag name. When there is no arch in tag name, this is an amd64 version
+
 ### Create a volume
 
 Create a volume which have the current user id and group id mapped to root user (uid/gid 0)
 
-```
-docker volume create -d studioetrange/bindfs:latest -o sourcePath=$PWD -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] myvolume
+    ```
+    docker volume create -d studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 myvolume
 
-docker volume ls
+    docker volume ls
 
-DRIVER                          VOLUME NAME
-studioetrange/bindfs:latest      myvolume
-```
+    DRIVER                          VOLUME NAME
+    studioetrange/bindfs:latest      myvolume
+    ```
+
+Use bindfs options : [bindfs options](https://bindfs.org/docs/bindfs-help.txt)
+
+    ```
+    docker volume create -d studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] myvolume
+    ```
 
 ### Use the volume
 
@@ -138,7 +151,7 @@ volumes:
     make PLATFORM=amd64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
     make PLATFORM=arm64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
     ```
-* The build target will generate an image tag merging `PLUGIN_TAG` and `PLATFORM` : `2.3-amd64`. If no `PLATFORM` is setted, then the image tag will not be merged : `2.3`
+* The build target will generate an image tag joining `PLUGIN_TAG` and `PLATFORM` : `2.3-amd64`. If no `PLATFORM` is setted, then the image will be : `2.3`
 * If you select a platform different from the host, you have to use qemu emulators (see https://gist.github.com/StudioEtrange/ab9b118b778fac8e815c872826ed2cd8#run-multiplatorm-images)
     ```
     docker run --privileged --rm tonistiigi/binfmt -install linux/arm64
@@ -278,6 +291,8 @@ volumes:
 * [X] Protect the volume list with mutex for every driver operation : 
     * https://github.com/sapk/docker-volume-rclone/blob/master/rclone/driver/driver.go
     * https://github.com/fentas/docker-volume-davfs/blob/master/main.go
+
+* [X] linux/arm64 support
 
 ## LICENSE
 
