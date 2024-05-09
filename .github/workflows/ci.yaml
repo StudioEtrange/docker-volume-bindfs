@@ -51,13 +51,13 @@ jobs:
             run: make PLATFORM=arm64 PLUGIN_TAG=${{ steps.image_tag.outputs.tag }} create-plugin-copy-for-ghcr
 
           - name: Login to DockerHub
-            uses: docker/login-action@v1
+            uses: docker/login-action@v3
             with:
               username: ${{ secrets.DOCKERHUB_USERNAME }}
               password: ${{ secrets.DOCKERHUB_TOKEN }}
 
           - name: Login to Github Packages
-            uses: docker/login-action@v1
+            uses: docker/login-action@v3
             with:
               registry: ghcr.io
               username: ${{ github.actor }}
