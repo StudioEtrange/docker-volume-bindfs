@@ -67,7 +67,7 @@ jobs:
             run: |
               docker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
               docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}
-              ocker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-amd64
+              docker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-amd64
               docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-amd64
-              ocker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-arm64
+              docker plugin push ghcr.io/studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-arm64
               docker plugin push studioetrange/bindfs:${{ steps.image_tag.outputs.tag }}-arm64
