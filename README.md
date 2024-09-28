@@ -73,7 +73,7 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 Create a volume which have the current user id and group id mapped to root user (uid/gid 0)
 
     ```
-    docker volume create -d studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 myvolume
+    docker volume create -d ghcr.io/studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 myvolume
 
     docker volume ls
 
@@ -84,7 +84,7 @@ Create a volume which have the current user id and group id mapped to root user 
 Use bindfs options : [bindfs options](https://bindfs.org/docs/bindfs-help.txt)
 
     ```
-    docker volume create -d studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] myvolume
+    docker volume create -d ghcr.io/studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] myvolume
     ```
 
 ### Use the volume
