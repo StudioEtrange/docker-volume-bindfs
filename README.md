@@ -124,6 +124,13 @@ volumes:
 
 ### Build plugin
 
+* Quick build commands:
+
+    ```bash
+    git clone https://github.com/StudioEtrange/docker-volume-bindfs
+    cd docker-volume-bindfs
+    make all
+    ```
 
 * This will build plugin, tagged as latest, delete plugin if he already exists and install it
 

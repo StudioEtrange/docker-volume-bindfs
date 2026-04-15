@@ -297,7 +297,7 @@ func (d *bindfsDriver) removeVolume(v *bindfsVolume) error {
 		// Else remove everything in that mountpoint
 		if err := os.Remove(v.Mountpoint); err != nil {
 			// If the mount is not mounted, remove legacy
-			msg := fmt.Sprintf("Failed to remove the volume with sourcePath mountpoint %s (%s)", v.Sourcepath, v.Mountpoint, err)
+			msg := fmt.Sprintf("Failed to remove the volume with sourcePath %s at mountpoint %s (%v)", v.Sourcepath, v.Mountpoint, err)
 			log.Error(msg)
 			return fmt.Errorf(msg)
 		}
