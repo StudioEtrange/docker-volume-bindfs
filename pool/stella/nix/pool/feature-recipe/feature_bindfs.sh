@@ -10,13 +10,32 @@ _bindfs_INCLUDED_=1
 feature_bindfs() {
 	FEAT_NAME=bindfs
 
-	FEAT_LIST_SCHEMA="1_17_6:source 1_17_2:source 1_16_1:source 1_15_1:source 1_14_9:source 1_14_1:source 1_13_11:source 1_13_10:source"
+	FEAT_LIST_SCHEMA="1_18_4:source 1_17_6:source 1_17_2:source 1_16_1:source 1_15_1:source 1_14_9:source 1_14_1:source 1_13_11:source 1_13_10:source"
 	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 
 	FEAT_DESC="Mount a directory elsewhere with changed permissions"
 	FEAT_LINK="https://bindfs.org"
+}
+
+
+feature_bindfs_1_18_4() {
+	FEAT_VERSION="1_18_4"
+
+
+	FEAT_SOURCE_DEPENDENCIES="FORCE_ORIGIN_SYSTEM fuse"
+
+	FEAT_SOURCE_URL="https://github.com/mpartel/bindfs/archive/1.18.4.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bindfs-1.18.4.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_SOURCE_CALLBACK="feature_bindfs_link"
+
+	FEAT_TEST="bindfs"
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/$FEAT_TEST"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
 }
 
 
