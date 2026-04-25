@@ -1,26 +1,23 @@
 # Docker volume plugin for bindfs
 
-
-This project is based on vieux/docker-volume-sshfs.
 With this plugin you're able to mount a given path and remap its owner and group.
 
-The plugin is based on bindfs usage to mount folders. https://bindfs.org/
+This plugin use bindfs tool to managed mounted folders. https://bindfs.org/
 
-
-## About this fork
-
-
-This is a fork of https://github.com/clecherbauer/docker-volume-bindfs
-
+## Plugin features
 
 * support multiple volume with same mount points
 * add more info and clean build process
 * resolve bindfs defunct process each time a volume is destroyed
 * isolate bindfs-state.json state file for each plugin version
 * make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
-* when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/0b7f32a1a1d36248333f5a9ac6b9aefdaa9faffc/nix/pool/feature-recipe/feature_bindfs.sh)).
+* when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/d1d1536ab99492a9fb7f925c75e77bab3a7a2d90/nix/pool/feature-recipe/feature_bindfs.sh#L13)).
 * available plugin versions for linux/amd64 and linux/arm64 platform
 * support multi platform build for linux/amd64 and linux/arm64
+
+## Project History
+
+The original project was maintained here https://github.com/clecherbauer/docker-volume-bindfs, closed on may 2024 and was inspired on https://github.com/vieux/docker-volume-sshfs, closed on oct 2022.
 
 ## Usage
 
@@ -84,7 +81,7 @@ Create a volume which have the current user id and group id mapped to root user 
 Use bindfs options : [bindfs options](https://bindfs.org/docs/bindfs-help.txt)
 
     ```
-    docker volume create -d ghcr.io/studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 [-o <any_bindfs_-o_option> ] myvolume
+    docker volume create -d ghcr.io/studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 [-o <bindfs -o options>] myvolume
     ```
 
 ### Use the volume
@@ -124,21 +121,22 @@ volumes:
 
 ### Build plugin
 
+* Quick build commands:
 
-* This will build plugin, tagged as latest, delete plugin if he already exists and install it
-
-    ```
+    ```bash
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
     cd docker-volume-bindfs
     make all
     ```
 
-* Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_17_6)
+    This will build plugin, tagged as latest, delete plugin if he already exists and install it
+
+* Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_18_4)
     ```
-    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
+    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
     
     # without using docker cache :
-    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all-nocache 
+    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all-nocache 
     ```
 
 
@@ -148,8 +146,8 @@ volumes:
 * Available supported platforms : `linux/amd64` and `linux/arm64`. By default, the current host platform is used.
 * You can force to select a supported platforms using any make target by setting `PLATFORM` variable with `amd64` or `arm64`
     ```
-    make PLATFORM=amd64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
-    make PLATFORM=arm64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_17_6 all
+    make PLATFORM=amd64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
+    make PLATFORM=arm64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
     ```
 * The build target will generate an image tag joining `PLUGIN_TAG` and `PLATFORM` : `2.3-amd64`. If no `PLATFORM` is setted, then the image will be : `2.3`
 * If you select a platform different from the host, you have to use qemu emulators (see https://gist.github.com/StudioEtrange/ab9b118b778fac8e815c872826ed2cd8#run-multiplatorm-images)
@@ -224,7 +222,7 @@ volumes:
     * Edit Dockerfile and change FROM image with one from dockerhub https://hub.docker.com/_/golang/tags?page=1&name=bullseye based on debian bullseye (i.e : `FROM golang:1.22.1-bullseye as builder`)
     * Use this version in dependencies management step   
 
-* NEW DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor) (project tag =>2.0)
+* DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor) (project tag =>2.0)
 
     ```
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
@@ -248,36 +246,6 @@ volumes:
     sudo chown -R $(id -u):$(id -g) vendor
     sudo chown -R $(id -u):$(id -g) go.mod
     sudo chown -R $(id -u):$(id -g) go.sum
-    ```
-
-* OLD DEPENDENCIES MANAGEMEMENT : For go 1.14 with govendor (project tag <=1.2)
-
-    ```
-    git clone https://github.com/StudioEtrange/docker-volume-bindfs
-    git checkout 1.2
-    cd docker-volume-bindfs
-    docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.14.12-stretch bash
-
-    # FROM INSIDE CONTAINER
-    go get github.com/StudioEtrange/govendor
-    cd /go/src/github.com/StudioEtrange/docker-volume-bindfs
-
-
-    # check status of used packaged from source code
-    govendor list
-
-    # INIT a vendor folder
-    govendor init
-
-    # ADD/UPDATE a package with a specific version into vendor and update vendor.json
-    govendor fetch <dep>@<version>
-    govendor fetch github.com/Sirupsen/logrus@181d419aa9e2223811b824e8f0b4af96f9ba930
-
-    # SYNC package between vendor content and vendor.json 
-    govendor sync
-
-    # FROM OUTSIDE CONTAINER
-    sudo chown -R $(id -u):$(id -g) vendor
     ```
 
 ## Things to think to do
