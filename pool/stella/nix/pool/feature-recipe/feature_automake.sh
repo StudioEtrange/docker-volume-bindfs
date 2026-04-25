@@ -10,7 +10,7 @@ _AUTOMAKE_INCLUDED_=1
 feature_automake() {
 	FEAT_NAME="automake"
 	FEAT_LIST_SCHEMA="1_16_5:source 1_14_1:source 1_14:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://www.gnu.org/software/automake/"

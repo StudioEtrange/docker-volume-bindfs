@@ -1,0 +1,5 @@
+#!/bin/bash
+
+baz_log 'Making the baz plugin'
+mkdir -p -- commands/
+cp unifetch commands/unifetch

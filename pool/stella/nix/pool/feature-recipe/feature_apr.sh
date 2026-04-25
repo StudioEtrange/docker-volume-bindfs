@@ -3,13 +3,14 @@ _apr_INCLUDED_=1
 
 
 feature_apr() {
-	FEAT_NAME=apr
+	FEAT_NAME="apr"
 
 	FEAT_LIST_SCHEMA="1_5_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
-
+	FEAT_DESC="The Apache Portable Runtime (APR) is a C library that provides a predictable and consistent interface to underlying platform-specific implementations."
+	FEAT_LINK="https://apr.apache.org/"
 }
 
 feature_apr_1_5_2() {

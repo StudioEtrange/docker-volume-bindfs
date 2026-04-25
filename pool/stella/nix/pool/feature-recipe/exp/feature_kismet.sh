@@ -7,7 +7,7 @@ _kismet_INCLUDED_=1
 feature_kismet() {
 	FEAT_NAME="kismet"
 	FEAT_LIST_SCHEMA="2021-06-R1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Kismet is a wireless network and device detector, sniffer, wardriving tool, and WIDS (wireless intrusion detection) framework."

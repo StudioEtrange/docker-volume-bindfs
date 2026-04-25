@@ -4,6 +4,7 @@ _STELLA_LIB_BINARY_INCLUDED_=1
 
 
 # GENERIC
+#.__info_bin
 # __is_bin
 # __is_shareable_bin
 # __is_static_lib
@@ -299,14 +300,14 @@ __info_elf() {
 
 __bit_bin() {
 	local _file="$1"
-  # Usefull to read files in archive
-  local _offset="$2"
-  [ "$_offset" = "" ] && _offset=0
+	# Usefull to read files in archive
+	local _offset="$2"
+	[ "$_offset" = "" ] && _offset=0
 	local _bit
 	local _type="$(__type_bin "$_file" "$_offset")"
 	case $_type in
 		FILE_MACHO )
-				_bit="$(__macho_bit "$(__macho_header "$_file" "$_offset")")"
+			_bit="$(__macho_bit "$(__macho_header "$_file" "$_offset")")"
 		;;
 		FILE_ELF )
 			_bit="$(__elf_bit "$(__macho_header "$_file" "$_offset")")"
@@ -315,7 +316,7 @@ __bit_bin() {
 			_bit="$(__ar_bit "$_file" "$_offset")"
 		;;
 	esac
-	echo "$_bit"
+echo "$_bit"
 }
 
 __type_bin() {
@@ -410,6 +411,7 @@ __is_static_lib() {
 # object is shareable (shared lib or executable)
 # NOTE on linux it happens that executable file have DYN flag instead of EXEC flag
 # http://stackoverflow.com/a/34522357
+# NOTE : on macos MH_BUNDLE is a loadable module. It is loadable but not linkable
 __is_shareable_bin() {
 	local _file="$1"
 	local _result=1
@@ -417,10 +419,12 @@ __is_shareable_bin() {
 		local _type_bin="$(__type_bin "$_file")"
 		case $_type_bin in
 			FILE_MACHO)
-					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					#[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					[[ "$(__macho_filetype "$(__macho_header "$_file")")" =~ MH_DYLIB ]] && _result=0
 				;;
 			FILE_MACHO_UNIVERSAL)
-					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					#[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB|MH_BUNDLE ]] && _result=0
+					[[ "$(__macho_universal_global_filetype "$_file")" =~ MH_DYLIB ]] && _result=0
 				;;
 			FILE_ELF)
 					[[ "$(__elf_filetype "$(__elf_header "$_file")")" =~ ET_DYN ]] && _result=0
@@ -756,6 +760,8 @@ __macho_magic() {
     # UB are always in Big Endian
     CAFEBABE*) _key_magic="FAT_MAGIC";_format="FILE_MACHO_UNIVERSAL";;
     BEBAFECA*) _key_magic="FAT_CIGAM";_format="FILE_MACHO_UNIVERSAL";;
+	CAFEBABF*) _key_magic="FAT_MAGIC_64";  _format="FILE_MACHO_UNIVERSAL";;
+    BFBAFECA*) _key_magic="FAT_CIGAM_64";  _format="FILE_MACHO_UNIVERSAL";;
     *)
     return 1;;
   esac
@@ -779,6 +785,8 @@ __macho_endian() {
     # UB are always in Big Endian
     FAT_MAGIC) _endian="BIG";;
     FAT_CIGAM) _endian="BIG";;
+	FAT_MAGIC_64) _endian="BIG";;
+    FAT_CIGAM_64) _endian="BIG";;
   esac
   echo "$_endian"
   return 0
@@ -803,12 +811,13 @@ __macho_cputype() {
 }
 
 __macho_cpusubtype() {
-  local _header="$1"
+	local _header="$1"
 	local _endian="$(__macho_endian "$_header")"
-  local _offset=8
+	local _offset=8
 	local _cpusubtype="$(__get_ordered_bin "$_header" "$_endian" "$_offset" "4")"
-  echo "$(__macho_convert_cpusubtype "$_cpusubtype")"
-  return 0
+	
+	echo "$(__macho_convert_cpusubtype "$_cpusubtype")"
+	return 0
 }
 
 __macho_convert_cpusubtype() {
@@ -821,65 +830,65 @@ __macho_convert_cpusubtype() {
 __macho_convert_cputype() {
 	local _cpu_type="$1"
 	local _x_cpu_type="0x$_cpu_type"
-  local _r_cpu_type
+	local _r_cpu_type
 	# Mask for architecture bits
-  local CPU_ARCH_MASK="0xff000000"
-  # 64 bit ABI
-  local CPU_ARCH_ABI64="0x01000000"
-  local CPU_TYPE_ANY=-1
-  local CPU_TYPE_X86=7
-  local CPU_TYPE_I386=$((CPU_TYPE_X86))
-  local CPU_TYPE_X86_64=$((CPU_TYPE_X86 | CPU_ARCH_ABI64))
-  # Old Motorola PowerPC
-  local CPU_TYPE_MC98000=10
-  local CPU_TYPE_ARM=12
-  local CPU_TYPE_ARM64=$((CPU_TYPE_ARM | CPU_ARCH_ABI64))
-  local CPU_TYPE_SPARC=14
-  local CPU_TYPE_POWERPC=18
-  local CPU_TYPE_POWERPC64=$((CPU_TYPE_POWERPC | CPU_ARCH_ABI64))
-  case $((_x_cpu_type)) in
-    $CPU_TYPE_X86_64) _r_cpu_type="CPU_TYPE_X86_64";;
-    $CPU_TYPE_ANY) _r_cpu_type="CPU_TYPE_ANY";;
-    $CPU_TYPE_X86)_r_cpu_type="CPU_TYPE_X86";;
-    $CPU_TYPE_I386)_r_cpu_type="CPU_TYPE_I386";;
-    $CPU_TYPE_X86_64)_r_cpu_type="CPU_TYPE_X86_64";;
-    $CPU_TYPE_MC98000)_r_cpu_type="CPU_TYPE_MC98000";;
-    $CPU_TYPE_ARM)_r_cpu_type="CPU_TYPE_ARM";;
-    $CPU_TYPE_ARM64)_r_cpu_type="CPU_TYPE_ARM64";;
-    $CPU_TYPE_SPARC)_r_cpu_type="CPU_TYPE_SPARC";;
-    $CPU_TYPE_POWERPC)_r_cpu_type="CPU_TYPE_POWERPC";;
-    $CPU_TYPE_POWERPC64)_r_cpu_type="CPU_TYPE_POWERPC64";;
-    *)
-    _r_cpu_type="$_x_cpu_type";;
-  esac
-  echo "$_r_cpu_type"
+	local CPU_ARCH_MASK="0xff000000"
+	# 64 bit ABI
+	local CPU_ARCH_ABI64="0x01000000"
+	local CPU_TYPE_ANY=-1
+	local CPU_TYPE_X86=7
+	local CPU_TYPE_I386=$((CPU_TYPE_X86))
+	local CPU_TYPE_X86_64=$((CPU_TYPE_X86 | CPU_ARCH_ABI64))
+	# Old Motorola PowerPC
+	local CPU_TYPE_MC98000=10
+	local CPU_TYPE_ARM=12
+	local CPU_TYPE_ARM64=$((CPU_TYPE_ARM | CPU_ARCH_ABI64))
+	local CPU_TYPE_SPARC=14
+	local CPU_TYPE_POWERPC=18
+	local CPU_TYPE_POWERPC64=$((CPU_TYPE_POWERPC | CPU_ARCH_ABI64))
+	
+	case $((_x_cpu_type)) in
+		$CPU_TYPE_X86_64) _r_cpu_type="CPU_TYPE_X86_64";;
+		$CPU_TYPE_ANY) _r_cpu_type="CPU_TYPE_ANY";;
+		$CPU_TYPE_X86)_r_cpu_type="CPU_TYPE_X86";;
+		$CPU_TYPE_I386)_r_cpu_type="CPU_TYPE_I386";;
+		$CPU_TYPE_X86_64)_r_cpu_type="CPU_TYPE_X86_64";;
+		$CPU_TYPE_MC98000)_r_cpu_type="CPU_TYPE_MC98000";;
+		$CPU_TYPE_ARM)_r_cpu_type="CPU_TYPE_ARM";;
+		$CPU_TYPE_ARM64)_r_cpu_type="CPU_TYPE_ARM64";;
+		$CPU_TYPE_SPARC)_r_cpu_type="CPU_TYPE_SPARC";;
+		$CPU_TYPE_POWERPC)_r_cpu_type="CPU_TYPE_POWERPC";;
+		$CPU_TYPE_POWERPC64)_r_cpu_type="CPU_TYPE_POWERPC64";;
+		*) _r_cpu_type="$_x_cpu_type";;
+	esac
+	echo "$_r_cpu_type"
 }
 
 
 __macho_filetype() {
-  local _header="$1"
+	local _header="$1"
 	local _endian="$(__macho_endian "$_header")"
 	local _offset=12
 	local _ftype="$(__get_ordered_bin "$_header" "$_endian" "$_offset" "4")"
-  local _x_ftype="0x$_ftype"
-  local _r_ftype
-  case $(($_x_ftype)) in
-    1) _r_ftype="MH_OBJECT";;
-    2) _r_ftype="MH_EXECUTE";;
-    3) _r_ftype="MH_FVMLIB";;
-    4) _r_ftype="MH_CORE";;
-    5) _r_ftype="MH_PRELOAD";;
-    6) _r_ftype="MH_DYLIB";;
-    7) _r_ftype="MH_DYLINKER";;
-    8) _r_ftype="MH_BUNDLE";;
-    9) _r_ftype="MH_DYLIB_STUB";;
-    10) _r_ftype="MH_DSYM";;
-    11) _r_ftype="MH_KEXT_BUNDLE";;
-    *)
-    _r_ftype="$_x_ftype";;
-  esac
-  echo "$_r_ftype"
-  return 0
+	local _x_ftype="0x$_ftype"
+	local _r_ftype
+	
+	case $(($_x_ftype)) in
+		1) _r_ftype="MH_OBJECT";;
+		2) _r_ftype="MH_EXECUTE";;
+		3) _r_ftype="MH_FVMLIB";;
+		4) _r_ftype="MH_CORE";;
+		5) _r_ftype="MH_PRELOAD";;
+		6) _r_ftype="MH_DYLIB";;
+		7) _r_ftype="MH_DYLINKER";;
+		8) _r_ftype="MH_BUNDLE";;
+		9) _r_ftype="MH_DYLIB_STUB";;
+		10) _r_ftype="MH_DSYM";;
+		11) _r_ftype="MH_KEXT_BUNDLE";;
+		*) _r_ftype="$_x_ftype";;
+	esac
+	echo "$_r_ftype"
+	return 0
 }
 
 

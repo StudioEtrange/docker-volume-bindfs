@@ -5,7 +5,7 @@ _nmap_INCLUDED_=1
 feature_nmap() {
 	FEAT_NAME=nmap
 	FEAT_LIST_SCHEMA="6_49_BETA_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

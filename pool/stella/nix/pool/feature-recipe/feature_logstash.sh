@@ -6,7 +6,7 @@ _logstash_INCLUDED_=1
 feature_logstash() {
 	FEAT_NAME=logstash
 	FEAT_LIST_SCHEMA="5_2_0:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

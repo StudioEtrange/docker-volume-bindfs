@@ -8,7 +8,6 @@ feature_terraform_provider_libvirt() {
 
 	FEAT_NAME=terraform_provider_libvirt
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

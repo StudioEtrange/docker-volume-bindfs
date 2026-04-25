@@ -7,7 +7,7 @@ _redis_INCLUDED_=1
 feature_redis() {
 	FEAT_NAME=redis
 	FEAT_LIST_SCHEMA="4_0_8:source 3_0_7:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

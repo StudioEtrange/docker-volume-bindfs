@@ -6,7 +6,7 @@ _NETCAT_INCLUDED_=1
 feature_netcat() {
 	FEAT_NAME=netcat
 	FEAT_LIST_SCHEMA="0_7_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

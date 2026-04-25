@@ -12,7 +12,7 @@ _AUTOCONF_INCLUDED_=1
 feature_autoconf() {
 	FEAT_NAME=autoconf
 	FEAT_LIST_SCHEMA="2_71:source 2_69:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://www.gnu.org/software/autoconf"

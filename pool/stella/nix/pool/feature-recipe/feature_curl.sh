@@ -7,7 +7,7 @@ feature_curl() {
 	FEAT_NAME=curl
 
 	FEAT_LIST_SCHEMA="7_36_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

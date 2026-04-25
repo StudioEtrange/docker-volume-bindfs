@@ -3,36 +3,44 @@ _HTOP_INCLUDED_=1
 
 
 feature_htop() {
-	FEAT_NAME=htop
-	FEAT_LIST_SCHEMA="2_0_2:source"
-	FEAT_DEFAULT_ARCH=
+	FEAT_NAME="htop"
+	FEAT_LIST_SCHEMA="3_4_1:source"
+	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_LINK="https://htop.dev https://github.com/htop-dev/htop"
+	FEAT_DESC="htop - an interactive process viewer"
 }
 
-feature_htop_2_0_2() {
-	FEAT_VERSION=2_0_2
+
+
+feature_htop_3_4_1() {
+	FEAT_VERSION="3_4_1"
 
 
 	FEAT_SOURCE_DEPENDENCIES="ncurses#6_0"
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://hisham.hm/htop/releases/2.0.2/htop-2.0.2.tar.gz
-	FEAT_SOURCE_URL_FILENAME=htop-2.0.2.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="https://github.com/htop-dev/htop/releases/download/3.4.1/htop-3.4.1.tar.xz"
+	FEAT_SOURCE_URL_FILENAME="htop-3.4.1.tar.xz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=feature_htop_link
+	FEAT_SOURCE_CALLBACK="feature_htop_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/htop
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/htop"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
+
+
+
 
 feature_htop_link() {
 	__link_feature_library "ncurses" "FORCE_DYNAMIC"

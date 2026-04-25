@@ -1,8 +1,10 @@
 if [ ! "$_minishift_INCLUDED_" = "1" ]; then
 _minishift_INCLUDED_=1
 
+# DEPRECATED TOOL
+
 # openshift origin single-node cluster, inside a single VM on localhost
-# https://github.com/jimmidyson/minishift
+# https://github.com/minishift/minishift
 
 # example :
 # minishift start --vm-driver=virtualbox
@@ -27,9 +29,40 @@ _minishift_INCLUDED_=1
 
 feature_minishift() {
 	FEAT_NAME=minishift
-	FEAT_LIST_SCHEMA="1_13_1:binary"
-	FEAT_DEFAULT_ARCH=
+	FEAT_LIST_SCHEMA="1_34_3:binary 1_13_1:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
+}
+
+feature_minishift_1_34_3() {
+	FEAT_VERSION=1_34_3
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL=https://github.com/minishift/minishift/releases/download/v1.34.3/minishift-1.34.3-linux-amd64.tgz
+		FEAT_BINARY_URL_FILENAME=minishift-1.34.3-linux-amd64.tgz
+		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL=https://github.com/minishift/minishift/releases/download/v1.34.3/minishift-1.34.3-darwin-amd64.tgz
+		FEAT_BINARY_URL_FILENAME=minishift-1.34.3-darwin-amd64.tgz
+		FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+	fi
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/minishift
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
 }
 
 feature_minishift_1_13_1() {

@@ -6,7 +6,7 @@ _dumb_INCLUDED_=1
 feature_dumb() {
 	FEAT_NAME=dumb
 	FEAT_LIST_SCHEMA="0_9_3:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="DUMB is an IT, XM, S3M and MOD player library"

@@ -9,7 +9,7 @@ feature_libxml2() {
 	FEAT_NAME=libxml2
 
 	FEAT_LIST_SCHEMA="2_9_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

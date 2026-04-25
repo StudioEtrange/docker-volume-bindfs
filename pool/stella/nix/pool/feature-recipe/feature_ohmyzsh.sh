@@ -5,7 +5,7 @@ _GOCROSSCOMPILE_INCLUDED_=1
 feature_ohmyzsh() {
 	FEAT_NAME="ohmyzsh"
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

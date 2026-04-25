@@ -9,7 +9,7 @@ feature_oolite() {
 	FEAT_NAME=oolite
 
 	FEAT_LIST_SCHEMA="1_82:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

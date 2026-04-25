@@ -7,7 +7,7 @@ feature_pcre() {
 
 	FEAT_NAME=pcre
 	FEAT_LIST_SCHEMA="8_36:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

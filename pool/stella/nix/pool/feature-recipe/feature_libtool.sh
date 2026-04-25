@@ -8,7 +8,7 @@ _LIBTOOL_INCLUDED_=1
 feature_libtool() {
 	FEAT_NAME=libtool
 	FEAT_LIST_SCHEMA="2_4_7:source 2_4_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://www.gnu.org/software/libtool/"
@@ -72,7 +72,7 @@ feature_libtool_patch_for_libtool_2_4_7() {
 
 	# debian patches https://sources.debian.org/patches/libtool/2.4.7-7/
 	# see list https://sources.debian.org/src/libtool/2.4.7-7/debian/patches/series/
-	patches_url="https://sources.debian.org/data/main/libt/libtool/2.4.7-7/debian/patches"
+	patches_url="https://sources.debian.org/data/main/libt/libtool/2.4.7-7~deb12u1/debian/patches"
 	patches_list="0011-libtool-optimizing-options-parser-hooks.patch link_all_deplibs.patch deplib_binary.patch netbsdelf.patch version_type.patch nopic.patch deplibs_test_disable.patch \
 disable-link-order2.patch deplibs-ident.patch man-add-whatis-info.diff no_hostname.patch bootstrap_options.conf version_string.patch grep-spaces.patch libtool-eval-nm.patch \
 0030-flang-support.patch 0040-unsafe-eval.patch 0050-documentation.patch 0055-pass-flags-unchanged.patch 0075-remove-dates-from-docs.patch 0080-struct-names.patch \

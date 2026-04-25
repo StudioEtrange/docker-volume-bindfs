@@ -7,7 +7,7 @@ feature_gnuplot() {
 	FEAT_NAME=gnuplot
 
 	FEAT_LIST_SCHEMA="5_0_3:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

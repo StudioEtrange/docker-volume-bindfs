@@ -7,7 +7,7 @@ _flink_INCLUDED_=1
 feature_flink() {
 	FEAT_NAME=flink
 	FEAT_LIST_SCHEMA="1_1_2_HADOOP_2_4:binary 0_10_1_HADOOP_2_4:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

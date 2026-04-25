@@ -3,13 +3,14 @@ _aprutil_INCLUDED_=1
 
 
 feature_apr-util() {
-	FEAT_NAME=apr-util
+	FEAT_NAME="apr-util"
 
 	FEAT_LIST_SCHEMA="1_5_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
-
+	FEAT_DESC="The Apache Portable Runtime Utility Library provides a predictable and consistent interface to underlying client library interfaces."
+	FEAT_LINK="https://apr.apache.org/"
 }
 
 feature_apr-util_1_5_4() {

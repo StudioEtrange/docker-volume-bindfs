@@ -5,14 +5,42 @@ _NINJA_INCLUDED_=1
 feature_ninja() {
 
 	FEAT_NAME="ninja"
-	FEAT_LIST_SCHEMA="1_9_0:source 1_9_0:binary 1_7_2:source 1_7_2:binary 1_7_1:source 1_7_1:binary 1_6_0:source 1_6_0:binary"
-	FEAT_DEFAULT_ARCH=
+	FEAT_LIST_SCHEMA="1_9_0:source 1_13_2:binary 1_9_0:binary 1_7_2:source 1_7_2:binary 1_7_1:source 1_7_1:binary 1_6_0:source 1_6_0:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_LINK=
 	FEAT_DESC=
 }
 
+
+feature_ninja_1_13_2() {
+	FEAT_VERSION="1_13_2"
+
+	# TODO echo " ** NEED : python"
+	FEAT_SOURCE_DEPENDENCIES="python#2_7_9"
+
+	FEAT_SOURCE_URL="https://github.com/ninja-build/ninja/archive/v1.13.2.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="ninja-v1.13.2.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-mac.zip"
+		FEAT_BINARY_URL_FILENAME="ninja-mac-v1.13.2.zip"
+		FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL="https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip"
+		FEAT_BINARY_URL_FILENAME="ninja-linux-v1.13.2.zip"
+		FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+	fi
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/ninja"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 feature_ninja_1_9_0() {
 	FEAT_VERSION=1_9_0
@@ -37,7 +65,7 @@ feature_ninja_1_9_0() {
 	fi
 
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ninja
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/ninja"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
 }
@@ -69,7 +97,7 @@ feature_ninja_1_7_2() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ninja
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/ninja"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
 }
@@ -101,7 +129,7 @@ feature_ninja_1_7_1() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ninja
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/ninja"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
 }
@@ -133,7 +161,7 @@ feature_ninja_1_6_0() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/ninja
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/ninja"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
 }

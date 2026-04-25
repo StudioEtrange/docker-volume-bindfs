@@ -5,7 +5,7 @@ _tig_INCLUDED_=1
 feature_tig() {
 	FEAT_NAME=tig
 	FEAT_LIST_SCHEMA="2_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 	
 	FEAT_DESC="Tig: text-mode interface for Git."
@@ -30,8 +30,8 @@ feature_tig_2_2() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/tig
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/tig"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 

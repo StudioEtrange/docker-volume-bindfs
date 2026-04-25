@@ -6,7 +6,7 @@ _ocaml_INCLUDED_=1
 feature_ocaml() {
 	FEAT_NAME=ocaml
 	FEAT_LIST_SCHEMA="4_03_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

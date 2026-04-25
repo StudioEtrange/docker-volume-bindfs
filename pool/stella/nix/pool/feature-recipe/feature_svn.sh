@@ -8,7 +8,7 @@ _svn_INCLUDED_=1
 feature_svn() {
 	FEAT_NAME=svn
 	FEAT_LIST_SCHEMA="1_8_17:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

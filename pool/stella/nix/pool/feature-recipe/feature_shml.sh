@@ -6,7 +6,7 @@ _shml_INCLUDED_=1
 feature_shml() {
 	FEAT_NAME=shml
 	FEAT_LIST_SCHEMA="1_0_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

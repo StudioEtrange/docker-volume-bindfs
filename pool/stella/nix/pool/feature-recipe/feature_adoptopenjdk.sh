@@ -17,7 +17,7 @@ _adoptopenjdk_INCLUDED_=1
 feature_adoptopenjdk() {
 	FEAT_NAME="adoptopenjdk"
 	FEAT_LIST_SCHEMA="12_0_2_10_2@x64:binary 11_0_4_11@x64:binary 8_u222_b10@x64:binary 8_u172_b11@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 	
 	FEAT_LINK="https://adoptopenjdk.net"

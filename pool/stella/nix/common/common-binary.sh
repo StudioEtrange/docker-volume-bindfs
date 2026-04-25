@@ -30,63 +30,6 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 # __check_install_name_darwin	# TEST IS MACHO AND IS DYN FILE - RECURSIVE -- OPTIONAL FILTER -- [RETURN ERROR CODE]
 # __tweak_install_name_darwin # TEST IS MACHO AND IS DYN FILE - RECURSIVE -- OPTIONAL FILTER
 
-# NOTE
-#			LINUX ELF TOOLS
-#					objdump (needed to analysis) -- in sys package gnu binutils (WARN : objdump not always present on linux system / prefer readelf ? see lddtree to change objdump to readelf)
-#					ldd (needed for linked lib analys) -- present by default => security warning
-#					patchelf (needed to analysis AND modify rpath) -- in stella recipe 'patchelf'
-#					scanelf (needed to analysis) -- in stella recipe pax-utils
-#					readelf (needed to analysis)-- in sys package gnu 'binutils'
-#			MACOS BINARY TOOLS :
-#					otool (needed to analysis) -- in ??
-#					install_name_tool (needed to modify rpath, install_name and already linked lib. Cannot add or remove linked lib) -- in ??
-#			MACOS : install_name, rpath, loader_path, executable_path
-# 					https://mikeash.com/pyblog/friday-qa-2009-11-06-linking-and-install-names.html
-#					http://jorgen.tjer.no/post/2014/05/20/dt-rpath-ld-and-at-rpath-dyld/
-#					https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
-#
-#			LINKED LIBS
-#						LINUX : Dynamic libs will be searched at RUNTINE in the following directories in the given order:
-#							1. DT_RPATH - a list of directories which is linked into the executable, supported on most UNIX systems.
-#											The DT_RPATH entries are ignored if DT_RUNPATH entries exist.
-#							2. LD_LIBRARY_PATH - an environment variable which holds a list of directories
-#							3. DT_RUNPATH - same as RPATH, but searched after LD_LIBRARY_PATH, supported only on most recent UNIX systems, e.g. on most current Linux systems
-#							4. /etc/ld.so.conf and /etc/ld.so.conf/* - configuration file for ld.so which lists additional library directories
-#							5. builtin directories - basically /lib and /usr/lib
-#
-#						LINUX : Static and dynamic libraries will be searched at BUILD time in the folowwing order - see common-platform function __default_linker_search_path
-#							1. LIBRARY_PATH
-#							2. path giver to the linker from gcc option -L and gcc hardcoded path
-#							3. hardcoded path into the linker
-
-#					  LINUX INFO :
-#								http://blog.tremily.us/posts/rpath/
-# 								https://bbs.archlinux.org/viewtopic.php?id=6460
-# 								http://www.cyberciti.biz/tips/linux-shared-library-management.html
-#								http://www.kaizou.org/2015/01/linux-libraries/
-#								https://stackoverflow.com/a/4250666/5027535
-#
-#						LINUX	TOOLS :
-#								https://github.com/gentoo/pax-utils
-#								https://github.com/ncopa/lddtree
-#
-#						MACOS :
-#								Use DYLD_LIBRARY_PATH instead of LD_LIBRARY_PATH
-#
-#						LINUX DEBUG :
-#								LD_TRACE_LOADED_OBJECTS=1 LD_DEBUG=libs ./program
-#								LD_DEBUG values http://www.bnikolic.co.uk/blog/linux-ld-debug.html
-#
-#						MACOS DEBUG :
-#								DYLD_PRINT_LIBRARIES=y ./program
-#
-# 	 	LINUX RPATH : PATCHELF
-#							using patchelf  "--set-rpath, --shrink-rpath and --print-rpath now prefer DT_RUNPATH over DT_RPATH,
-#							which is obsolete. When updating, if both are present, both are updated.
-# 						If only DT_RPATH is present, it is converted to DT_RUNPATH unless --force-rpath is specified.
-# 						If neither is present, a DT_RUNPATH is added unless --force-rpath is specified, in which case a DT_RPATH is added."
-#
-
 
 
 
@@ -95,7 +38,7 @@ _STELLA_COMMON_BINARY_INCLUDED_=1
 __get_elf_interpreter_linux() {
 	local _file="$1"
 	if __is_bin "$_file"; then
-		readelf  -p ".interp" "$_file" | sed -E -n '/\[\s*[0-9]\]/s/^\s*\[.*\]\s*(.*)/\1/p'
+		readelf  -p ".interp" "$_file" | sed -E -n '/\[[[:space:]]*[0-9]\]/s/^[[:space:]]*\[.*\][[:space:]]*(.*)/\1/p'
 	fi
 }
 
@@ -331,25 +274,56 @@ __tweak_binary_file() {
 
 
 # RPATH -------------------------------------------------------------------
-# return rpath values in search order
+# print rpath values separated by spaces in search order
+# return code
+#		on darwin : 0 LC_RPATH is not empty - 1 LC_RPATH is empty 
+#		on linux : 
+#					11 = DT_RPATH is empty and DT_RUNPATH is empty
+#					21 = DT_RPATH is empty and DT_RUNPATH is not empty
+#					12 = DT_RPATH is not empty and DT_RUNPATH is empty
+#					22 = DT_RPATH is not empty and DT_RUNPATH is not empty
+#					in order print DT_RUNPATH if not empty then DT_RPATH is not empty
 __get_rpath() {
 	local _file="$1"
 	local _rpath_values
-
+	local _runpath_values
+	local _return=0
 	if __is_executable_or_shareable_bin "$_file"; then
 		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 			_rpath_values="$(otool -l "$_file" | grep -E "LC_RPATH" -A2 | awk '/LC_RPATH/{for(i=2;i;--i)getline; print $0 }' | tr -s ' ' | cut -d ' ' -f 3 |  tr '\n' ' ')"
-			echo "$(__trim $_rpath_values)"
+			_rpath_values="$(__trim $_rpath_values)"
+			if [ -n "$_rpath_values" ]; then
+				printf '%s' "$_rpath_values"
+				return 0
+			else
+				return 1
+			fi
 		fi
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 			local _field='RUNPATH'
-			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
-			if [ "$_rpath_values" = "" ]; then
-				_field="RPATH"
-				IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field\s" | tr -s ' ' | cut -d ' ' -f 3)
+			IFS=':' read -ra _runpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
+			
+			if [ "$_runpath_values" = "" ]; then
+				_return=$(( _return + 10 ))
+			else
+				echo "${_runpath_values[@]}"
+				_return=$(( _return + 20 ))
+				
 			fi
-			echo "${_rpath_values[@]}"
+
+			_field="RPATH"
+			IFS=':' read -ra _rpath_values <<< $(objdump -p $_file | grep -E "$_field[[:space:]]" | tr -s ' ' | cut -d ' ' -f 3)
+			if [ "$_rpath_values" = "" ]; then
+				_return=$(( _return + 1 ))
+			else
+				_return=$(( _return + 2 ))
+				if [ ! "$_runpath_values" = "" ]; then
+					echo "${_rpath_values[@]}"
+				fi
+			fi
+
+			return $_return
 		fi
 	fi
 }
@@ -463,7 +437,7 @@ __remove_all_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE"
+			__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
 				msg="$msg -- deleting all RPATH values."
 			patchelf --remove-rpath "$_path"
 		fi
@@ -574,7 +548,7 @@ __add_rpath() {
 			done
 		fi
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE"
+			__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
 			patchelf --set-rpath "${_new_rpath// /:}" "$_path"
 			msg="$msg -- adding : $_new_rpath"
 		fi
@@ -872,10 +846,20 @@ __find_linked_lib_darwin() {
 					if [ "$(__is_abs "$linked_lib")" = "FALSE" ]; then
 						[ "$_opt_verbose" = "ON" ] && printf %s "-- WARN : pure relative path - consider use @loader_path or @rpath"
 					fi
-					if [ -f "$linked_lib" ]; then
-						[ "$_opt_verbose" = "ON" ] && printf %s "-- OK"
-						_match=1
-					fi
+					case $line in
+						# NOTE : to collect current cached folders root name on current macos version running on this host :
+						#		./macos-dyld-cache-analyse.sh --dir | awk -F/ 'NF>=3 {print "/" $2 "/" $3; next} NF==2 {print "/" $2; next}' | sort -u
+						/usr/lib*|/System/Library*|/System/iOSSupport*|/Library/Frameworks*)
+							[ "$_opt_verbose" = "ON" ] && printf %s "-- OK -- should be in dyld cache"
+							_match=1
+						;;
+						*)
+							if [ -f "$linked_lib" ]; then
+								[ "$_opt_verbose" = "ON" ] && printf %s "-- OK"
+								_match=1
+							fi
+						;;
+					esac
 				fi
 			fi
 			if [ "$_match" = "" ]; then
@@ -1116,7 +1100,7 @@ __tweak_linked_lib() {
 
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-			__require "patchelf" "patchelf#0_10" "STELLA_FEATURE"
+			__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
 		fi
 
 		local _resolved_lib
@@ -1354,7 +1338,7 @@ __check_install_name_darwin() {
 	if __is_shareable_bin "$_path"; then
 		if __is_macho "$_path" || __is_macho_universal "$_path"; then
 
-
+			# NOTE : only dylib (MH_DYLIB) have install name, no MH_BUNDLE
 			printf "*** Checking ID/Install Name value : "
 			local _install_name="$(__get_install_name_darwin $_path)"
 

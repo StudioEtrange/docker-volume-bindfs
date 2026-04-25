@@ -5,7 +5,6 @@ _TEMPLATE-BUNDLE_INCLUDED_=1
 feature_template-bundle() {
 	FEAT_NAME=template-bundle
 	FEAT_LIST_SCHEMA="1_0_0@x64 1_0_0@x86"
-	FEAT_DEFAULT_ARCH=x64
 
 	FEAT_DESC="template is foo"
 	FEAT_LINK="https://github.com/bar/template"

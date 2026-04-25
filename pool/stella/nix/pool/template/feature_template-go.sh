@@ -7,7 +7,6 @@ _TEMPLATEGO_INCLUDED_=1
 feature_template-go() {
 	FEAT_NAME="template-go"
 	FEAT_LIST_SCHEMA="snapshot:source"
-	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="template is foo"

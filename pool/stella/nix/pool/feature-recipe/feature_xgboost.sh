@@ -8,7 +8,7 @@ _xgboost_INCLUDED_=1
 feature_xgboost() {
 	FEAT_NAME=xgboost
 	FEAT_LIST_SCHEMA="0_60:source SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -8,7 +8,7 @@ _GOCROSSCOMPILE_INCLUDED_=1
 feature_go-crosscompile-chain() {
 	FEAT_NAME="go-crosscompile-chain"
 	FEAT_LIST_SCHEMA="1_4_3"
-	FEAT_DEFAULT_ARCH=
+	
 
 	FEAT_BUNDLE=NESTED
 }

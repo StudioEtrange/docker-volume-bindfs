@@ -6,7 +6,7 @@ _SEVENZIP_INCLUDED_=1
 feature_sevenzip() {
 	FEAT_NAME=sevenzip
 	FEAT_LIST_SCHEMA="9_20_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

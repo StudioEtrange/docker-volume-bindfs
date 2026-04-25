@@ -8,7 +8,7 @@ _shellgames_INCLUDED_=1
 feature_shell-games() {
 	FEAT_NAME="shell-games"
 	FEAT_LIST_SCHEMA="1_0"
-	FEAT_DEFAULT_ARCH=
+	
 
 	FEAT_BUNDLE=LIST
 }

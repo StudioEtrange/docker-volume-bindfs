@@ -6,7 +6,7 @@ _FOMA_INCLUDED_=1
 feature_foma() {
 	FEAT_NAME=foma
 	FEAT_LIST_SCHEMA="0_9_18:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

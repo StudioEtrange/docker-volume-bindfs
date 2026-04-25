@@ -6,6 +6,13 @@ _STELLA_COMMON_INCLUDED_=1
 #turns off bash's hash function
 #set +h
 
+# init stella environment
+__init_stella_env() {
+	__feature_init_installed
+	# PROXY
+	__init_proxy
+}
+
 
 # VARIOUS-----------------------------
 
@@ -275,7 +282,7 @@ __sha256() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		printf "$*" | shasum -a 256 | tr -dc '[:alnum:]'
 	else
-		type sha256sum &>/dev/null && printf "$*" | sha256sum | tr -dc '[:alnum:]'
+		type sha256sum >/dev/null 2>&1 && printf "$*" | sha256sum | tr -dc '[:alnum:]'
 	fi
 }
 
@@ -283,7 +290,7 @@ __sha1() {
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		printf "$*" | shasum -a 1 | tr -dc '[:alnum:]'
 	else
-		type sha1sum &>/dev/null && printf "$*" | sha1sum | tr -dc '[:alnum:]'
+		type sha1sum >/dev/null 2>&1 && printf "$*" | sha1sum | tr -dc '[:alnum:]'
 	fi
 }
 
@@ -295,7 +302,7 @@ __md5() {
 		#printf "$*" | md5 | tr -dc '[:alnum:]'
 		md5 -qs "$*" | tr -dc '[:alnum:]'
 	else
-		type md5sum &>/dev/null && printf '%s' "$*" | md5sum | tr -dc '[:alnum:]'
+		type md5sum >/dev/null 2>&1 && printf '%s' "$*" | md5sum | tr -dc '[:alnum:]'
 	fi
 }
 
@@ -355,7 +362,7 @@ __generate_password() {
 # On some systems, sudo do not exist, and we may already exec cmd as root
 #		sample : __sudo_exec apt-get update
 __sudo_exec() {
-	if $(type sudo &>/dev/null); then
+	if $(type sudo >/dev/null 2>&1); then
 		sudo -E "$@"
 	else
 		"$@"
@@ -393,7 +400,7 @@ __sudo_begin_session() {
     trap '__sudo_end_session; exit' SIGABRT SIGHUP SIGINT SIGQUIT SIGTERM ERR EXIT
 }
 __sudo_end_session() {
-		echo "** Ending sudo session $STELLA_SUDO_PID"
+	__log "INFO" "Ending sudo session $STELLA_SUDO_PID"
     kill -0 "$STELLA_SUDO_PID"
     trap - SIGABRT SIGHUP SIGINT SIGQUIT SIGTERM ERR EXIT
     sudo -k
@@ -414,6 +421,7 @@ __get_last_version() {
 }
 
 # pick a version from a list according to constraint
+# options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
 # selector could be
 #				a specific version number
 #				or a version number with a constraint symbol >, >=, <, <=, ^
@@ -428,41 +436,17 @@ __get_last_version() {
 #				^version : pin version and select most recent version with same version part (not exactly like npm)
 #					^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
 #					^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
-
-# 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
-
+# samples: see samples in test_common.bats
 #		__select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1b
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1b
 #		__select_version_from_list ">1.1.1b" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : <none>
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : <none>
 #		__select_version_from_list ">=1.1.1a" "1.1.1 1.1.0 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1a
-#		__select_version_from_list "<=1.1.1c" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1b
-#		__select_version_from_list "<1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.0
-#		__select_version_from_list "<1.1.0a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.0
-#		__select_version_from_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.0
-#		__select_version_from_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
-# select_version result is : 1.1.1a
-#		__select_version_from_list "^1.0" "1.0.0 1.0.1 1.1.1 1.1.1a 1.1.1b" "SEP ."
-# desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0 1.0.1 1.0.8
-# select_version result is : 1.0.1
-#			__select_version_from_list "^1.1" "1.1 1.0.0" "SEP ."
-# select_version result is : 1.1
-#			__select_version_from_list "^1.1" "1.1 1.1.0" "SEP ."
-# select_version result is : 1.1.0
-__select_version_from_list() {
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1a
+__select_version_from_list_old() {
 	local selector="$1"
 	local list="$2"
 	local opt="$3"
@@ -607,31 +591,9 @@ __select_version_from_list() {
 # 	same as __select_version_from_list but return a matching list of versions instead of one picked version
 # 	options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
 #					ASC (default), DESC : will return result filtered list in this order
+# samples : see samples in test_common.bats
 # __filter_version_list ">=1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
 #		1.1.0 1.1.1 1.1.1a 1.1.1b
-# __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#		1.1.1 1.1.1a 1.1.1b
-# __filter_version_list ">=1.1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
-#		1.1.1
-# __filter_version_list "<1.1.0" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#
-# __filter_version_list "<1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#		1.1.0 1.1.1
-# __filter_version_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
-#		1.1.0 1.1.1 1.1.1a
-# __filter_version_list "<=1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
-#		1.1.0 1.1.1a
-# __filter_version_list "^1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP . ENDING_CHAR_REVERSE"
-#		1.1.1a
-# __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ."
-#		1.1 1.1.0 1.1.1 1.1.1a 1.1.1b
-# __filter_version_list "^1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "DESC SEP ." 
-#		1.1.1b 1.1.1a 1.1.1 1.1.0 1.1
-# __filter_version_list "1.1" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
-#		1.1
-# __filter_version_list "" "1.1.0 1.1.1 1.1.1a 1.1.1b 1.1" "SEP ." 
-#		1.1.0 1.1.1 1.1.1a 1.1.1b 1.1
-
 __filter_version_list() {
 	local selector="$1"
 	local list="$2"
@@ -645,11 +607,11 @@ __filter_version_list() {
 	for o in $opt; do
 		[ "$o" = "ASC" ] && __result_order="$o"
 		[ "$o" = "DESC" ] && __result_order="$o"
+		[ "$flag_limit" = "ON" ] && limit="$o" && flag_limit="OFF"
+		[ "$o" = "LIMIT" ] && flag_limit="ON"
 		[ "$o" = "ENDING_CHAR_REVERSE" ] && __sort_opt="${__sort_opt} ENDING_CHAR_REVERSE"
 		[ "$flag_sep" = "ON" ] && __sort_opt="${__sort_opt} $o" && flag_sep="OFF"
 		[ "$o" = "SEP" ] && flag_sep="ON" && __sort_opt="${__sort_opt} SEP"
-		[ "$flag_limit" = "ON" ] && limit="$o" && flag_limit="OFF"
-		[ "$o" = "LIMIT" ] && flag_limit="ON"
 	done
 
 
@@ -788,31 +750,79 @@ __filter_version_list() {
 
 }
 
+# pick a version from a list according to constraint
+# options LIMIT n, ENDING_CHAR_REVERSE, SEP c : see __sort_version
+# selector could be
+#				a specific version number
+#				or a version number with a constraint symbol >, >=, <, <=, ^
+#				>version : most recent after version
+#					>1.0 select the latest version after 1.0, which is not 1.0 (like 2.3.4)
+#				>=version : most recent including version
+#					>=1.0 select the latest version after 1.0, which may be 1.0
+#				<version : most recent just before version
+#					<1.0 select the latest just before 1.0, which is not 1.0 (like 0.3.4)
+#				<=version : most recent just before version including version itself
+#					<=1.0 select the latest version just before 1.0, which may be 1.0
+#				^version : pin version and select most recent version with same version part (not exactly like npm)
+#					^1.0 select the latest 1.0.* version (like 1.0.0 or 1.0.4)
+#					^1 select the latest 1.* version (like 1.0.0 or 1.2.4)
+# samples: see samples in test_common.bats
+#		__select_version_from_list ">1.1.1a" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1b
+#		__select_version_from_list ">1.1.1b" "1.1.0 1.1.1 1.1.1a 1.1.1b" "SEP ."
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : <none>
+#		__select_version_from_list ">=1.1.1a" "1.1.1 1.1.0 1.1.1a 1.1.1b" "SEP ."
+# 				desc list is 1.1.1b 1.1.1a 1.1.1 1.1.0
+# 				selected_version result is : 1.1.1a
+__select_version_from_list() {
+	local selector="$1"
+	local list="$2"
+	local opt="$3"
+	local result=""
+	local filtered
+	local v
+
+	case ${selector} in
+		\>=* | \>* )
+			# take first element of the filtered list
+			filtered="$(__filter_version_list "${selector}" "${list}" "${opt}")"
+			for v in ${filtered}; do
+				result="${v}"
+				break
+			done
+			;;
+
+		\<=* | \<* | ^* )
+			# take last element of the filtered list
+			filtered="$(__filter_version_list "${selector}" "${list}" "${opt}")"
+			if [ -n "${filtered}" ]; then
+				for v in ${filtered}; do
+					result="${v}"
+				done
+			fi
+			;;
+
+		"" )
+			result=""
+			;;
+
+		* )
+			filtered="$(__filter_version_list "${selector}" "${list}" "${opt}")"
+			for v in ${filtered}; do
+				result="${v}"
+				break
+			done
+			;;
+	esac
+
+	echo "${result}"
+}
+
 
 
 # sort a list of versions
-
-#__sort_version "build507 build510 build403 build4000 build" "ASC"
-#  build build403 build507 build510 build4000
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC"
-#  1.1.0 1.1.1 1.1.1a 1.1.1b
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP ."
-#  1.1.0 1.1.1 1.1.1a 1.1.1b
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP . ENDING_CHAR_REVERSE"
-#  1.1.0 1.1.1a 1.1.1b 1.1.1
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC"
-#  1.1.1b 1.1.1a 1.1.1 1.1.0
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP ."
-#  1.1.1b 1.1.1a 1.1.1 1.1.0
-#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "DESC SEP . ENDING_CHAR_REVERSE"
-#  1.1.1 1.1.1b 1.1.1a 1.1.0
-#__sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "ASC ENDING_CHAR_REVERSE SEP ."
-#  1.1.0 1.1.1alpha 1.1.1beta1 1.1.1beta2 1.1.1
-#__sort_version "1.1.0 1.1.1 1.1.1alpha 1.1.1beta1 1.1.1beta2" "DESC ENDING_CHAR_REVERSE SEP ."
-#  1.1.1 1.1.1beta2 1.1.1beta1 1.1.1alpha 1.1.0
-#__sort_version "1.9.0 1.10.0 1.10.1.1 1.10.1 1.10.1alpha1 1.10.1beta1 1.10.1beta2 1.10.2 1.10.2.1 1.10.2.2 1.10.0RC1 1.10.0RC2" "DESC ENDING_CHAR_REVERSE SEP ."
-#  1.10.2.2 1.10.2.1 1.10.2 1.10.1.1 1.10.1 1.10.1beta2 1.10.1beta1 1.10.1alpha1 1.10.0 1.10.0RC2 1.10.0RC1 1.9.0
-
 # options :
 #		ASC : ascending order
 #		DESC : decresacing order
@@ -822,8 +832,15 @@ __filter_version_list() {
 # 			we must indicate separator with SEP if we use ENDING_CHAR_REVERSE and if there is any separator (obviously)
 #		LIMIT n : limit to a number of result
 # NOTE : characters "}", "!" and "{" may cause problem if they are used in versions strings
-
-
+# samples : see samples ih test_common.bats
+#__sort_version "build507 build510 build403 build4000 build" "ASC"
+#  build build403 build507 build510 build4000
+#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC"
+#  1.1.0 1.1.1 1.1.1a 1.1.1b
+#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP ."
+#  1.1.0 1.1.1 1.1.1a 1.1.1b
+#__sort_version "1.1.0 1.1.1 1.1.1a 1.1.1b" "ASC SEP . ENDING_CHAR_REVERSE"
+#  1.1.0 1.1.1a 1.1.1b 1.1.1
 __sort_version() {
 	local list=$1
 	local opt="$2"
@@ -961,16 +978,43 @@ __sort_version() {
 }
 
 
-
-
-
-
+# other method https://gist.github.com/cdown/1163649
+# other method http://unix.stackexchange.com/a/60698
 __url_encode() {
-	if [ "$(which xxd 2>/dev/null)" = "" ]; then
-		__url_encode_1 "$@"
-	else
-		__url_encode_with_xxd "$@"
-	fi
+	__url_encode_with_awk  "$@"
+}
+
+# https://unix.stackexchange.com/a/678894
+__url_encode_with_awk() {
+  LC_ALL=C awk -- '
+    BEGIN {
+      for (i = 1; i <= 255; i++) hex[sprintf("%c", i)] = sprintf("%%%02X", i)
+    }
+    function urlencode(s,  c,i,r,l) {
+      l = length(s)
+      for (i = 1; i <= l; i++) {
+        c = substr(s, i, 1)
+        r = r "" (c ~ /^[-._~0-9a-zA-Z]$/ ? c : hex[c])
+      }
+      return r
+    }
+    BEGIN {
+      for (i = 1; i < ARGC; i++)
+        print urlencode(ARGV[i])
+    }' "$@"
+}
+
+# https://gist.github.com/cdown/1163649
+# xxd is used to support wide characters
+__url_encode_with_xxd() {
+  local length="${#1}"
+  for (( i = 0; i < length; i++ )); do
+    local c="${1:i:1}"
+    case $c in
+	      [a-zA-Z0-9.~_-]) printf "$c" ;;
+	    *) printf "$c" | xxd -p -c1 | while read x;do printf "%%%s" "$x";done
+	  esac
+	done
 }
 
 # https://gist.github.com/cdown/1163649
@@ -990,21 +1034,10 @@ __url_encode_1() {
     LC_COLLATE=$old_lc_collate
 }
 
-# https://gist.github.com/cdown/1163649
-# xxd is used to suppoert wide characters
-__url_encode_with_xxd() {
-  local length="${#1}"
-  for (( i = 0; i < length; i++ )); do
-    local c="${1:i:1}"
-    case $c in
-	      [a-zA-Z0-9.~_-]) printf "$c" ;;
-	    *) printf "$c" | xxd -p -c1 | while read x;do printf "%%%s" "$x";done
-	  esac
-	done
-}
+
+
 
 # Faster solution than __url_encode_1 ? (without xxd)
-# http://unix.stackexchange.com/a/60698
 __url_encode_2() {
 	string=$1; format=; set --
   while
@@ -1027,6 +1060,10 @@ __url_encode_2() {
   done
   printf "$format\\n" "$@"
 }
+
+
+
+
 
 # https://gist.github.com/cdown/1163649
 __url_decode() {
@@ -1449,8 +1486,9 @@ __uri_parse() {
 
 # [schema://][user@][host][:port][/abs_path|?rel_path]
 # By default
-# CACHE, WORKSPACE, ENV, GIT are excluded ==> use theses options to force include
-# APP, WIN are included ==> uses these option to force exclude
+# CACHE, WORKSPACE, .stella-env, .git are excluded by default ==> use theses options to force include
+# /app, /win folders are included by default ==> use EXCLUDE_WIN EXCLUDE_APP options to force exclude
+# AI files are included by default ==> use EXCLUDE_AI option to force exclude
 # SUDO use sudo on the target
 # FOLDER_CONTENT use this option to transfer content of stella folder only (not stella folder itself)
 __transfer_stella() {
@@ -1474,19 +1512,21 @@ __transfer_stella() {
 	_opt_folder_content=
 	local _opt_delete_excluded=
 
+	
 	for o in $_OPT; do
 		[ "$o" = "CACHE" ] && _opt_ex_cache=
 		[ "$o" = "WORKSPACE" ] && _opt_ex_workspace=
 		[ "$o" = "ENV" ] && _opt_ex_env=
 		[ "$o" = "GIT" ] && _opt_ex_git=
-		[ "$o" = "WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
-		[ "$o" = "APP" ] && _opt_ex_app="EXCLUDE /app/"
+		[ "$o" = "EXCLUDE_WIN" ] && _opt_ex_win="EXCLUDE /win/ EXCLUDE /stella.bat EXCLUDE /conf.bat"
+		[ "$o" = "EXCLUDE_APP" ] && _opt_ex_app="EXCLUDE /app/"
+		[ "$o" = "EXCLUDE_AI" ] && _opt_ex_ai="EXCLUDE /.agents/ EXCLUDE /AGENTS.md"
 		[ "$o" = "SUDO" ] && _opt_sudo="SUDO"
 		[ "$o" = "FOLDER_CONTENT" ] && _opt_folder_content="FOLDER_CONTENT"
 		[ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
 	done
-	__log "DEBUG" "** ${_opt_sudo} Transfer stella to $_uri"
-	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_delete_excluded $_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
+	__log "DEBUG" "${_opt_sudo} Transfer stella to $_uri"
+	__transfer_folder_rsync "$STELLA_ROOT" "$_uri" "$_opt_delete_excluded $_opt_ex_ai $_opt_ex_win $_opt_ex_app $_opt_ex_cache $_opt_ex_workspace $_opt_ex_env $_opt_ex_git $_opt_sudo $_opt_folder_content"
 }
 
 
@@ -1533,7 +1573,7 @@ __transfer_file_rsync() {
 	local _uri="$2"
 	local _opt="$3"
 
-	__log "DEBUG" "** Transfer file $_file to $_uri"
+	__log "DEBUG" "Transfer file $_file to $_uri"
 	__transfer_rsync "FILE" "$_file" "$_uri" "$_opt"
 }
 
@@ -1589,7 +1629,7 @@ __transfer_rsync() {
 	done
 
 	# NOTE : rsync needs to be present on both host (source AND target)
-	__require "rsync" "rsync"
+	__require "rsync" "rsync" "SYSTEM"
 
 	__uri_parse "$_uri"
 
@@ -1601,7 +1641,7 @@ __transfer_rsync() {
 	fi
 
 	if [ "$__stella_uri_schema" = "ssh" ]; then
-		__require "ssh" "ssh"
+		__require "ssh" "ssh" "SYSTEM"
 		_ssh_port="22"
 		[ ! "$__stella_uri_port" = "" ] && _ssh_port="$__stella_uri_port"
 	fi
@@ -1692,7 +1732,7 @@ __transfer_rsync() {
 			;;
 		local )
 			if [ "$_source" = "$_target" ]; then
-				__log "INFO" " ** source $_source and target $_target are equivalent, so no transfer"
+				__log "INFO" "source $_source and target $_target are equivalent, so no transfer"
 			else
 				# '--rsync-path' option seems to not work when we are on the same host (local)
 				if [ "$_opt_sudo" = "ON" ]; then
@@ -1706,7 +1746,7 @@ __transfer_rsync() {
 			fi
 			;;
 		*)
-			echo "** ERROR protocol unknown"
+			__log "ERROR" "protocol $__stella_uri_schema unknown"
 			;;
 	esac
 }
@@ -1917,12 +1957,9 @@ __is_dir_empty() {
 	return $([ -z "$(ls -A "$1" 2>/dev/null)" ])
 }
 
+# NOTES:
 # To get: /tmp/my.dir (like dirname)
 # path = ${foo%/*}
-# To get: filename.tar.gz (like basename)
-# file = ${foo##*/}
-# To get: filename
-# base = ${file%%.*}
 __get_path_from_string() {
 	if [ "$1" = "${1%/*}" ]; then
 		echo "."
@@ -1931,6 +1968,11 @@ __get_path_from_string() {
 	fi
 }
 
+# NOTES:
+# To get: filename.tar.gz (like basename)
+# file = ${foo##*/}
+# To get: filename
+# base = ${file%%.*}
 __get_filename_from_string() {
 	echo ${1##*/}
 }
@@ -2264,14 +2306,149 @@ __symlink_abs_to_rel_path() {
 
 
 
+# append a path at the end of a colon-separated list if not yet in list
+# DOES NOT force absolute, DOES NOT check existence
+# $1 = current list
+# $2 = candidate path
+__path_append_to_list() {
+  local list="$1"
+  local p="$2"
 
+  [ -z "$p" ] && { printf '%s' "$list"; return; }
 
-# init stella environment
-__init_stella_env() {
-	__feature_init_installed
-	# PROXY
-	__init_proxy
+  case ":$list:" in
+    *:"$p":*)
+      printf '%s' "$list"
+      ;;
+    *)
+      if [ -n "$list" ]; then
+        printf '%s:%s' "$list" "$p"
+      else
+        printf '%s' "$p"
+      fi
+      ;;
+  esac
 }
+
+# append a path only if directory exists
+# append a path at the end of a colon-separated list if not yet in list
+__path_append_to_list_if_exists() {
+  local list="$1"
+  local p="$2"
+
+  [ -z "$p" ] && { printf '%s' "$list"; return; }
+  [ -d "$p" ] || { printf '%s' "$list"; return; }
+
+  case ":$list:" in
+    *:"$p":*)
+      printf '%s' "$list"
+      ;;
+    *)
+      if [ -n "$list" ]; then
+        printf '%s:%s' "$list" "$p"
+      else
+        printf '%s' "$p"
+      fi
+      ;;
+  esac
+}
+
+# add all lines from STDIN (one per line) into colon list $1
+# append path at the end of a colon-separated list if not yet in list
+__path_append_to_list_from_stdin() {
+  local list="$1" line
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    list="$(__path_append_to_list "$list" "$line")"
+  done
+  printf '%s' "$list"
+}
+
+
+
+# Usage :
+#   __find_file_in_path_list "<regex_file>_pattern" "<paths_list_with_separator_:>" "STOP_FIRST SUB_DIRS subdir1 subdir2"
+#	samples :
+#   	__find_file_in_path_list 'libGL.*' "/usr:/usr/local:/opt:/usr/lib"
+#			/usr/lib/libGL.so.1
+#		__find_file_in_path_list "libz.so" "/lib" "SUB_DIRS x86_64-linux-gnu STOP_FIRST"
+#			/lib/x86_64-linux-gnu/libz.so.1
+#		__find_file_in_path_list "^libz" "/usr/lib:/usr/local:/opt
+#			/usr/lib/libz.1.2.12.dylib
+#		PATTERN : regex pattern applid to each file contained in path
+#		PATH_LIST : list of path separated by ':'
+#	NOTE :
+# 		for an exact file match use : '^libfoo\.so$''
+# 		it is a non recursive search file
+# 	OPTIONS:
+#		STOP_FIRST : STOP search at first match
+#		SUB_DIRS : subdirs search list (separated by space)
+__find_file_in_path_list() {
+
+	[ $# -lt 2 ] && return 1
+
+	local PATTERN="$1"   # file to find with regex
+	local PATH_LIST="$2"
+	local OPT="$3"
+	local SUB_DIRS=
+	local FOUND=0
+
+	local _opt_first=
+	local _first_matching=
+	local _flag_subdir
+	for o in $OPT; do
+		[ "$o" = "STOP_FIRST" ] && _opt_first="ON" && _flag_subdir= # STOP search at first match
+		[ "$_flag_subdir" = "ON" ] && SUB_DIRS="${SUB_DIRS} ${o}"
+		[ "$o" = "SUB_DIRS" ] && _flag_subdir="ON"
+	done
+
+	__search_dir() {
+		local DIR="$1"
+		local entry
+		local name
+		[ -d "$DIR" ] || return 1
+		# browse DIR
+		for entry in "$DIR"/*; do
+			name=${entry##*/}
+			# PATTERN is a regex used by grep -E
+			if echo "$name" | grep -E -e "$PATTERN" -q; then
+				echo "$entry"
+				FOUND=1
+				[ "$_opt_first" = "ON" ] && return 0
+			fi
+		done
+	}
+
+	local BASE
+	local OLD_IFS="$IFS"
+	IFS=':'
+	for BASE in $PATH_LIST; do
+		[ -z "$BASE" ] && BASE="."
+
+		__search_dir "$BASE"
+		if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
+            break
+        fi
+		if [ -n "$SUB_DIRS" ]; then
+			IFS=' '
+			for SUB in $SUB_DIRS; do
+				[ -z "$SUB" ] && continue
+				__search_dir "$BASE/$SUB"
+				if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
+					break
+				fi
+			done
+			IFS=':'
+			if [ "$_opt_first" = "ON" ] && [ "$FOUND" -eq 1 ]; then
+				break
+			fi
+		fi
+	done
+	IFS="$OLD_IFS"
+
+	[ "$FOUND" -eq 1 ] && return 0 || return 1
+}
+
 
 #MEASURE TOOL----------------------------------------------
 # __timecount_start "count_id"
@@ -2313,7 +2490,7 @@ __count_folder_item() {
 }
 
 __del_folder() {
-	echo "** Deleting $1 folder"
+	__log "DEBUG" "Deleting $1 folder"
 	[ -d $1 ] && rm -Rf $1
 }
 
@@ -2382,60 +2559,69 @@ __resource() {
 	#		"DEST_ERASE" when GET, will erase FINAL_DESTINATION first
 	# TODO : remove illegal characters in NAME. NAME is used in flag file name when merging
 
-	local _opt_merge=OFF
-	local _opt_strip=OFF
-	local _opt_get=ON
-	local _opt_delete=OFF
-	local _opt_update=OFF
-	local _opt_revert=OFF
-	local _opt_force_name=OFF
-	local _opt_version=OFF
-	local _opt_dest_erase=OFF
+	local _opt_merge="OFF"
+	local _opt_strip="OFF"
+	local _opt_get="ON"
+	local _opt_delete="OFF"
+	local _opt_update="OFF"
+	local _opt_revert="OFF"
+	local _opt_force_name="OFF"
+	local _opt_version="OFF"
+	local _opt_dest_erase="OFF"
 	local _checkout_version=
-	local _download_filename=_AUTO_
+	local _download_filename="_AUTO_"
 	for o in $OPT; do
 		if [ "$_opt_force_name" = "ON" ]; then
-			_download_filename=$o
-			_opt_force_name=OFF
+			_download_filename="$o"
+			_opt_force_name="OFF"
 		else
 			if [ "$_opt_version" = "ON" ]; then
-				_checkout_version=$o
-				_opt_version=OFF
+				_checkout_version="$o"
+				_opt_version="OFF"
 			else
-				[ "$o" = "VERSION" ] && _opt_version=ON
-				[ "$o" = "MERGE" ] && _opt_merge=ON
-				[ "$o" = "DEST_ERASE" ] && _opt_dest_erase=ON
-				[ "$o" = "STRIP" ] && _opt_strip=ON
-				[ "$o" = "FORCE_NAME" ] && _opt_force_name=ON
-				if [ "$o" = "DELETE" ]; then _opt_delete=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_update=OFF; fi
-				if [ "$o" = "UPDATE" ]; then _opt_update=ON;  _opt_revert=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
-				if [ "$o" = "REVERT" ]; then _opt_revert=ON;  _opt_update=OFF;  _opt_get=OFF; _opt_delete=OFF; fi
+				[ "$o" = "VERSION" ] && _opt_version="ON"
+				[ "$o" = "MERGE" ] && _opt_merge="ON"
+				[ "$o" = "DEST_ERASE" ] && _opt_dest_erase="ON"
+				[ "$o" = "STRIP" ] && _opt_strip="ON"
+				[ "$o" = "FORCE_NAME" ] && _opt_force_name="ON"
+				if [ "$o" = "DELETE" ]; then _opt_delete="ON";  _opt_revert="OFF";  _opt_get="OFF"; _opt_update="OFF"; fi
+				if [ "$o" = "UPDATE" ]; then _opt_update="ON";  _opt_revert="OFF";  _opt_get="OFF"; _opt_delete="OFF"; fi
+				if [ "$o" = "REVERT" ]; then _opt_revert="ON";  _opt_update="OFF";  _opt_get="OFF"; _opt_delete="OFF"; fi
 			fi
 		fi
 	done
 
-	[ "$_opt_revert" = "ON" ] && __log "INFO" " ** Reverting resource :"
-	[ "$_opt_update" = "ON" ] && __log "INFO" " ** Updating resource :"
-	[ "$_opt_delete" = "ON" ] && __log "INFO" " ** Deleting resource :"
-	[ "$_opt_get" = "ON" ] && __log "INFO" " ** Getting resource :"
-	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" " $NAME in $FINAL_DESTINATION" || __log "INFO" " $NAME"
+	[ "$_opt_revert" = "ON" ] && __log "INFO" "Reverting resource :"
+	[ "$_opt_update" = "ON" ] && __log "INFO" "Updating resource :"
+	[ "$_opt_delete" = "ON" ] && __log "INFO" "Deleting resource :"
+	[ "$_opt_get" = "ON" ] && __log "INFO" "Getting resource :"
+	[ ! "$FINAL_DESTINATION" = "" ] && __log "INFO" "$NAME in $FINAL_DESTINATION" || __log "INFO" "$NAME"
+
+	if [ "${URI}" = "" ]; then
+		__log_stella "ERROR" "ressource URI empty"
+		exit 1
+	fi
+	if [ "${PROTOCOL}" = "" ]; then
+		__log_stella "ERROR" "ressource protocol empty"
+		exit 1
+	fi
 
 	#[ "$FORCE" ] && rm -Rf $FINAL_DESTINATION
 	if [ "$_opt_get" = "ON" ]; then
 		#if [ "$FORCE" ]; then
 		#	[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-		#	[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		#	[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 		#fi
 		if [ "$_opt_dest_erase" = "ON" ]; then
 			[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-			[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+			[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 		fi
 	fi
 
 
 	if [ "$_opt_delete" = "ON" ]; then
 		[ "$_opt_merge" = "OFF" ] && rm -Rf "$FINAL_DESTINATION"
-		[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._MERGED_$NAME"
+		[ "$_opt_merge" = "ON" ] && rm -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 		_FLAG=0
 	fi
 
@@ -2453,14 +2639,14 @@ __resource() {
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
-							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-								__log "INFO" " ** Ressource already merged"
+							if [ -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME" ]; then
+								__log "INFO" "Ressource already merged"
 								_FLAG=0
 							fi
 						fi
 						if [ "$_opt_strip" = "ON" ]; then
-							#__log " ** Ressource already stripped"
-							__log "INFO" " ** Destination folder exist"
+							#__log "Ressource already stripped"
+							__log "INFO" "Destination folder exist"
 							#_FLAG=0
 						fi
 					fi
@@ -2474,8 +2660,8 @@ __resource() {
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
 						if [ "$_opt_merge" = "ON" ]; then
-							if [ -f "$FINAL_DESTINATION/._MERGED_$NAME" ]; then
-								__log "INFO" " ** Ressource already merged"
+							if [ -f "$FINAL_DESTINATION/._STELLA_MERGED_$NAME" ]; then
+								__log "INFO" "Ressource already merged"
 								_FLAG=0
 							fi
 						fi
@@ -2487,12 +2673,12 @@ __resource() {
 				[ "$_opt_merge" = "ON" ] && __log "INFO" "MERGE option not supported with this protocol"
 				if [ -d "$FINAL_DESTINATION" ]; then
 					if [ "$_opt_get" = "ON" ]; then
-						__log "INFO" " ** Ressource already exist"
+						__log "INFO" "Ressource already exist"
 						_FLAG=0
 					fi
 				else
-					[ "$_opt_revert" = "ON" ] && __log "INFO" " ** Ressource does not exist" && _FLAG=0
-					[ "$_opt_update" = "ON" ] && __log "INFO" " ** Ressource does not exist" && _FLAG=0
+					[ "$_opt_revert" = "ON" ] && __log "INFO" "Ressource does not exist" && _FLAG=0
+					[ "$_opt_update" = "ON" ] && __log "INFO" "Ressource does not exist" && _FLAG=0
 				fi
 				;;
 		esac
@@ -2502,45 +2688,137 @@ __resource() {
 		[ ! -d $FINAL_DESTINATION ] && mkdir -p $FINAL_DESTINATION
 
 		case ${PROTOCOL} in
+			HOMEBREW_BOTTLE)
+				# TODO
+				if [ "$_opt_get" = "ON" ]; then __download_uncompress_homebrew_bottle "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
+				;;
 			HTTP_ZIP )
 				if [ "$_opt_get" = "ON" ]; then __download_uncompress "$URI" "$_download_filename" "$FINAL_DESTINATION" "$_STRIP"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			HTTP )
 				# HTTP protocol use always merge by default : because it never erase destination folder
 				# but the 'merged' flag file will be created only if we pass the option MERGE
 				if [ "$_opt_get" = "ON" ]; then __download "$URI" "$_download_filename" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			HG )
 				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; hg revert --all -C; fi
 				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; hg pull; hg update $_checkout_version; fi
 				if [ "$_opt_get" = "ON" ]; then hg clone $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; hg update $_checkout_version; fi; fi
-				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 				;;
 			GIT )
 				__require "git" "git" "SYSTEM"
 				if [ "$_opt_revert" = "ON" ]; then cd "$FINAL_DESTINATION"; git reset --hard; fi
 				if [ "$_opt_update" = "ON" ]; then cd "$FINAL_DESTINATION"; git pull;if [ ! "$_checkout_version" = "" ]; then git checkout $_checkout_version; fi; fi
 				if [ "$_opt_get" = "ON" ]; then git clone --recursive $URI "$FINAL_DESTINATION"; if [ ! "$_checkout_version" = "" ]; then cd "$FINAL_DESTINATION"; git checkout $_checkout_version; fi; fi
-				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"
+				# [ "$_opt_merge" = "ON" ] && echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"
 				;;
 			FILE )
 				if [ "$_opt_get" = "ON" ]; then __copy_folder_content_into "$URI" "$FINAL_DESTINATION"; fi
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			FILE_ZIP )
 				__uncompress "$URI" "$FINAL_DESTINATION" "$_STRIP"
-				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._MERGED_$NAME"; fi
+				if [ "$_opt_merge" = "ON" ]; then echo 1 > "$FINAL_DESTINATION/._STELLA_MERGED_$NAME"; fi
 				;;
 			* )
-				__log "INFO" " ** ERROR Unknow protocol"
+				__log "ERROR" "Unknow protocol ${PROTOCOL}"
 				;;
 		esac
 	fi
 }
 
 # DOWNLOAD AND ZIP FUNCTIONS---------------------------------------------------
+
+__download_uncompress_homebrew_bottle() {
+	local FORMULA
+	local FILE_NAME
+	local UNZIP_DIR
+	local OPT
+	# DEST_ERASE delete destination folder
+	# STRIP delete first folder in archive
+
+	FORMULA="$1"
+	FILE_NAME="$2"
+	UNZIP_DIR="$3"
+	OPT="STRIP $4"
+
+	if [ "$STELLA_CPU_ARCH" = "32" ]; then
+		__log "ERROR" "Homebrew bottle do not support 32 bits archive"
+		exit 1
+	fi
+
+	local arch
+	case ${STELLA_CURRENT_CPU_FAMILY} in
+		intel)
+			arch="amd64"
+			;;
+		arm)
+			arch="arm64"
+			;;
+		*)
+			__log "ERROR" "Unsupported architecture for Homebrew bottle (${STELLA_CURRENT_CPU_FAMILY})"
+			exit 1
+			;;
+	esac
+
+	[ "${FILE_NAME}" = "" ] && FILE_NAME="_AUTO_"
+
+	if [ "${FILE_NAME}" = "_AUTO_" ]; then
+		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}" || { echo "ERROR" ; exit 1; }
+		FILE_NAME=$(find "$STELLA_APP_CACHE_DIR" -maxdepth 1 -type f -name "${FORMULA}-*.bottle.tar.gz" | head -n 1)
+		FILE_NAME=${FILE_NAME##*/}
+	else
+		"$STELLA_ARTEFACT/homebrew-get-bottle.sh" -n "$FORMULA" -o "${STELLA_CURRENT_PLATFORM}" -a "${arch}" -d "${STELLA_APP_CACHE_DIR}" -f "${FILE_NAME}" || { echo "ERROR" ; exit 1; }
+	fi
+	if [ -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
+		__uncompress "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+	else
+		if [ -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
+			__uncompress "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" "$UNZIP_DIR" "$OPT"
+		fi
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		# NOTE : linux bottles have place holder (@@HOMEBREW_PREFIX@@) replaced by brew tool for interpreter path and rpath values
+		# we need to set interpreter and we ignore other values for rpath
+		__require "patchelf" "patchelf#0_18_0" "STELLA_FEATURE INTERNAL"
+		
+		__system_interpreter="$(patchelf --print-interpreter /bin/ls)"
+
+		find "$UNZIP_DIR" -type f -perm -111 | while IFS= read -r f; do
+			interp="$(patchelf --print-interpreter "$f" 2>/dev/null || true)"
+			if [ -n "$interp" ] && echo "$interp" | grep -q '@@HOMEBREW_PREFIX@@'; then
+				echo "→ Patching interpreter for: $f"
+				chmod u+w "$f"
+				patchelf --set-interpreter "$__system_interpreter" "$f"
+			fi
+		done
+
+		# NOTE we leave in place all rpath values - because they may have no impact
+		# patchelf --remove-rpath "$f"
+	fi
+
+	local content_folder=""
+	(
+		# remove folder named with "version" from "latest/feature/version/*"
+		shopt -s dotglob
+		for x in "$UNZIP_DIR/"*; do
+			[ -d "$x" ] || continue
+			content_folder="$x"
+		done
+		echo "→ Move bottle files from $content_folder to $UNZIP_DIR"
+		for f in "$content_folder/"*; do 
+			mv "$f" "${UNZIP_DIR}"/; 
+		done
+		rm -rf "${content_folder}"
+	)
+}
+
+
 __download_uncompress() {
 	local URL
 	local FILE_NAME
@@ -2554,11 +2832,12 @@ __download_uncompress() {
 	UNZIP_DIR="$3"
 	OPT="$4"
 
-
+	[ "${FILE_NAME}" = "" ] && FILE_NAME="_AUTO_"
+	
 	if [ "${FILE_NAME}" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
-		__log "INFO" "** Guessed file name is $FILE_NAME"
+		__log "INFO" "Guessed file name is $FILE_NAME"
 	fi
 
 	__download "$URL" "$FILE_NAME"
@@ -2608,7 +2887,7 @@ __compress() {
 			fi
 			;;
 		ZIP)
-			__log "DEBUG" "TODO: *********** ZIP NOT IMPLEMENTED"
+			__log "ERROR" "TODO: *********** ZIP NOT IMPLEMENTED"
 			;;
 		TAR*)
 				[ -d "$_target" ] && tar -c -v $_tar_flag -f "$_output_archive" -C "$_target/.." "$(basename "${_target}")"
@@ -2616,6 +2895,28 @@ __compress() {
 			;;
 	esac
 
+
+}
+
+__uncompress_dmg() {
+	local FILE_PATH="$1"
+	local UNZIP_DIR="$2"
+	local OPT="$3"
+
+	local _opt_dest_erase=OFF # delete destination folder (default : FALSE)
+	for o in $OPT; do
+		[ "$o" = "DEST_ERASE" ] && _opt_dest_erase=ON
+	done
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$_opt_dest_erase" = "ON" ]; then
+			rm -Rf "$UNZIP_DIR"
+		fi
+		mkdir -p "$UNZIP_DIR"
+		__extract_dmg "$FILE_PATH" "$UNZIP_DIR"
+	else
+		__log_stella "WARN" "dmg files are supported only on darwin system"
+	fi
 
 }
 
@@ -2641,45 +2942,82 @@ __uncompress() {
 
 	mkdir -p "$UNZIP_DIR"
 
-	__log "INFO" " ** Uncompress $FILE_PATH in $UNZIP_DIR"
+	__log "INFO" "Uncompress $FILE_PATH in $UNZIP_DIR"
 
 	cd "$UNZIP_DIR"
 
 	case "$FILE_PATH" in
 		*.zip)
 			__require "unzip" "unzip" "SYSTEM"
-			[ "$_opt_strip" = "OFF" ] && unzip -a -o "$FILE_PATH"
-			[ "$_opt_strip" = "ON" ] && __unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			if [ "$_opt_strip" = "ON" ]; then
+				__unzip-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				unzip -a -o "$FILE_PATH"
+			fi
 			;;
 		*.tar )
-			if [ "$_opt_strip" = "OFF" ]; then
-				tar xf "$FILE_PATH"
-			else
+			if [ "$_opt_strip" = "ON" ]; then
 				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xf "$FILE_PATH"
 			fi
 			;;
-		*.gz | *.tgz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				tar xzf "$FILE_PATH"
-			else
+		*.tar.gz | *.tgz)
+			__log "DEBUG" "TAR.GZ file detected - option strip is $_opt_strip"
+			__require "gzip" "gzip" "SYSTEM"
+			if [ "$_opt_strip" = "ON" ]; then
 				tar xzf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xzf "$FILE_PATH"
 			fi
 			;;
-		*.xz | *.tar.bz2 | *.tbz2 | *.tbz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				tar xf "$FILE_PATH"
+		*.tar.bz2 | *.tbz2 | *.tbz )
+			__log "DEBUG" "TAR.BZ2 file detected - option strip is $_opt_strip"
+			__require "bzip2" "bzip2" "SYSTEM"
+			if [ "$_opt_strip" = "ON" ]; then
+				tar xjf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-bz2-strip "$FILE_PATH" "$UNZIP_DIR"
 			else
-				tar xf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-strip "$FILE_PATH" "$UNZIP_DIR"
+				tar xjf "$FILE_PATH"
 			fi
+			;;
+		*.tar.xz | *.txz )
+			__log "DEBUG" "TAR.XZ file detected - option strip is $_opt_strip"
+			__require "xz" "xz" "SYSTEM"
+			if [ "$_opt_strip" = "ON" ]; then
+				tar xJf "$FILE_PATH" --strip-components=1 2>/dev/null || __untar-xz-strip "$FILE_PATH" "$UNZIP_DIR"
+			else
+				tar xJf "$FILE_PATH"
+			fi
+			;;
+		*.xz )
+			# NOTE : xz do not support any arborescence, but only a file, so there is no strip option 
+			__require "xz" "xz" "SYSTEM"
+			local temp=$(mktmpdir)
+			cp -f "$FILE_PATH" "$temp/"
+			cd "$temp"
+			xz -d "$temp/$(basename $FILE_PATH)"
+			# NOTE : without -k option original archive will be deleted
+			mv "$temp"/* "$UNZIP_DIR"
 			;;
 		*.bz2|*.bz)
-			if [ "$_opt_strip" = "OFF" ]; then
-				cp -f "$FILE_PATH" .
-				bzip2 -d *
-			else
-				# NOTE : maybe not needed because a bz2 file contains always only one files and not a directory ?
-				__bzip2-strip "$FILE_PATH" "$UNZIP_DIR"
-			fi
+			# NOTE : bz2 do not support any arborescence, but only a file, so there is no strip option 
+			__require "bzip2" "bzip2" "SYSTEM"
+			local temp=$(mktmpdir)
+			cp -f "$FILE_PATH" "$temp/"
+			cd "$temp"
+			bzip2 -d "$temp/$(basename $FILE_PATH)"
+			# NOTE : without -k option original archive will be deleted
+			mv "$temp"/* "$UNZIP_DIR"
+			;;
+		*.gz)
+			# NOTE : gz do not support any arborescence, but only a file, so there is no strip option 
+			__require "gzip" "gzip" "SYSTEM"
+			local temp=$(mktmpdir)
+			cp -f "$FILE_PATH" "$temp/"
+			cd "$temp"
+			gzip -f -d "$temp/$(basename $FILE_PATH)"
+			# NOTE : without -k option original archive will be deleted
+			mv "$temp"/* "$UNZIP_DIR"
 			;;
 		*.7z)
 			__require "7z" "7z" "SYSTEM"
@@ -2693,7 +3031,7 @@ __uncompress() {
 				ar p "$FILE_PATH" data.tar.gz | tar xz
 			;;
 		*)
-			__log "INFO" " ** ERROR : Unknown archive format"
+			__log "ERROR" "Unknown archive format"
 			;;
 	esac
 }
@@ -2714,28 +3052,28 @@ __download() {
 	if [ "$FILE_NAME" = "_AUTO_" ]; then
 		#_AFTER_SLASH=${URL##*/}
 		FILE_NAME=$(__get_filename_from_url "$URL")
-		__log "INFO" "** Guessed file name is $FILE_NAME"
+		__log "INFO" "Guessed file name is $FILE_NAME"
 	fi
 
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 
-	__log "INFO" " ** Download $FILE_NAME from $URL into cache"
 
-	#if [ "$FORCE" = "1" ]; then
-	#	rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
-	#fi
+	if [ "$FORCE" = "1" ]; then
+		__log "INFO" "Empty $FILE_NAME from cache if any"
+		rm -Rf "$STELLA_APP_CACHE_DIR/$FILE_NAME"
+	fi
+
+	__log "INFO" "Download $FILE_NAME from $URL into cache"
 
 
 	if [ ! -f "$STELLA_APP_CACHE_DIR/$FILE_NAME" ]; then
 		if [ ! -f "$STELLA_INTERNAL_CACHE_DIR/$FILE_NAME" ]; then
 			# NOTE : curl seems to be more compatible
-			if [[ -n `which curl 2> /dev/null` ]]; then
-				# TODO : why two curl call ?
-				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
+			if type curl >/dev/null 2>&1; then
 				curl -fkSL -o "$STELLA_APP_CACHE_DIR/$FILE_NAME" "$URL" || \
 				rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
 			else
-				if [[ -n `which wget 2> /dev/null` ]]; then
+				if type wget >/dev/null 2>&1; then
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" --no-check-certificate || \
 					wget "$URL" -O "$STELLA_APP_CACHE_DIR/$FILE_NAME" || \
 					rm -f "$STELLA_APP_CACHE_DIR/$FILE_NAME"
@@ -2744,10 +3082,10 @@ __download() {
 				fi
 			fi
 		else
-			__log "INFO" " ** Already downloaded"
+			__log "INFO" "File already into cache"
 		fi
 	else
-		__log "INFO" " ** Already downloaded"
+		__log "INFO" "File already into cache"
 	fi
 
 	local _tmp_dir
@@ -2766,11 +3104,11 @@ __download() {
 					mkdir -p "$DEST_DIR"
 				fi
 				cp "$_tmp_dir/$FILE_NAME" "$DEST_DIR/"
-				__log "INFO" "** Downloaded $FILE_NAME is in $DEST_DIR"
+				__log "INFO" "Downloaded $FILE_NAME is in $DEST_DIR"
 			fi
 		fi
 	else
-		__log "INFO" "** ERROR downloading $URL"
+		__log "ERROR" "ERROR downloading $URL"
 	fi
 }
 
@@ -2781,16 +3119,59 @@ __untar-strip() {
 	local temp=$(mktmpdir)
 
 	cd "$temp"
-	tar xzf "$FILE_PATH"
+	tar xzf "$zip"
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-	shopt -s dotglob
-	local f=("$temp"/*)
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+	)
+	rm -Rf "$temp"
+}
 
-	if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-			mv "$temp"/*/* "$dest"
-	else
-			mv "$temp"/* "$dest"
-	fi
+
+__untar-xz-strip() {
+	local zip=$1
+	local dest=${2:-.}
+	local temp=$(mktmpdir)
+
+	cd "$temp"
+	tar xJf "$zip"
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
+
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+	)
+	rm -Rf "$temp"
+}
+
+
+__untar-bz2-strip() {
+	local zip=$1
+	local dest=${2:-.}
+	local temp=$(mktmpdir)
+
+	cd "$temp"
+	tar xjf "$zip"
+	(
+		shopt -s dotglob
+		local f=("$temp"/*)
+
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+				mv "$temp"/*/* "$dest"
+		else
+				mv "$temp"/* "$dest"
+		fi
+	)
 	rm -Rf "$temp"
 }
 
@@ -2800,15 +3181,17 @@ __unzip-strip() {
     local temp=$(mktmpdir)
 
     unzip -a -o -d "$temp" "$zip"
-    shopt -s dotglob
-    local f=("$temp"/*)
+    (
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
-    rm -Rf "$temp"
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+		else
+			mv "$temp"/* "$dest"
+		fi
+	)
+	rm -Rf "$temp"
 }
 
 __sevenzip-strip() {
@@ -2816,38 +3199,22 @@ __sevenzip-strip() {
     local dest=${2:-.}
     local temp=$(mktmpdir)
     7z x "$zip" -y -o"$temp"
-    shopt -s dotglob
-    local f=("$temp"/*)
+    (
+		shopt -s dotglob
+		local f=("$temp"/*)
 
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
+		if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
+			mv "$temp"/*/* "$dest"
+		else
+			mv "$temp"/* "$dest"
+		fi
+	)
     rm -Rf "$temp"
 }
 
 
 
-__bzip2-strip() {
-    local zip=$1
-    local dest=${2:-.}
-    local temp=$(mktmpdir)
 
-	cp -f $zip $temp/
-	cd $temp
-    bzip2 -d *
-
-    shopt -s dotglob
-    local f=("$temp"/*)
-
-    if (( ${#f[@]} == 1 )) && [[ -d "${f[0]}" ]] ; then
-        mv "$temp"/*/* "$dest"
-    else
-        mv "$temp"/* "$dest"
-    fi
-    rm -Rf "$temp"
-}
 
 # SCM ---------------------------------------------
 # https://vcversioner.readthedocs.org/en/latest/
@@ -2863,7 +3230,7 @@ __mercurial_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON
 	done
 
-	if [[ -n `which hg 2> /dev/null` ]]; then
+	if type hg >/dev/null 2>&1; then
 		if [ "$_opt_version_long" = "ON" ]; then
 			echo "$(hg log -R "$_PATH" -r . --template "{latesttag}-{latesttagdistance}-{node|short}")"
 		fi
@@ -2885,13 +3252,27 @@ __git_project_version() {
 		[ "$o" = "LONG" ] && _opt_version_long=ON && _opt_version_short=OFF
 	done
 
+	if [ "$_opt_version_short" = "ON" ]; then
+		_git_options="--abbrev=0"
+	else
+		_git_options="--long"
+	fi
+
 	if [ -d "${_path}/.git" ]; then
-		if [[ -n `which git 2> /dev/null` ]]; then
-			if [ "$_opt_version_long" = "ON" ]; then
-				echo "$(git --git-dir "${_path}/.git" describe --tags --long --always --first-parent)"
-			fi
-			if [ "$_opt_version_short" = "ON" ]; then
-				echo "$(git --git-dir "${_path}/.git" describe --tags --abbrev=0 --always --first-parent)"
+		if type git >/dev/null 2>&1; then
+			# TODO NOTE : --first-parent option needs git version >= 1.8.4 but for fast execution purpose we test only >2
+			if [ "$(git --version | awk '{print $3}' | cut -d. -f1)" -ge 2 ]; then			
+				echo "$(git --git-dir "${_path}/.git" describe --tags ${_git_options} --always --first-parent)"
+			else
+				commit=$(git --git-dir "${_path}/.git" rev-parse HEAD)
+				while [ -n "$commit" ]; do
+					tag=$(git --git-dir "${_path}/.git" describe --tags ${_git_options} --always $commit 2>/dev/null)
+					if [ -n "$tag" ]; then
+						echo $tag
+						break
+					fi
+					commit=$(git --git-dir "${_path}/.git" rev-parse "${commit}^1" 2>/dev/null || echo "")
+				done
 			fi
 		fi
 	fi
@@ -3066,65 +3447,88 @@ __get_keys() {
 
 }
 
-
+# delete a specific key
+# SECTION : section name (if empty, the whole file is searched)
 __del_key() {
-	local _FILE=$1
-	local _SECTION=$2
-	local _KEY=$3
+	local _FILE="$1"
+	local _SECTION="$2"
+	local _KEY="$3"
 
 	[ -f "$_FILE" ] && __ini_file "DEL" "$_FILE" "$_SECTION" "$_KEY"
 }
 
+# set or add a key
+# SECTION : section name (if empty, the whole file is searched)
+# if section does not exist, it will be created
 __add_key() {
-	local _FILE=$1
-	local _SECTION=$2
-	local _KEY=$3
-	local _VALUE=$4
+	local _FILE="$1"
+	local _SECTION="$2"
+	local _KEY="$3"
+	local _VALUE="$4"
 
-	if [ ! -f "$_FILE" ]; then
-		touch $_FILE
+	if [ "${_FILE}" = "" ]; then
+		__log_stella "ERROR" "add_key no file specified"
+		exit 1
+	fi
+
+	if [ ! -f "${_FILE}" ]; then
+		touch ${_FILE}
 	fi
 
 	__ini_file "ADD" "$_FILE" "$_SECTION" "$_KEY" "$_VALUE"
 }
 
+# ADD set or add a key
+# DELETE remove a key
+# SECTION : section name (if empty, the whole file is searched)
+# if section does not exist, it will be created
 __ini_file() {
-	local _MODE=$1
-	local _FILE=$2
-	local _SECTION=$3
-	local _KEY=$4
+	local _MODE="$1"
+	local _FILE="$2"
+	local _SECTION="$3"
+	local _KEY="$4"
 	if [ ! "$_KEY" = "" ]; then
-		local _VALUE=$5
+		local _VALUE="$5"
 	fi
 
 	# escape regexp special characters
 	# http://stackoverflow.com/questions/407523/escape-a-string-for-a-sed-replace-pattern
-	_SECTION_NAME=$_SECTION
-	_SECTION=$(echo $_SECTION | sed -e 's/[]\/$*.^|[]/\\&/g')
+	_SECTION_NAME="$_SECTION"
+	if [ ! "$_SECTION_NAME" = "" ]; then
+		_SECTION=$(echo "$_SECTION" | sed -e 's/[]\/$*.^|[]/\\&/g')
+	fi
 	_VALUE=$(echo "$_VALUE" | sed -e 's/\\/\\\\/g')
 	_KEY=$(echo "$_KEY" | sed -e 's/\\/\\\\/g')
 
 	tp=$(mktmp)
 
-	awk -F= -v mode="$_MODE" -v val="$_VALUE" '
+	awk -F= -v mode="$_MODE" -v val="$_VALUE" -v section="$_SECTION" '
 	# Clear the flags
 	BEGIN {
 		processing = 0;
 		skip = 0;
 		modified = 0;
+		ignore_section = 0;
+		# If no section is specified, we process the whole file
+		if ( section == "" ) {
+			ignore_section = 1;
+			processing = 1;
+		}
 	}
 
 	# Leaving the found section
 	/\[/ {
-		if(processing) {
-			if ( mode == "ADD" ) {
-				print "'$_KEY'="val;
-				modified = 1;
-				processing = 0;
-			}
+		if (!ignore_section) {
+			if(processing) {
+				if ( mode == "ADD" ) {
+					print "'$_KEY'="val;
+					modified = 1;
+					processing = 0;
+				}
 
-			if ( mode == "DEL" ) {
-				processing = 0;
+				if ( mode == "DEL" ) {
+					processing = 0;
+				}
 			}
 		}
 	}
@@ -3132,7 +3536,7 @@ __ini_file() {
 
 	# Entering the section, set the flag
 	/^\['$_SECTION']/ {
-		processing = 1;
+		if (!ignore_section) processing = 1;
 	}
 
 	# Modify the line, if the flag is set
@@ -3154,7 +3558,7 @@ __ini_file() {
 	}
 
 
-	# Output a line (that we didnt output above)
+	# Output a line (that we did not output above)
 	/.*/ {
 
 		if (skip)
@@ -3164,7 +3568,7 @@ __ini_file() {
 	}
 	END {
 		if(!modified && mode == "ADD") {
-			if(!processing) print "['$_SECTION_NAME']"
+		    if(!ignore_section && !processing) print "['$_SECTION_NAME']"
 			if("'$_KEY'" != "") {
 				print "'$_KEY'="val;
 			}

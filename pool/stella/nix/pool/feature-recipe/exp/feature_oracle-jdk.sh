@@ -15,7 +15,7 @@ _ORACLEJDK_INCLUDED_=1
 feature_oracle-jdk() {
 	FEAT_NAME=oracle-jdk
 	FEAT_LIST_SCHEMA="8u152@x64:binary 8u152@x86:binary 8u91@x86:binary 8u91@x64:binary 8u45@x86:binary 8u45@x64:binary 7u80@x86:binary 7u80@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR=binary
 }
 
@@ -216,7 +216,7 @@ feature_oracle-jdk_install_binary() {
 	mkdir -p "$STELLA_APP_CACHE_DIR"
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		if [ ! -f "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" ]; then
-			type wget &>/dev/null && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" \
+			type wget >/dev/null 2>&1 && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$FEAT_BINARY_URL" -O "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" \
 			    ||  curl -j -k -S -L -H "gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" -o "$STELLA_APP_CACHE_DIR/$FEAT_BINARY_URL_FILENAME" "$FEAT_BINARY_URL"
 			
 		fi

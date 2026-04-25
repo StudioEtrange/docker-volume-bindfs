@@ -9,7 +9,7 @@ _kubectl_INCLUDED_=1
 feature_kubectl() {
 	FEAT_NAME="kubectl"
 	FEAT_LIST_SCHEMA="1_29_0:binary 1_24_1:binary 1_23_7:binary 1_22_10:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="The Kubernetes command-line tool, kubectl, allows you to run commands against Kubernetes clusters."

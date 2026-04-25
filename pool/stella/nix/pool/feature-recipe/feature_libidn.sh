@@ -5,7 +5,7 @@ _libidn_INCLUDED_=1
 feature_libidn() {
 	FEAT_NAME=libidn
 	FEAT_LIST_SCHEMA="1_30:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

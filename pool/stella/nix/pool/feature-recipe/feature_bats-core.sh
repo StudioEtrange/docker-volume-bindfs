@@ -6,7 +6,7 @@ _batscore_INCLUDED_=1
 feature_bats-core() {
 	FEAT_NAME="bats-core"
 	FEAT_LIST_SCHEMA="1_9_0:source 1_7_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Bash Automated Testing System"

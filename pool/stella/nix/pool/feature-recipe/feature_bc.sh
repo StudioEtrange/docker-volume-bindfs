@@ -2,38 +2,47 @@ if [ ! "$_bc_INCLUDED_" = "1" ]; then
 _bc_INCLUDED_=1
 
 
-# http://www.gnu.org/software/bc/bc.html
 feature_bc() {
-	FEAT_NAME=bc
+	FEAT_NAME="bc"
 
-	FEAT_LIST_SCHEMA="1_06_95:source"
-	FEAT_DEFAULT_ARCH=
+	FEAT_LIST_SCHEMA="1_08_02:source 1_06_95:source"
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
+	FEAT_DESC="bc is an arbitrary precision numeric processing language"
+	FEAT_LINK="https://www.gnu.org/software/bc/bc.html"
 
 }
 
+
+
+
+
+feature_bc_1_08_02() {
+	FEAT_VERSION="1_08_02"
+
+
+
+	FEAT_SOURCE_URL="https://ftp.gnu.org/gnu/bc/bc-1.08.2.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="bc-1.08.2.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/bc"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+}
+
+
 feature_bc_1_06_95() {
-	FEAT_VERSION=1_06_95
+	FEAT_VERSION="1_06_95"
 
 
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
+	FEAT_SOURCE_URL="http://alpha.gnu.org/gnu/bc/bc-1.06.95.tar.bz2"
+	FEAT_SOURCE_URL_FILENAME="bc-1.06.95.tar.bz2"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
-	FEAT_SOURCE_URL=http://alpha.gnu.org/gnu/bc/bc-1.06.95.tar.bz2
-	FEAT_SOURCE_URL_FILENAME=bc-1.06.95.tar.bz2
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_BINARY_URL=
-	FEAT_BINARY_URL_FILENAME=
-	FEAT_BINARY_URL_PROTOCOL=
-
-	FEAT_SOURCE_CALLBACK=
-	FEAT_BINARY_CALLBACK=
-	FEAT_ENV_CALLBACK=
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/bc
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/bc"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 
@@ -51,7 +60,8 @@ feature_bc_install_source() {
 	AUTO_INSTALL_CONF_FLAG_PREFIX=
 	AUTO_INSTALL_CONF_FLAG_POSTFIX=
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
-	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
+	# allow to bypass makeinfo step, because makeinfo tool should not be here, and it is useless here
+	AUTO_INSTALL_BUILD_FLAG_POSTFIX="MAKEINFO=true"
 
 
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR"

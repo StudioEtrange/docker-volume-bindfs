@@ -4,6 +4,7 @@ _STELLA_COMMON_BUILD_LINK_INCLUDED_=1
 
 
 
+
 __link_feature_library() {
 	local SCHEMA="$1"
 	local _link_OPT="$2"
@@ -17,7 +18,7 @@ __link_feature_library() {
 	# GET_FOLDER <prefix> -- get prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
 	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) AND do not add RPATH values
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted. If you use LIBS_NAME both -l and -L flags will be setted
-  # USE_PKG_CONFIG -- use of pkg-config
+  	# USE_PKG_CONFIG -- use of pkg-config
 
 	local _ROOT=
 	local _BIN=
@@ -101,10 +102,8 @@ __link_feature_library() {
 			__add_toolset "pkgconfig"
 			# we need to add some defaut seach into path, because pkgconfig have default values from its install path
 			# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
-			echo "** WARN : adding some system lib search path for pkg-config, because we use pkg-config for a SYSTEM lib"
-			# TODO __default_linker_search_path should receive arch, because linker search path depend on arch
-			__def_path=$(__default_linker_search_path)
-			__def_path="${__def_path//:/ }"
+			echo "** WARN : adding some system lib search path to pkg-config, because we use pkg-config for a SYSTEM lib"
+			__def_path=$(__search_library_paths_at_buildtime)
 			for _p in $__def_path; do
 				STELLA_BUILD_PKG_CONFIG_PATH="${STELLA_BUILD_PKG_CONFIG_PATH}:${_p}/pkgconfig"
 			done

@@ -6,7 +6,7 @@ _batsassert_INCLUDED_=1
 feature_bats-assert() {
 	FEAT_NAME="bats-assert"
 	FEAT_LIST_SCHEMA="2_1_0:source 2_0_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-assert is a helper library providing common assertions for bats"

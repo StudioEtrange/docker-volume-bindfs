@@ -5,7 +5,7 @@ _JPEG_INCLUDED_=1
 feature_jpeg() {
 	FEAT_NAME=jpeg
 	FEAT_LIST_SCHEMA="9_0_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

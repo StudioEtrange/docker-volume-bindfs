@@ -26,7 +26,7 @@ _SOCAT_INCLUDED_=1
 feature_socat() {
 	FEAT_NAME=socat
 	FEAT_LIST_SCHEMA="1_7_3_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -6,7 +6,7 @@ _libwebsockets_INCLUDED_=1
 feature_libwebsockets() {
 	FEAT_NAME="libwebsockets"
 	FEAT_LIST_SCHEMA="4_2_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Libwebsockets (LWS) is a flexible, lightweight pure C library for implementing modern network protocols easily with a tiny footprint, using a nonblocking event loop."

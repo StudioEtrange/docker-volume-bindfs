@@ -7,7 +7,7 @@ _LZO_INCLUDED_=1
 feature_lzo() {
 	FEAT_NAME=lzo
 	FEAT_LIST_SCHEMA="2_09:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

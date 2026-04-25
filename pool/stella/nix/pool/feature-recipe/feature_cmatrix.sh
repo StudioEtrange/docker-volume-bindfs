@@ -7,7 +7,7 @@ _CMATRIX_INCLUDED_=1
 feature_cmatrix() {
 	FEAT_NAME=cmatrix
 	FEAT_LIST_SCHEMA="2_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Terminal based The Matrix like implementation"

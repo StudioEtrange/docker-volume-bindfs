@@ -3,9 +3,9 @@ _lynis_INCLUDED_=1
 
 
 feature_lynis() {
-	FEAT_NAME=lynis
-	FEAT_LIST_SCHEMA="3_0_4:source"
-	FEAT_DEFAULT_ARCH=
+	FEAT_NAME="lynis"
+	FEAT_LIST_SCHEMA="3_1_5:source 3_0_4:source"
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Security auditing tool for Linux, macOS, and UNIX-based systems. Assists with compliance testing (HIPAA/ISO27001/PCI DSS) and system hardening. Agentless, and installation optional."
@@ -38,8 +38,25 @@ feature_lynis_setenv() {
 
 
 
+feature_lynis_3_1_5() {
+	FEAT_VERSION="3_1_5"
+
+
+
+	FEAT_SOURCE_URL="https://github.com/CISOfy/lynis/archive/refs/tags/3.1.5.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="lynis_3.1.5.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_ENV_CALLBACK="feature_lynis_setenv"
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/lynis"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
+
+
 feature_lynis_3_0_4() {
-	FEAT_VERSION=3_0_4
+	FEAT_VERSION="3_0_4"
 
 
 
@@ -49,7 +66,7 @@ feature_lynis_3_0_4() {
 
 	FEAT_ENV_CALLBACK="feature_lynis_setenv"
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/lynis
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/lynis"
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 
 }

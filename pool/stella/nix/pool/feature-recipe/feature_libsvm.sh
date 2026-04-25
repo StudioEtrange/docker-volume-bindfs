@@ -7,7 +7,7 @@ feature_libsvm() {
 	FEAT_NAME=libsvm
 
 	FEAT_LIST_SCHEMA="3_2_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

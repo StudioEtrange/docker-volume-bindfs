@@ -6,7 +6,7 @@ feature_minio-client() {
 
 	FEAT_NAME=minio-client
 	FEAT_LIST_SCHEMA="latest@x64:binary RELEASE_20200626@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

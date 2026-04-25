@@ -6,7 +6,7 @@ _vorbis_INCLUDED_=1
 feature_vorbis() {
 	FEAT_NAME=vorbis
 	FEAT_LIST_SCHEMA="1_3_5:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

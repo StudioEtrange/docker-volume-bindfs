@@ -10,7 +10,7 @@ _gcc_INCLUDED_=1
 feature_gcc() {
 	FEAT_NAME=gcc
 	FEAT_LIST_SCHEMA="4_8_5:source 7_3_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

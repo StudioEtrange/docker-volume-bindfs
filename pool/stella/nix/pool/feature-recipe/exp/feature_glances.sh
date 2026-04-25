@@ -10,7 +10,7 @@ feature_glances() {
 	FEAT_NAME=glances
 
 	FEAT_LIST_SCHEMA="3_1_0:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_ENV_CALLBACK="feature_glances_env"

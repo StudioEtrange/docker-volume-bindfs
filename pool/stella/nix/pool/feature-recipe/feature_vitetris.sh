@@ -7,7 +7,7 @@ _vitetris_INCLUDED_=1
 feature_vitetris() {
 	FEAT_NAME=vitetris
 	FEAT_LIST_SCHEMA="0_58_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 	
 	FEAT_DESC="Classic multiplayer tetris for the terminal "

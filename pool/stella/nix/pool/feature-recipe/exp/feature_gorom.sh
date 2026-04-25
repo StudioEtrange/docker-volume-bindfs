@@ -8,7 +8,7 @@ _gorom_INCLUDED_=1
 feature_gorom() {
 	FEAT_NAME="gorom"
 	FEAT_LIST_SCHEMA="0_1_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="GoROM is a utility to manage emulator ROM files"

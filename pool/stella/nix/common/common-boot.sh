@@ -141,7 +141,7 @@ __boot() {
     [ "$o" = "DELETE_EXCLUDED" ] && _opt_delete_excluded="DELETE_EXCLUDED"
 	done
 
-  __log "INFO" "** ${_opt_sudo} Boot $_item $_mode to $_uri with '$_arg'"
+  __log "INFO" "** ${_opt_sudo} Boot $_item $_mode to $_uri"
 
   local __have_to_transfer=0
 
@@ -318,19 +318,28 @@ __boot() {
 
 
 __bootstrap_stella_env() {
-	export PS1="[stella] \u@\h|\W>"
+	export PS1="[$STELLA_APP_NAME] \u@\h|\W>"
 
+  if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+    # to avoid bash deprecation message on macos
+    # https://apple.stackexchange.com/a/371998
+    export BASH_SILENCE_DEPRECATION_WARNING=1
+  fi
+
+  # Ajoutez ces wrappers comme les autres
 	local _t=$(mktmp)
-	#(set -o posix; set) >$_t
 	declare >$_t
 	declare -f >>$_t
 ( exec bash -i 3<<HERE 4<&0 <&3
-. $_t 2>/dev/null;rm $_t;
-echo "** STELLA SHELL with env var setted (type exit to exit...) **"
-exec  3>&- <&4
+. $_t 2>/dev/null;rm $_t;exec 3>&- <&4; echo "** Welcome to STELLA SHELL **";
 HERE
 )
+
+
+
 }
+
+
 
 
 

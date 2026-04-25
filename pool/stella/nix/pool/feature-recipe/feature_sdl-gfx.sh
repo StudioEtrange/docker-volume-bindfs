@@ -17,7 +17,7 @@ _sdlgfx_INCLUDED_=1
 feature_sdl-gfx() {
 	FEAT_NAME="sdl-gfx"
 	FEAT_LIST_SCHEMA="1_0_4:source 1_0_1:source 0_2_0_25:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Graphics drawing primitives and other support functions wrapped up in an add-on, C-based library for the Simple Direct Media (SDL) cross-platform API layer."

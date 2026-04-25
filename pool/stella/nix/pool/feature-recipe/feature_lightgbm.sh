@@ -8,7 +8,7 @@ _lightgbm_INCLUDED_=1
 feature_lightgbm() {
 	FEAT_NAME=lightgbm
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

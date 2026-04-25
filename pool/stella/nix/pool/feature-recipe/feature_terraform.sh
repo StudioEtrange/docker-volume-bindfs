@@ -9,7 +9,7 @@ feature_terraform() {
 	FEAT_NAME=terraform
 	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA="0_11_7@x64:binary 0_9_6@x64:binary 0_9_4@x64:binary"
 	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="0_11_7@x64:binary 0_11_7@x86:binary 0_9_6@x64:binary 0_9_6@x86:binary 0_9_4@x64:binary 0_9_4@x86:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

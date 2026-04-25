@@ -24,7 +24,7 @@ _haskell_INCLUDED_=1
 feature_haskell() {
 	FEAT_NAME=haskell
 	FEAT_LIST_SCHEMA="7_10_3:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

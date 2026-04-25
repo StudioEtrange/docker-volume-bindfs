@@ -6,7 +6,7 @@ _heartbeat_INCLUDED_=1
 feature_heartbeat() {
 	FEAT_NAME=heartbeat
 	FEAT_LIST_SCHEMA="5_6_4:binary 5_6_0:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

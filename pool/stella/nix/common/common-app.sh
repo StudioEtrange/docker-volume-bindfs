@@ -52,7 +52,7 @@ __transfer_app(){
 
 	__standard_include="INCLUDE /.stella-id"
 
-	__log "DEBUG" "** ${_opt_sudo} Transfer app $STELLA_APP_NAME to $_uri"
+	__log "DEBUG" "** ${_opt_sudo} Transfer app $STELLA_APP_NAME from $STELLA_APP_ROOT to $_uri"
 
 	__transfer_folder_rsync "$STELLA_APP_ROOT" "$_uri" "$__standard_include $_opt_delete_excluded $_opt_ex_cache $_opt_ex_workspace $_opt_ex_hidden $_opt_exclude $_opt_ex_git $_opt_sudo $_opt_folder_content $_opt_copy_links"
 
@@ -163,7 +163,7 @@ __vendorize_stella() {
 																											|| __abs_stellaroot="$_stella_root"
 	__STELLA_ROOT_SAVE="$STELLA_ROOT"
 	STELLA_ROOT="$__abs_stellaroot"
-	__transfer_stella "$_target_approot/$_folder_name" "WIN APP"
+	__transfer_stella "$_target_approot/$_folder_name" "DELETE_EXCLUDED EXCLUDE_WIN EXCLUDE_APP EXCLUDE_AI"
 	STELLA_ROOT="$__STELLA_ROOT_SAVE"
 
 	# we need to save version information of the vendorized stella before recreating link
@@ -220,7 +220,7 @@ __init_app() {
 		mkdir -p "$_approot"
 	fi
 
-  [ "$_workroot" = "" ] && _workroot="$_approot/workspace"
+  	[ "$_workroot" = "" ] && _workroot="$_approot/workspace"
 	[ "$_cachedir" = "" ] && _cachedir="$_approot/cache"
 
 	[ "$(__is_abs "$_workroot")" = "FALSE" ] && _workroot=$(__rel_to_abs_path "$_workroot" "$_approot")
@@ -233,7 +233,7 @@ __init_app() {
 
 	_STELLA_APP_PROPERTIES_FILE="$_approot/$STELLA_APP_PROPERTIES_FILENAME"
 	if [ -f "$_STELLA_APP_PROPERTIES_FILE" ]; then
-		echo " ** Properties file already exist"
+		__log_stella "WARN" "Properties file $_STELLA_APP_PROPERTIES_FILE already exists"
 	else
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_NAME" "$_app_name"
 		__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_WORK_ROOT" "$_workroot"
@@ -320,21 +320,21 @@ __get_assets_properties() {
 
 
 __remove_app_feature() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
-	__app_feature "REMOVE" $_SCHEMA
+	__app_feature "REMOVE" "$_SCHEMA"
 }
 
 __add_app_feature() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
-	__app_feature "ADD" $_SCHEMA
+	__app_feature "ADD" "$_SCHEMA"
 }
 
 __app_feature() {
 	# ADD or REMOVE
-	local _MODE=$1
-	local _SCHEMA=$2
+	local _MODE="$1"
+	local _SCHEMA="$2"
 	local _APP_FEATURE_LIST=
 
 	local _flag=0
@@ -386,7 +386,7 @@ __app_feature() {
 		if [ ! "$STELLA_APP_FEATURE_LIST" = "$_APP_FEATURE_LIST" ]; then
 			__add_key "$_STELLA_APP_PROPERTIES_FILE" "STELLA" "APP_FEATURE_LIST" "$_APP_FEATURE_LIST"
 			# refresh value
-			STELLA_APP_FEATURE_LIST=$_APP_FEATURE_LIST
+			STELLA_APP_FEATURE_LIST="$_APP_FEATURE_LIST"
 		fi
 	fi
 }
@@ -413,17 +413,17 @@ __uninstall_features() {
 
 # install a feature listed in app feature list. Look for matching version in app feature list, so could match several version
 __get_feature() {
-	local _SCHEMA=$1
+	local _SCHEMA="$1"
 
 	local _flag=0
 
-	__translate_schema $_SCHEMA "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
+	__translate_schema "$_SCHEMA" "_TR_FEATURE_NAME" "_TR_FEATURE_VER" "_TR_FEATURE_ARCH" "_TR_FEATURE_FLAVOUR" "_TR_FEATURE_OS_RESTRICTION" "_TR_FEATURE_OS_EXCLUSION"
 
 	if [ ! "$STELLA_APP_FEATURE_LIST" = "" ]; then
 
 		for f in $STELLA_APP_FEATURE_LIST; do
 
-			__translate_schema $f "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
+			__translate_schema "$f" "TR_FEATURE_NAME" "TR_FEATURE_VER" "TR_FEATURE_ARCH" "TR_FEATURE_FLAVOUR" "TR_FEATURE_OS_RESTRICTION" "TR_FEATURE_OS_EXCLUSION"
 
 			_flag=1
 			[ ! "$_TR_FEATURE_NAME" = "$TR_FEATURE_NAME" ] && _flag=0
@@ -433,7 +433,7 @@ __get_feature() {
 
 
 			if [ "$_flag" = "1" ]; then
-				__feature_install $f
+				__feature_install "$f"
 			fi
 		done
 	fi

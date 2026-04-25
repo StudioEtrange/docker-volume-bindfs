@@ -15,7 +15,7 @@ _radare2_INCLUDED_=1
 feature_radare2() {
 	FEAT_NAME=radare2
 	FEAT_LIST_SCHEMA="1_3_0:source 1_2_1:source SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

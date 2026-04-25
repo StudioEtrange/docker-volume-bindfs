@@ -6,7 +6,7 @@ _libvirt_INCLUDED_=1
 feature_libvirt() {
 	FEAT_NAME=libvirt
 	FEAT_LIST_SCHEMA="3_2_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

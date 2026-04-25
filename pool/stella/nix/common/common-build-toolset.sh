@@ -3,6 +3,55 @@ if [ ! "$_STELLA_COMMON_BUILD_TOOLSET_INCLUDED_" = "1" ]; then
 _STELLA_COMMON_BUILD_TOOLSET_INCLUDED_=1
 
 
+
+# ------------------------------------------ TOOLSET specific ------------------------------------
+
+# http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
+# return X.Y.Z as version of current gcc
+# ex : 4.4.7
+__gcc_version() {
+	gcc -dumpversion
+}
+
+# return an int representation of current gcc version
+# ex : 40407
+__gcc_version_int() {
+	gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/'
+}
+
+# check if current gcc version hit the minimal version required
+# first param : X_Y_Z (or X_Y)
+# return 1 if required minimal version is fullfilled by the current gcc version
+__gcc_check_min_version() {
+	local _required_ver=$1
+	expr $(__gcc_version_int) \>= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
+}
+
+# detect if current gcc binary is in fact clang (mainly for MacOS)
+# return 1 if gcc is clang
+__gcc_is_clang() {
+	if [ "$(echo | gcc -dM -E - | grep __clang__)" = "" ]; then
+		echo "0"
+	else
+		echo "1"
+	fi
+}
+
+# NOTE apple-clang-llvm versions are not synchronized with clang-llvm versions
+__clang_version() {
+	clang --version | head -n 1 | grep -o -E "[[:digit:]].[[:digit:]].[[:digit:]]" | head -1
+}
+
+
+# return the target triplet
+#			Name of CPU family/model (eg. x86_64)
+#			The vendor (eg. linux)
+#			Operating system name (eg. gnu)
+__default_target_triplet() {
+	gcc -dumpmachine
+}
+
+
 # TOOLSET ------------------------------------------------------------------------------------------------------------------------------
 __toolset_install() {
 	local _save_STELLA_APP_FEATURE_ROOT=$STELLA_APP_FEATURE_ROOT
@@ -44,7 +93,9 @@ __toolset_init() {
 			for p in $FEAT_BUNDLE_ITEM; do
 				__internal_feature_context $p
 				if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-					STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+					if [ ! -f "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH" ]; then
+						STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+					fi
 				fi
 				for c in $FEAT_ENV_CALLBACK; do
 					$c
@@ -55,7 +106,9 @@ __toolset_init() {
 		fi
 
 		if [ ! "$FEAT_SEARCH_PATH" = "" ]; then
-			STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+			if [ ! -f "$FEAT_INSTALL_ROOT/._STELLA_DO_NOT_UPDATE_PATH" ]; then
+				STELLA_BUILD_TOOLSET_PATH="$FEAT_SEARCH_PATH:$STELLA_BUILD_TOOLSET_PATH"
+			fi
 		fi
 		local c
 		# TODO : warn : env vars should be uninitialized later because use of a toolset is temporary
@@ -197,7 +250,7 @@ __enable_current_toolset() {
 		;;
 		cmake)
 			# if no version specified, prefer cmake already present on system
-			if [ "$(which cmake 2>/dev/null)" = "" ]; then
+			if ! type cmake >/dev/null 2>&1; then
 				__toolset_install "$STELLA_BUILD_CONFIG_TOOL_SCHEMA"
 				__toolset_init "$STELLA_BUILD_CONFIG_TOOL_SCHEMA"
 			fi
@@ -245,7 +298,7 @@ __enable_current_toolset() {
 		 	__translate_schema "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA" "_REQUIRED_TOOLSET_NAME" "_REQUIRED_TOOLSET_VER"
 			local _install_gcc
 
-			if $(type gcc &>/dev/null); then
+			if $(type gcc >/dev/null 2>&1); then
 				_install_gcc=0
 
 				if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
@@ -301,20 +354,20 @@ __enable_current_toolset() {
 			"C++")
 				case $STELLA_BUILD_COMPIL_FRONTEND in
 					default)
-						if [ "$(which g++ 2>/dev/null)" = "" ] && [ "$(which clang++ 2>/dev/null)" = "" ]; then
+						if ! type "g++" >/dev/null 2>&1 || ! type "clang++" >/dev/null 2>&1; then
 							echo "** ERROR : missing g++ or clang++"
 							echo "** Try stella.sh sys install build-chain-standard OR your regular OS package manager"
 							exit 1
 						fi
 					;;
 					clang-omp)
-						if [ "$(which clang++-omp 2>/dev/null)" = "" ]; then
+						if ! type "clang++-omp" >/dev/null 2>&1; then
 							echo "** ERROR : missing clang++ for clang-omp"
 							exit 1
 						fi
 					;;
 					gcc)
-						if [ "$(which g++ 2>/dev/null)" = "" ]; then
+						if ! type "g++" >/dev/null 2>&1; then
 							echo "** ERROR : missing g++ for gcc"
 							__toolset_install "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
 							__toolset_init "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
@@ -330,15 +383,12 @@ __enable_current_toolset() {
 	echo "** Some informations about toolset"
 	case $STELLA_BUILD_COMPIL_FRONTEND_BIN_FAMILY in
 		gcc)
-			echo "===> default linker search path"
-			# TODO could depend on arch
-			__default_linker_search_path
-			if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-				echo "===> gcc hardcoded libraries search (-L flag)"
-				__gcc_linker_search_path
-			fi
+			echo "===> default linker search path at build/link time"
+			__gcc_default_search_library_paths_at_buildtime
+			echo "===> gcc hardcoded libraries search at build/link time"
+			__gcc_extra_search_library_paths_at_buildtime
 	esac
-	if $(type pkg-config &>/dev/null); then
+	if $(type pkg-config >/dev/null 2>&1); then
 		echo "===> pkg-config default search path"
 		__pkgconfig_search_path
 	fi
@@ -353,8 +403,8 @@ __enable_current_toolset() {
 		clang-omp)
 			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
 			if [ "$TOOLSET_TEST_FEATURE" = "1" ]; then
-				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang
-				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++
+				export CC="$TOOLSET_FEAT_INSTALL_ROOT/bin/clang"
+				export CXX="$TOOLSET_FEAT_INSTALL_ROOT/bin/clang++"
 				# activate clang openmp libs search folder at link time
 				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
 				# add a search path for clang openmp libs at runtime
@@ -365,8 +415,8 @@ __enable_current_toolset() {
 		gcc)
 			__toolset_info "$STELLA_BUILD_COMPIL_FRONTEND_SCHEMA"
 			if [ "$TOOLSET_TEST_FEATURE" = "1" ]; then
-				export CC=$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc
-				export CXX=$TOOLSET_FEAT_INSTALL_ROOT/bin/g++
+				export CC="$TOOLSET_FEAT_INSTALL_ROOT/bin/gcc"
+				export CXX="$TOOLSET_FEAT_INSTALL_ROOT/bin/g++"
 				# activate gcc libs search folder at link time
 				export LIBRARY_PATH="$LIBRARY_PATH:$TOOLSET_FEAT_INSTALL_ROOT/lib"
 				# add a search path for gcc libs at runtime

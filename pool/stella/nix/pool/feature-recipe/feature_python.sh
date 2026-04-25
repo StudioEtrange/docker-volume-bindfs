@@ -9,7 +9,7 @@ feature_python() {
 
 	FEAT_NAME=python
 	FEAT_LIST_SCHEMA="2_7_9:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

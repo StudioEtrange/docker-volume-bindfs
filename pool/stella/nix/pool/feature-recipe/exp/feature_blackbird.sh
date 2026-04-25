@@ -6,7 +6,7 @@ _blackbird_INCLUDED_=1
 feature_blackbird() {
 	FEAT_NAME=blackbird
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Blackbird Bitcoin Arbitrage: a long/short market-neutral strategy"

@@ -16,7 +16,6 @@ _TEMPLATE_INCLUDED_=1
 feature_template() {
 	FEAT_NAME=template
 	FEAT_LIST_SCHEMA="1_0_0:source"
-	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="template is foo"

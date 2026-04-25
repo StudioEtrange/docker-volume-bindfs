@@ -5,7 +5,7 @@ _libusb_INCLUDED_=1
 feature_libusb() {
 	FEAT_NAME=libusb
 	FEAT_LIST_SCHEMA="1_0_21:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

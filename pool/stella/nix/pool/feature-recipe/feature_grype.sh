@@ -4,13 +4,80 @@ _grype_INCLUDED_=1
 
 feature_grype() {
 	FEAT_NAME=grype
-	FEAT_LIST_SCHEMA="0_74_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	FEAT_LIST_SCHEMA="0_111_0@x64:binary 0_100_0@x64:binary 0_74_0@x64:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A vulnerability scanner for container images and filesystems"
 	FEAT_LINK="https://github.com/anchore/grype"
 }
+
+feature_grype_0_111_0() {
+	FEAT_VERSION="0_111_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.111.0/grype_0.111.0_darwin_amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.111.0_darwin_amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.111.0/grype_0.111.0_darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.111.0_darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	if [ "${STELLA_CURRENT_PLATFORM}" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.111.0/grype_0.111.0_linux_amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.111.0_linux_amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.111.0/grype_0.111.0_linux_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.111.0_linux_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/grype"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}"
+}
+
+feature_grype_0_100_0() {
+	FEAT_VERSION="0_100_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.100.0/grype_0.100.0_darwin_amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.100.0_darwin_amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.100.0/grype_0.100.0_darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.100.0_darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	if [ "${STELLA_CURRENT_PLATFORM}" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.100.0/grype_0.100.0_linux_amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.100.0_linux_amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/anchore/grype/releases/download/v0.100.0/grype_0.100.0_linux_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="grype_0.100.0_linux_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/grype"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}"
+}
+
 
 feature_grype_stable() {
 	FEAT_VERSION="stable"

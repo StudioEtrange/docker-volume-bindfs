@@ -16,7 +16,7 @@ _eclipse_INCLUDED_=1
 feature_eclipse() {
 	FEAT_NAME=eclipse
 	FEAT_LIST_SCHEMA="4_6:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

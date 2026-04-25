@@ -163,7 +163,7 @@ __reset_system_proxy_values() {
 __proxy_override() {
 
 	# sudo do not preserve env var by default
-	type sudo &>/dev/null && \
+	type sudo >/dev/null 2>&1 && \
 	function sudo() {
 		command sudo no_proxy="$STELLA_NO_PROXY" https_proxy="$STELLA_HTTPS_PROXY" http_proxy="$STELLA_HTTP_PROXY" "$@"
 	}
@@ -191,9 +191,13 @@ __proxy_override() {
 
 	function curl() {
 		local __port
-		[ ! "${STELLA_PROXY_PORT}" = "" ] && __port=":${STELLA_PROXY_PORT}"
-		[ ! "$STELLA_PROXY_USER" = "" ] && echo $(command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" --proxy-user "${STELLA_PROXY_USER}:${STELLA_PROXY_PASS}" "$@")
-		[ "$STELLA_PROXY_USER" = "" ] && echo $(command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" "$@")
+		[ -n "${STELLA_PROXY_PORT}" ] && __port=":${STELLA_PROXY_PORT}"
+
+		if [ -n "${STELLA_PROXY_USER}" ]; then
+				command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" --proxy-user "${STELLA_PROXY_USER}:${STELLA_PROXY_PASS}" "$@"
+		else
+				command curl --noproxy "${STELLA_NO_PROXY}" --proxy "${STELLA_PROXY_HOST}${__port}" "$@"
+		fi
 	}
 
 
@@ -204,7 +208,7 @@ __proxy_override() {
 	function hg() {
 		local __port
 		[ ! "${STELLA_PROXY_PORT}" = "" ] && __port=":${STELLA_PROXY_PORT}"
-		echo $(command hg --config http_proxy.host="${STELLA_PROXY_HOST}${__port}" --config http_proxy.user="${STELLA_PROXY_USER}" --config http_proxy.passwd="${STELLA_PROXY_PASS}" "$@")
+		command hg --config http_proxy.host="${STELLA_PROXY_HOST}${__port}" --config http_proxy.user="${STELLA_PROXY_USER}" --config http_proxy.passwd="${STELLA_PROXY_PASS}" "$@"
 	}
 
 	function mvn() {
@@ -380,6 +384,7 @@ $(command minikube "$@");
 #	__find_free_port "2" "UDP"
 #	__find_free_port "3" "CONSECUTIVE"
 #	__find_free_port "2" "TCP RANGE_BEGIN 640 RANGE_END 650 EXCLUDE_LIST_BEGIN 602 603 645 642 641 644 646 650 EXCLUDE_LIST_END CONSECUTIVE"
+# TODO ipv6
 __find_free_port() {
 	local ports="${1:-1}"
 	local __opt="$2"
@@ -433,11 +438,11 @@ __find_free_port() {
 	local taken_ports
 
 	local __network_cmd
-	type ss &>/dev/null
+	type ss >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		__network_cmd="ss"
 	else
-		type netstat &>/dev/null
+		type netstat >/dev/null 2>&1
 		if [ $? = 0 ]; then
 			__network_cmd="netstat"
 		else
@@ -457,9 +462,10 @@ __find_free_port() {
 }
 
 # https://stackoverflow.com/a/14701003/5027535
-# return TRUE if port is open
-# return FALSE if port is unreachable
-#	return nothing if we cannot test
+# print TRUE if port is open
+# print FALSE if port is unreachable
+# print nothing if we cannot test
+# work with ipV4 or ipv6
 __check_tcp_port_open() {
 	local __host="$1"
 	local __port="$2"
@@ -469,15 +475,15 @@ __check_tcp_port_open() {
 	[ "${__timeout}" = "" ] && __timeout=3
 
 	# NOTE : nc is present by default on MacOS
-	type nc &>/dev/null
+	type nc >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		nc -w ${__timeout} -v ${__host} ${__port} </dev/null 2>/dev/null
 		[ $? = 0 ] && echo "TRUE" || echo "FALSE"
 	else
-		type timeout &>/dev/null
+		type timeout >/dev/null 2>&1
 		if [ $? = 0 ]; then
-			 timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}" 2>/dev/null
-			 [ $? = 0 ] && echo "TRUE" || echo "FALSE"
+			timeout ${__timeout} bash -c "</dev/tcp/${__host}/${__port}" 2>/dev/null
+			[ $? = 0 ] && echo "TRUE" || echo "FALSE"
 		else
 			# TODO : timeout nor nc are present we cannot check tcp port is open or not
 			echo ""
@@ -500,7 +506,7 @@ __ssh_execute() {
 	local __cmd="$2"
 	local __opt="$3"
 
-	__require "ssh" "ssh"
+	__require "ssh" "ssh" "SYSTEM"
 
 	local __opt_shared=
 	local __opt_sudo=
@@ -548,7 +554,7 @@ __ssh_execute() {
 # vagrant machine name
 __vagrant_get_ssh_options() {
 	local __name="$1"
-	echo "$(vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }')"
+	vagrant ssh-config $__name | sed '/^[[:space:]]*$/d' |  awk '/^Host .*$/ { detected=1; }  { if(start) {print " -o "$1"="$2}; if(detected) start=1; }'
 }
 
 # TODO
@@ -557,55 +563,152 @@ __vagrant_get_ssh_options() {
 # __get_interface_used_for()
 
 
-# TODO : these functions support only ipv4
+
 # https://stackoverflow.com/a/33550399
 __get_network_info() {
-	#local _err=
-	type netstat &>/dev/null
-	if [ $? = 0 ]; then
-		# NOTE : we pick the first default interface if we have more than one
-		STELLA_DEFAULT_INTERFACE="$(netstat -rn | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
-	else
-		type ip &>/dev/null
-		[ $? = 0 ] && STELLA_DEFAULT_INTERFACE="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
-	fi
+	case $STELLA_CURRENT_PLATFORM in
+		darwin )
+			type route >/dev/null 2>&1
+			if [ $? = 0 ]; then
+				STELLA_DEFAULT_INTERFACE_IPV4="$(route -n get -inet default 2>/dev/null | awk '/interface: / {print $2; exit}')"
+				STELLA_DEFAULT_INTERFACE_IPV6="$(route -n get -inet6 default 2>/dev/null | awk '/interface: / {print $2; exit}')"
+			else
+				type netstat >/dev/null 2>&1
+				# pick the first default interface if there is several
+				if [ $? = 0 ]; then
+					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -f inet 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
+					STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -rn -f inet6 2>/dev/null | awk '/^default/ {print $NF; exit}' | head -1)"
+				fi
+			fi
+			;;
+		linux )
+			type ip >/dev/null 2>&1
+			if [ $? = 0 ]; then
+				# pick the first default interface if there is several
+				STELLA_DEFAULT_INTERFACE_IPV4="$(ip -4 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
+				STELLA_DEFAULT_INTERFACE_IPV6="$(ip -6 route show default 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}' | head -1)"
+			else
+				type netstat >/dev/null 2>&1
+				# pick the first default interface if there is several
+				if [ $? = 0 ]; then
+					STELLA_DEFAULT_INTERFACE_IPV4="$(netstat -rn -A inet 2>/dev/null | awk '/^0.0.0.0/ {thif=substr($0,74,10); print thif;} /^default.*UG/ {thif=substr($0,65,10); print thif;}' | head -1)"
+					STELLA_DEFAULT_INTERFACE_IPV6="$(netstat -rn -A inet6 2>/dev/null | awk '/::\/0/ && /UG/ {print $NF; exit}' | head -1)"
+				fi
+			fi
+			;;
+	esac
+
+	# TODO : choose between ipv4 and ipv6
+	STELLA_DEFAULT_INTERFACE="$STELLA_DEFAULT_INTERFACE_IPV4"
 
 	# contains default ip
-	STELLA_HOST_DEFAULT_IP="$(__get_ip_from_interface ${STELLA_DEFAULT_INTERFACE})"
+	STELLA_HOST_DEFAULT_IP_IPV4="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "ipv4")"
+	STELLA_HOST_DEFAULT_IP_IPV6="$(__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV6}" "ipv6")"
+	# TODO : choose between ipv4 and ipv6
+	STELLA_HOST_DEFAULT_IP="${STELLA_HOST_DEFAULT_IP_IPV4}"
 
-	type ifconfig &>/dev/null
+	type ip >/dev/null 2>&1
 	if [ $? = 0 ]; then
-		# contains all available IP
-		STELLA_HOST_IP="$(ifconfig | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | tr '\n' ' ')"
+		# works on linux only
+		# contains a list of ips
+		STELLA_HOST_IP_IPV4="$(ip -4 addr 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | xargs)"
+		STELLA_HOST_IP_IPV6="$(ip -6 addr 2>/dev/null | awk '/inet6/ {print $2}' | cut -d/ -f1 | xargs)"
 	else
-		type ip &>/dev/null
+		type ifconfig >/dev/null 2>&1
 		if [ $? = 0 ]; then
-			STELLA_HOST_IP="$(ip -o -4 addr | awk '{split($4, a, "/"); print a[1]}' | tr '\n' ' ')"
+			# works on linux and MacOS
+			STELLA_HOST_IP_IPV4="$(ifconfig 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | xargs)"
+			STELLA_HOST_IP_IPV6="$(ifconfig 2>/dev/null | grep -Eo 'inet6 (adr:|addr:)?[0-9a-fA-F:]+' | awk '{print $2}' | sed 's/^(addr|adr)://' | xargs)"
 		else
-			# do not work on macos
-			type hostname &>/dev/null
-			[ $? = 0 ] && STELLA_HOST_IP="$(hostname -I 2>/dev/null)"
+			# NOTE WARN : hostname return a mix of ipv4 and ipv6 and only adress with global scope (no Ipv6 local link or 127.0.0.1)
+			# NOTE : hostname -I do not exist on MacOS
+			type hostname >/dev/null 2>&1
+			if [ $? = 0 ]; then
+				STELLA_HOST_IP_IPV4="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | xargs)"
+				STELLA_HOST_IP_IPV6="$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9a-fA-F:]+$' | xargs)"
+			fi
 		fi
 	fi
+	# TODO : choose between ipv4 and ipv6
+	STELLA_HOST_IP="$STELLA_HOST_IP_IPV4"
 
 }
 
+# retrieve a stable ip from default network interface
+# a stable ip is an ip which is not temporary, not tentative, not deprecated, not dadfailed for ipv6
+# a stable ip could be used as a server ip
+__get_stable_ip_from_default_interface() {
+	local _mode="$1"
+	[ "$_mode" = "" ] && _mode="ipv4"
+
+	case $_mode in
+		ipv4 )
+			__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV4}" "$_mode" "STABLE"
+			;;
+		ipv6 )
+			__get_ip_from_interface "${STELLA_DEFAULT_INTERFACE_IPV6}" "$_mode" "STABLE"
+			;;
+	esac
+
+}
+
+# can return several ip separated by space
 __get_ip_from_interface() {
 	local _if="$1"
-	type ifconfig &>/dev/null
+	local _mode="$2"
+	# STABLE : find stable ip (no temporary, no tentative, no deprecated, no dadfailed), usefull to be used as an ip server address
+	local _option="$3"
+	[ "$_mode" = "" ] && _mode="ipv4"
+
+	#https://unix.stackexchange.com/a/407128
+	type ip >/dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "$(ifconfig ${_if} 2>/dev/null | grep -Eo 'inet (adr:|addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')"
+		case $_mode in
+			ipv4 )
+				if [ "$_option" = "STABLE" ]; then
+					ip -4 -o addr show dev ${_if} scope global 2>/dev/null | awk '/inet / {print $4}' | cut -d/ -f1 | xargs
+				else
+					ip -4 addr show dev ${_if} 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | xargs
+				fi
+				;;
+			ipv6 )
+				if [ "$_option" = "STABLE" ]; then
+					# only global scope ipv6 adress (no local link, no temporary, no deprecated, no tentative, no dadfailed)
+					ip -6 -o addr show dev ${_if} scope global | grep -Ev 'mngtmpaddr|temporary|tentative|deprecated|dadfailed' | awk '{print $4}' | cut -d/ -f1 | xargs
+				else
+					ip -6 addr show dev ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1 | xargs
+				fi
+				;;
+		esac
 	else
-		#https://unix.stackexchange.com/a/407128
-		type ip &>/dev/null
-		[ $? = 0 ] && echo "$(ip -4 -o addr show dev ${_if} | awk '{split($4, a, "/"); print a[1]}')"
+		type ifconfig >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			case $_mode in
+				# fonctionne sous linux et macos
+				ipv4 )
+					if [ "$_option" = "STABLE" ]; then
+						ifconfig ${_if} 2>/dev/null | awk '/inet / && $2!="127.0.0.1" {print $2}' | xargs
+					else
+						ifconfig ${_if} 2>/dev/null | awk '/inet / {print $2}' | xargs
+					fi
+					;;
+				ipv6 )
+					if [ "$_option" = "STABLE" ]; then
+						# NOTE : on linux there is no way to filter stable ip with ifconfig tool !
+						[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && ifconfig ${_if} 2>/dev/null | awk '/inet6 / && $2!="::1" && $2!~/^fe80:/ && $0!~/ temporary| tentative| deprecated/ {print $2}' | cut -d% -f1 | xargs
+					else
+						ifconfig ${_if} 2>/dev/null | awk '/inet6 / {print $2}' | xargs
+					fi
+					;;
+			esac
+		fi
 	fi
 }
 
 # TODO : do an equivalent without "ip" command
 #
 #__print_ip_info() {
-#	type ip &>/dev/null
+#	type ip >/dev/null 2>&1
 #	if [ $? = 0 ]; then
 #		PROBLEM : this command show only interface wich have an ip
 #		ip -o addr | awk '{split($4, a, "/"); print $2" : "a[1]}'
@@ -613,7 +716,6 @@ __get_ip_from_interface() {
 #}
 
 # https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
-# NOTE : host, dig, nslookup only request dns and do not look for ip in /etc/hosts
 # NOTE on getent :
 #					ipv4 adress
 #						getent ahostsv4 www.google.de | grep STREAM | head -n 1 | cut -d ' ' -f 1
@@ -624,27 +726,86 @@ __get_ip_from_interface() {
 #					list all resolved address
 #						getent ahosts google.de
 # 					getent ahosts google.de | head -n 1 | cut -d ' ' -f 1
-__get_ip_from_hostname() {
-	type getent &>/dev/null
+__get_ip_from_host() {
+	local _mode="$2"
+	[ "$_mode" = "" ] && _mode="ipv4"
+	type getent >/dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "$(getent ahostsv4 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1)"
+		case $_mode in
+			ipv4 )
+				getent ahostsv4 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1
+				;;
+			ipv6 )
+				getent ahostsv6 $1 | grep STREAM | head -n 1 | cut -d ' ' -f 1
+				;;
+		esac
 	else
-		echo "$(ping -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1)"
+		type dig >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			case $_mode in
+				ipv4 )
+					dig +short A $1 | head -n 1
+					;;
+				ipv6 )
+					dig +short AAAA $1 | head -n 1
+					;;
+			esac
+		else
+			case $STELLA_CURRENT_PLATFORM in
+				darwin )
+					case $_mode in
+						ipv4 )
+							ping -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1
+						;;
+						# NOTE on macos there is no timeout (-t) option for ping6
+						ipv6 )
+							perl -e 'alarm shift; exec @ARGV' "1" ping6 -q -c 1 -o "$1" 2>/dev/null | head -n1 | awk '{print $NF}'
+						;;
+					esac
+				;;
+				linux )
+					case $_mode in
+						ipv4 )
+							ping -4 -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f2 | cut -d ")" -f1
+							;;
+						ipv6 )
+							ping6 -q -c 1 -t 1 $1 2>/dev/null | grep -m 1 PING | cut -d "(" -f3 | cut -d ")" -f1
+							;;
+					esac
+				;;
+			esac
+		fi
 	fi
 }
 
-# determine external IP
+# determine IP viewed of the current host as viewed from external WAN
+# NOTE : in case off ipv6 this will return the current temporary ipv6 used by current host
 # https://unix.stackexchange.com/a/194136
-# TODO : work only ipv4
 __get_ip_external() {
-	
-	type dig &>/dev/null
-	if [ $? = 0 ]; then
-		__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
-		#__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
-	else
-		__result="$(curl -s ipinfo.io/ip)"
-	fi
+	local _mode="$1"
+
+	[ "$_mode" = "" ] && _mode="ipv4"
+
+	case $_mode in
+		ipv4 )
+			type dig >/dev/null 2>&1
+			if [ $? = 0 ]; then
+				__result="$(dig @resolver1.opendns.com A myip.opendns.com +short -4)"
+			else
+				__result="$(curl --connect-timeout 2 -skL ipinfo.io/ip)"
+			fi
+		;;
+		ipv6 )
+			type dig >/dev/null 2>&1
+			if [ $? = 0 ]; then
+				# NOTE : in this case dig will return the current temporary ipv6 used by current host
+				__result="$(dig @resolver1.opendns.com AAAA myip.opendns.com +short -6)"
+			else
+				__result="$(curl --connect-timeout 2 -skL v6.ipinfo.io/ip)"
+			fi
+		;;
+	esac
+
 
 	echo "${__result}"
 }
@@ -713,33 +874,41 @@ __disable_proxy() {
 
 
 # no_proxy is read from conf file only if a stella proxy is active
-# _list_uri could be a list of no proxy values separated with comma
+# _list_uri should be a list of no proxy values separated with comma
 __register_no_proxy() {
 	local _list_uri="$1"
 	__get_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "PREFIX"
 
 	_list_uri="${_list_uri//,/ }"
-	for p in $_list_uri; do
-			__uri_parse "$p"
+	_list_uri="${_list_uri} ${STELLA_PROXY_NO_PROXY//,/ }"
 
-			_host="$__stella_uri_host"
+	_list_uri="$(__list_filter_duplicate "${_list_uri}")"
 
-			_exist=
-			STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"
-			for h in $STELLA_PROXY_NO_PROXY; do
-				[ "$h" = "$_host" ] && _exist=1
-			done
+	_list_uri="$(__sort_version "${_list_uri}")"
 
-			if [ "$_exist" = "" ]; then
-				if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
-					STELLA_PROXY_NO_PROXY="$_host"
-				else
-					STELLA_PROXY_NO_PROXY="$STELLA_PROXY_NO_PROXY $_host"
-				fi
+	__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${_list_uri// /,}"
 
-				__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${STELLA_PROXY_NO_PROXY// /,}"
-			fi
-	done
+	# for p in $_list_uri; do
+	# 		__uri_parse "$p"
+
+	# 		_host="$__stella_uri_host"
+
+	# 		_exist=
+	# 		STELLA_PROXY_NO_PROXY="${STELLA_PROXY_NO_PROXY//,/ }"
+	# 		for h in $STELLA_PROXY_NO_PROXY; do
+	# 			[ "$h" = "$_host" ] && _exist=1
+	# 		done
+
+	# 		if [ "$_exist" = "" ]; then
+	# 			if [ "$STELLA_PROXY_NO_PROXY" = "" ]; then
+	# 				STELLA_PROXY_NO_PROXY="$_host"
+	# 			else
+	# 				STELLA_PROXY_NO_PROXY="$STELLA_PROXY_NO_PROXY $_host"
+	# 			fi
+
+	# 			__add_key "$STELLA_ENV_FILE" "STELLA_PROXY" "NO_PROXY" "${STELLA_PROXY_NO_PROXY// /,}"
+	# 		fi
+	# done
 	__init_proxy
 
 }

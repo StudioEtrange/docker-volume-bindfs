@@ -5,7 +5,7 @@ _jansson_INCLUDED_=1
 feature_jansson() {
 	FEAT_NAME=jansson
 	FEAT_LIST_SCHEMA="2_11:source"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="C library for encoding, decoding and manipulating JSON data"

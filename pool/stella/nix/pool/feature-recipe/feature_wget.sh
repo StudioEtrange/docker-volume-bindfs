@@ -7,7 +7,7 @@ _WGET_INCLUDED_=1
 feature_wget() {
 	FEAT_NAME=wget
 	FEAT_LIST_SCHEMA="1_15:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

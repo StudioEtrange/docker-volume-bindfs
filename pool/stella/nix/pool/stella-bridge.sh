@@ -180,7 +180,7 @@ __get_stella() {
 	[ "$_ver" = "" ] && _ver=LATEST
 
 	if [ "$_flavour" = "DEV" ]; then
-		if [[ ! -n `which git 2> /dev/null` ]]; then
+		if ! type git >/dev/null 2>&1; then
 			echo "*** git not present on this system. Trying to get the last stable version"
 			_flavour=STABLE
 			_ver=LATEST

@@ -4,7 +4,7 @@ _glew_INCLUDED_=1
 feature_glew() {
 	FEAT_NAME=glew
 	FEAT_LIST_SCHEMA="1_13_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

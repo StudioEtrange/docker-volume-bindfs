@@ -7,7 +7,7 @@ _cyrussasl_INCLUDED_=1
 feature_cyrus-sasl() {
 	FEAT_NAME=cyrus-sasl
 	FEAT_LIST_SCHEMA="2_1_26:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="http://www.cyrusimap.org/sasl/"

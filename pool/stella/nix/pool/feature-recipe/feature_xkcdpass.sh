@@ -9,7 +9,7 @@ feature_xkcdpass() {
 	FEAT_NAME=xkcdpass
 
 	FEAT_LIST_SCHEMA="1_17_2:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_ENV_CALLBACK=feature_xkcdpass_env

@@ -6,7 +6,7 @@ _flac_INCLUDED_=1
 feature_flac() {
 	FEAT_NAME=flac
 	FEAT_LIST_SCHEMA="1_3_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

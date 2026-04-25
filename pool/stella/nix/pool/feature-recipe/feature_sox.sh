@@ -7,7 +7,7 @@ _sox_INCLUDED_=1
 feature_sox() {
 	FEAT_NAME=sox
 	FEAT_LIST_SCHEMA="14_4_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

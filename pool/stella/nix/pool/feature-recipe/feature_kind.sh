@@ -20,13 +20,84 @@ _KIND_INCLUDED_=1
 
 feature_kind() {
 	FEAT_NAME=kind
-	FEAT_LIST_SCHEMA="0_11_1@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	FEAT_LIST_SCHEMA="0_31_0@x64:binary 0_30_0@x64:binary 0_11_1@x64:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	
 	FEAT_DESC="kind is a tool for running local Kubernetes clusters using Docker container nodes. kind was primarily designed for testing Kubernetes itself, but may be used for local development or CI."
 	FEAT_LINK="https://github.com/kubernetes-sigs/kind https://kind.sigs.k8s.io/"
+}
+
+feature_kind_0_31_0() {
+	FEAT_VERSION="0_31_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-linux-amd64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-arm64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-linux-arm64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-darwin-amd64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-darwin-amd64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-darwin-arm64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-darwin-arm64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+	fi
+
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/kind"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}"
+
+}
+
+feature_kind_0_30_0() {
+	FEAT_VERSION="0_30_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.30.0/kind-linux-amd64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-linux-amd64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.30.0/kind-linux-arm64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-linux-arm64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.30.0/kind-darwin-amd64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-darwin-amd64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/kubernetes-sigs/kind/releases/download/v0.30.0/kind-darwin-arm64"
+			FEAT_BINARY_URL_FILENAME_x64="kind-darwin-arm64-${FEAT_VERSION}"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+		fi
+	fi
+
+
+	FEAT_INSTALL_TEST="${FEAT_INSTALL_ROOT}/kind"
+	FEAT_SEARCH_PATH="${FEAT_INSTALL_ROOT}"
+
+}
+
+}
 }
 
 

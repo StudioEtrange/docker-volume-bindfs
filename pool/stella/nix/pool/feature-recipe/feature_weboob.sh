@@ -11,7 +11,7 @@ feature_weboob() {
 	FEAT_NAME=weboob
 
 	FEAT_LIST_SCHEMA="1_5:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://weboob.org/"

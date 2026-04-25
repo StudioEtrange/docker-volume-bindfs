@@ -4,7 +4,7 @@ _LIBSQUISH_INCLUDED_=1
 feature_libsquish() {
 	FEAT_NAME=libsquish
 	FEAT_LIST_SCHEMA="1_13:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -9,7 +9,7 @@ _M4_INCLUDED_=1
 feature_m4() {
 	FEAT_NAME=m4
 	FEAT_LIST_SCHEMA="1_4_19:source 1_4_18:source 1_4_17:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://www.gnu.org/software/m4/"

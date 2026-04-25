@@ -5,7 +5,7 @@ _httping_INCLUDED_=1
 feature_httping() {
 	FEAT_NAME=httping
 	FEAT_LIST_SCHEMA="2_5:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

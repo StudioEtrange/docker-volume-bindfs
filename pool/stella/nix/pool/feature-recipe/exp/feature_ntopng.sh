@@ -14,7 +14,7 @@ feature_ntopng() {
 	FEAT_NAME=ntopng
 
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -1,11 +1,12 @@
 if [ ! "$_TEMPLATE_INCLUDED_" = "1" ]; then
 _TEMPLATE_INCLUDED_=1
 
+# feature syntax :
+#		name[#version][@arch][:flavour][/os_restriction][\os_exclusion]
 
 feature_template() {
 	FEAT_NAME="template"
 	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary 1_0_0:source\macos"
-	FEAT_DEFAULT_ARCH="x64"
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="template is foo"
@@ -16,7 +17,7 @@ feature_template() {
 
 
 feature_template_1_0_0() {
-	# if FEAT_ARCH (ie:FEAT_BINARY_URL_x86) is not not null, properties FOO_ARCH=BAR will be selected and setted as FOO=BAR (ie:FEAT_BINARY_URL)
+	# if FEAT_ARCH (ie:FEAT_BINARY_URL_x86) is not not null, properties FOO_ARCH=BAR (will be selected and setted as FOO=BAR (ie:FEAT_BINARY_URL)
 	# if FOO_ARCH is empty, FOO will not be changed
 
 	FEAT_VERSION="1_0_0"
@@ -46,21 +47,46 @@ feature_template_1_0_0() {
 	FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-x64.zip"
 	FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
 
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64="http://foo.com/bar"
-		FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-darwin_amd64.zip"
-		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
-		FEAT_BINARY_URL_x86="http://foo.com/bar"
-		FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-darwin_386.zip"
-		FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
-	fi
+
+
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x64="http://foo.com/bar"
-		FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-x64.zip"
-		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
-		FEAT_BINARY_URL_x86="http://foo.com/bar"
-		FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-x86.zip"
-		FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "intel" ]; then
+			FEAT_BINARY_URL_x64="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-linux_amd64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-linux_386.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "arm" ]; then
+			FEAT_BINARY_URL_x64="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-x64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-x86.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		# intel cpu
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-darwin_amd64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x86="template-1_0_0-darwin_386.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		# arm/apple cpu
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x86=
+			FEAT_BINARY_URL_FILENAME_x86=
+			FEAT_BINARY_URL_PROTOCOL_x86=
+			FEAT_BINARY_URL_x64="http://foo.com/bar"
+			FEAT_BINARY_URL_FILENAME_x64="template-1_0_0-darwin_arm64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
 	fi
 
 	# callback are list of functions
@@ -93,10 +119,8 @@ feature_template_install_binary() {
 }
 
 
-
-
 # when feature is only a standalone binary and protocol used is HTTP : FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
-feature_kind_install_binary() {
+feature_template_install_binary() {
 
 	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP FORCE_NAME $FEAT_BINARY_URL_FILENAME"
 
@@ -105,6 +129,8 @@ feature_kind_install_binary() {
 		mv "${FEAT_INSTALL_ROOT}/${FEAT_BINARY_URL_FILENAME}" "${FEAT_INSTALL_ROOT}/template"
 		chmod +x "${FEAT_INSTALL_ROOT}/template"
 	fi
+
+	__feature_callback
 }
 
 

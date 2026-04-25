@@ -5,7 +5,7 @@ _swig_INCLUDED_=1
 feature_swig() {
 	FEAT_NAME=swig
 	FEAT_LIST_SCHEMA="3_0_10:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

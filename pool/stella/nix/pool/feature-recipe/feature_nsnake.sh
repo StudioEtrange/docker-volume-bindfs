@@ -7,7 +7,7 @@ _nsnake_INCLUDED_=1
 feature_nsnake() {
 	FEAT_NAME="nsnake"
 	FEAT_LIST_SCHEMA="3_0_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Nsnake: The classic snake game with textual interface."

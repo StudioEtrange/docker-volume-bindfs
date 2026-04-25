@@ -9,7 +9,7 @@ feature_zeromq() {
 	FEAT_NAME=zeromq
 
 	FEAT_LIST_SCHEMA="4_1_5:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

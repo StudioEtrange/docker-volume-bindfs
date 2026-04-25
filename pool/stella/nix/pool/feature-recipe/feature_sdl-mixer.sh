@@ -14,7 +14,7 @@ _sdlmixer_INCLUDED_=1
 feature_sdl-mixer() {
 	FEAT_NAME=sdl-mixer
 	FEAT_LIST_SCHEMA="2_0_4:source 2_0_0:source 1_2_12:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="SDL_mixer is a sound mixing library that is used with the SDL library, and almost as portable. It allows a programmer to use multiple samples along with music without having to code a mixing algorithm themselves. It also simplyfies the handling of loading and playing samples and music from all sorts of file formats."

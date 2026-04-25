@@ -5,7 +5,7 @@ _zeppelin_INCLUDED_=1
 feature_zeppelin() {
 	FEAT_NAME=zeppelin
 	FEAT_LIST_SCHEMA="0_6_1:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

@@ -7,7 +7,7 @@ feature_rexray() {
 	FEAT_NAME=rexray
 	FEAT_LIST_SCHEMA=
 	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="0_11_2@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

@@ -7,7 +7,7 @@ _openttd_INCLUDED_=1
 feature_openttd() {
 	FEAT_NAME=openttd
 	FEAT_LIST_SCHEMA="1_6_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

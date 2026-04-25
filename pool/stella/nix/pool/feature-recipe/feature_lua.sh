@@ -5,7 +5,7 @@ _lua_INCLUDED_=1
 feature_lua() {
 	FEAT_NAME=lua
 	FEAT_LIST_SCHEMA="5_3_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

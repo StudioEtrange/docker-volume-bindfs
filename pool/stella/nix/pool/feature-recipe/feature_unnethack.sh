@@ -7,7 +7,7 @@ _UNNETHACK_INCLUDED_=1
 feature_unnethack() {
 	FEAT_NAME="unnethack"
 	FEAT_LIST_SCHEMA="5_3_2:source 5_1_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="template is foo"

@@ -10,7 +10,7 @@ _openmpi_INCLUDED_=1
 feature_openmpi() {
 	FEAT_NAME=openmpi
 	FEAT_LIST_SCHEMA="1_10_3:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

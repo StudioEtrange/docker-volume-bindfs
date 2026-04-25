@@ -11,7 +11,7 @@ _sdlttf_INCLUDED_=1
 feature_sdl-ttf() {
 	FEAT_NAME=sdl-ttf
 	FEAT_LIST_SCHEMA="2_0_15:source 2_0_12:source 2_0_11:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="SDL_ttf is a TrueType font rendering library that is used with the SDL library, and almost as portable."

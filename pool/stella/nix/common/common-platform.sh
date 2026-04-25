@@ -22,7 +22,7 @@ _STELLA_PLATFORM_INCLUDED_=1
 #			linux <---> linux
 
 __get_os_from_distro() {
-	local _distro=$1
+	local _distro="$1"
 	
 	case $_distro in
 		"Mac OS X"|macos)
@@ -30,52 +30,16 @@ __get_os_from_distro() {
 	 		;;
 	esac
 
-	# minimize
 	_distro=$(echo "${_distro}" | tr '[:upper:]' '[:lower:]')
-
-	
-
-	# remove spaces
 	_distro="${_distro// /_}"
+
+	[ "${_distro}" = "" ] && _distro="unknown"
 
 	if [[ "${_distro}" = "unknown" ]] && [[ "${OSTYPE}" =~ "linux" ]]; then
 		_distro="linuxgeneric"
 	fi
 
-	echo $_distro
-
-	# case $_distro in
-	# 	"Red Hat Enterprise Linux")
-	# 		echo "rhel"
-	# 		;;
-	# 	Ubuntu|ubuntu*)
-	# 		echo "ubuntu"
-	# 		;;
-	# 	Debian|debian*)
-	# 		echo "debian"
-	# 		;;
-	# 	CentOS*|centos*)
-	# 		echo "centos"
-	# 		;;
-	# 	archlinux*)
-	# 		echo "archlinux"
-	# 		;;
-	# 	boot2docker*)
-	# 		echo "linuxgeneric"
-	# 		;;
-	# 	Alpine*|alpine*)
-	# 		echo "alpine"
-	# 		;;
-	# 	"Mac OS X"|macos)
-	# 		echo "macos"
-	# 		;;
-	# 	*Windows*|*windows*)
-	# 		echo "windows"
-	# 		;;
-	# 	*)
-	# 		echo "linuxgeneric"
-	# 		;;
-	# esac
+	printf '%s\n' "$_distro"
 }
 
 
@@ -98,9 +62,6 @@ __get_platform_from_os() {
 	case ${_os} in
 		windows)
 			echo "windows"
-			;;
-		unknown)
-			echo "unknown"
 			;;
 		*)
 			echo "unknown"
@@ -165,39 +126,91 @@ __get_os_env_from_kernel() {
 
 __set_current_platform_info() {
 
-
-	
 	
 	# some old configurations forgive to set sbin folders as PATH values
 	# mainly on centos
+	# TODO : REMOVE THIS ?
 	# https://forums.centos.org/viewtopic.php?t=53983
 	PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
 
-	# call screenFetch once by setting/unsetting  exit function and sourcing screenfetch
-	# https://github.com/KittyKatt/screenFetch
-	exit() {
-	:
-	}
-	. $STELLA_ARTEFACT/screenFetch/screenfetch-dev -n -E 1>/dev/null 2>&1
-	unset exit
+	detected_distro="$(
+		# call unifetch once by setting/unsetting  exit function and sourcing screenfetch
+		exit() {
+			:
+		}
+		eval "$(
+			#awk '/^ma_fonction\(\)/,/^}/' lib.sh
+			grep -vx 'main "$@"' "$STELLA_ARTEFACT/unifetch/unifetch"
+			#grep -vx 'main "$@"' "$STELLA_ARTEFACT/neofetch/neofetch"
+		)"
+		distro_shorthand="on"
+		kernel_shorthand="on"
+		cache_uname > /dev/null 2>&1
+		get_os > /dev/null 2>&1
+		get_distro > /dev/null 2>&1
+		unset -f exit
+		printf '%s\n' "$distro"
+	)"
 
-
-	STELLA_CURRENT_OS=$(__get_os_from_distro "$distro")
-	# TODO do not know what is the purpose of STELLA_CURRENT_OS_ENV
-	STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
+	STELLA_CURRENT_OS=$(__get_os_from_distro "$detected_distro")
+	# STELLA_CURRENT_OS_ENV=$(__get_os_env_from_kernel "$kernel")
 	STELLA_CURRENT_PLATFORM=$(__get_platform_from_os "$STELLA_CURRENT_OS")
 	STELLA_CURRENT_PLATFORM_SUFFIX=$(__get_platform_suffix "$STELLA_CURRENT_PLATFORM")
 
-	# current running arch of the os : x86_64, aarch64 ...
-	STELLA_CURRENT_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
-	[ "$STELLA_CURRENT_ARCH " = "" ] && STELLA_CURRENT_ARCH="unknown-arch"
+	# current running arch of the os : x86_64, aarch64, arm64 ..., usefull to determine intel vs arm cpu
+	# NOTE : FEAT_ARCH is used to select 32bits (x86) or 64bits (x64) version
+	STELLA_CURRENT_CPU_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+	[ "$STELLA_CURRENT_CPU_ARCH" = "" ] && STELLA_CURRENT_CPU_ARCH="unknown-arch"
+	# STELLA_CURRENT_CPU_ARCH value uname -m			Signification
+	# i386, i486, i586, i686	Intel 32 bits
+	# x86_64, amd64 			64 bits
+	# armv6l, armv7l,armv8l 	ARM 32 bits
+	# aarch64, arm64			ARM 64 bits
 
-	if type nproc &>/dev/null; then
-		STELLA_NB_CPU=$(nproc)
-	elif type sysctl &>/dev/null; then
-		STELLA_NB_CPU=`sysctl hw.ncpu 2> /dev/null | awk '{print $NF}'`
+	# on macos
+	#   on CPU intel, uname -m returns x86_64 but it can run 32bits and 64bits apps
+	#   on CPU arm, uname -m returns arm64
+	# BUT if the current process executing stella is running under rosetta 2 emulation for some reason, so we need to consider the current ARCH to be intel !!!
+	case $STELLA_CURRENT_CPU_ARCH in
+		# Intel / AMD
+		i*86|x86_64|amd64)
+			STELLA_CURRENT_CPU_FAMILY="intel"
+			;;
+		# ARM
+		armv*l|aarch64|arm64)
+			case $STELLA_CURRENT_PLATFORM in
+				darwin)
+					# on macos, if the process is running under rosetta 2 emulation, so we need to consider the current ARCH to be intel
+					# test is rosetta 2 is active : sysctl -n sysctl.proc_translated 2>/dev/null | grep -q "1"
+					if sysctl -n sysctl.proc_translated 2>/dev/null | grep -q "1"; then
+						STELLA_CURRENT_CPU_FAMILY="intel"
+					else
+						STELLA_CURRENT_CPU_FAMILY="arm"
+					fi
+					;;
+				*)
+					STELLA_CURRENT_CPU_FAMILY="arm"
+					;;
+			esac
+			;;
+		# PowerPC
+		ppc*)
+			STELLA_CURRENT_CPU_FAMILY="ppc"
+			;;
+		mips*)
+			STELLA_CURRENT_CPU_FAMILY="mips"
+			;;
+		*)
+			STELLA_CURRENT_CPU_FAMILY="unknown"
+			;;
+	esac
+
+	if type nproc >/dev/null 2>&1; then
+		STELLA_NB_CPU="$(nproc)"
+	elif type sysctl >/dev/null 2>&1; then
+		STELLA_NB_CPU="$(sysctl hw.ncpu 2>/dev/null | awk '{print $NF}')"
 	else
-		STELLA_NB_CPU=1
+		STELLA_NB_CPU="1"
 	fi
 
 
@@ -208,7 +221,7 @@ __set_current_platform_info() {
 	# https://www.sysadmit.com/2016/02/linux-como-saber-si-es-32-o-64-bits.html
 	# https://superuser.com/questions/208301/linux-command-to-return-number-of-bits-32-or-64/208306#208306
 
-	# CPU 64Bits capable
+	# CPU 64Bits or 32Bits
 	STELLA_CPU_ARCH=
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
 		grep -q -o -w 'lm' /proc/cpuinfo && STELLA_CPU_ARCH=64 || STELLA_CPU_ARCH=32
@@ -222,14 +235,18 @@ __set_current_platform_info() {
 
 	#  Note that on several architectures, a 64-bit kernel can run 32-bit userland programs,
 	#  so even if the uname -m shows a 64-bit kernel, there is no guarantee that 64-bit libraries will be available.
-	if [ "$(uname -m | grep 64)" = "" ]; then
-		STELLA_KERNEL_ARCH=32
-	else
-		STELLA_KERNEL_ARCH=64
-	fi
+	# if [ "$(uname -m | grep 64)" = "" ]; then
+	# 	STELLA_KERNEL_ARCH=32
+	# else
+	# 	STELLA_KERNEL_ARCH=64
+	# fi
 
 	# The getconf LONG_BIT get the default bit size of the C library
-	STELLA_C_ARCH=$(getconf LONG_BIT)
+	if type getconf >/dev/null 2>&1; then
+		STELLA_C_ARCH=$(getconf LONG_BIT)
+	else
+		STELLA_C_ARCH=
+	fi
 	STELLA_USERSPACE_ARCH=unknown
 
 	__get_network_info
@@ -245,6 +262,15 @@ __get_macos_version() {
 	echo $(sw_vers -productVersion | awk -F '.' '{print $1 "." $2}')
 }
 
+# macos use only dynamic libraries from dyld shared cache since macos 11
+# before dynamic libraries exists on filesystem (even if they are alos cached (like in 10.x))
+__darwin_dynamic_library_exists_on_filesystem() {
+	if [ "$(__select_version_from_list ">=11" "$(__get_macos_version)" "SEP .")" = "" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
 
 __platform_specifity() {
 	#http://unix.stackexchange.com/questions/30091/fix-or-alternative-for-mktemp-in-os-x
@@ -334,7 +360,7 @@ __require() {
 
 	echo "** REQUIRE $_id ($_artefact)"
 	local _err=
-	type $_artefact &>/dev/null || _err=1
+	type $_artefact >/dev/null 2>&1 || _err=1
 
 	if [ "$_err" = "1" ]; then
 		if [ "$_opt_optional" = "ON" ]; then
@@ -363,17 +389,18 @@ __require() {
 			else
 				if [ "$_opt_stella_feature" = "ON" ]; then
 					echo "** REQUIRE $_id : installing it from stella"
-					echo -------------------------------------------
+					#echo -------------------------------------------
 					( __feature_install "$_id" "NON_DECLARED $_opt_internal" )
 
-					echo REALLY ENABLED 1 ${FEATURE_LIST_ENABLED[@]}
-					echo $PATH
+					#echo REALLY ENABLED 1 ${FEATURE_LIST_ENABLED[@]}
+					#echo $PATH
 
-					echo -------------------------------------------
+					#echo -------------------------------------------
+					echo "** REQUIRE $_id : init it"
 					__feature_init "$_id" "NON_DECLARED"
-					echo REALLY ENABLED 2 ${FEATURE_LIST_ENABLED[@]}
-					echo $PATH
-					echo -------------------------------------------
+					echo "** features now enabled ${FEATURE_LIST_ENABLED[@]}"
+					#echo $PATH
+					#echo -------------------------------------------
 				else
 					echo "** ERROR -- Please install $_artefact"
 					echo "-- For a system install : try stella.sh sys install $_id OR your regular OS package manager"
@@ -388,157 +415,8 @@ __require() {
 	return $_result
 }
 
-# TOOLSET specific --------------------------------------------------------
 
-# http://stackoverflow.com/questions/5188267/checking-the-gcc-version-in-a-makefile
-# return X.Y.Z as version of current gcc
-# ex : 4.4.7
-__gcc_version() {
-	gcc -dumpversion
-}
-
-# return an int representation of current gcc version
-# ex : 40407
-__gcc_version_int() {
-	gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/'
-}
-
-# check if current gcc version hit the minimal version required
-# first param : X_Y_Z (or X_Y)
-# return 1 if required minimal version is fullfilled by the current gcc version
-__gcc_check_min_version() {
-	local _required_ver=$1
-	expr $(__gcc_version_int) \>= $(echo $_required_ver | sed -e 's/_\([0-9][0-9]\)/\1/g' -e 's/_\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$/&00/')
-}
-
-# detect if current gcc binary is in fact clang (mainly for MacOS)
-# return 1 if gcc is clang
-__gcc_is_clang() {
-	if [ "$(echo | gcc -dM -E - | grep __clang__)" = "" ]; then
-		echo "0"
-	else
-		echo "1"
-	fi
-}
-
-
-# return the target triplet
-#			Name of CPU family/model (eg. x86_64)
-#			The vendor (eg. linux)
-#			Operating system name (eg. gnu)
-__default_target_triplet() {
-	gcc -dumpmachine
-}
-
-
-# LIBRARIES SEARCH PATH -------
-# https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-
-
-# SEARCH PATH AT RUNTIME - WHILE RUNNING PROGRAM override with LD_LIBRARY_PATH enn var
-
-# dynamic libraries search path at runtime
-# https://github.com/StudioEtrange/lddtree/blob/579ebe449b76ed9d22f116a6f30b87b1f2ded2ca/lddtree.sh#L169
-__default_runtime_search_path() {
-	local c_ldso_paths=
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-
-		if [ -r /etc/ld.so.conf ] ; then
-			read_ldso_conf() {
-				local line p
-				for p ; do
-					# if the glob didnt match anything #360041,
-					# or the files arent readable, skip it
-					[ -r "${p}" ] || continue
-					while read line ; do
-						case ${line} in
-							"#"*) ;;
-							"include "*) read_ldso_conf ${line#* } ;;
-							*) c_ldso_paths="$c_ldso_paths:/${line#/}";;
-						esac
-					done <"${p}"
-				done
-			}
-			# the 'include' command is relative
-			local _oldpwd="$PWD"
-			cd "/etc" >/dev/null
-			interp=$(__get_elf_interpreter_linux "$(which ls)")
-			echo $interp
-			case "$interp" in
-			*/ld-musl-*)
-				musl_arch=${interp%.so*}
-				musl_arch=${musl_arch##*-}
-				read_ldso_conf /etc/ld-musl-${musl_arch}.path
-				;;
-			*/ld-linux*|*/ld.so*) # glibc
-				read_ldso_conf /etc/ld.so.conf
-				;;
-			esac
-			cd "$_oldpwd"
-		fi
-	fi
-	echo "${c_ldso_paths}"
-}
-
-
-# SEARCH PATH AT LINKING - WHILE BUILDING override with LIBRARY_PATH enn var
-
-# linker search path
-# library search path during linking
-# arch : x64|x86
-#				if empty the default system current arch will be used
-# LINUX https://stackoverflow.com/questions/9922949/how-to-print-the-ldlinker-search-path
-# NOTE ON MACOS :
-#			 https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
-#			 hardcoded values https://opensource.apple.com/source/dyld/dyld-519.2.1/src/dyld.cpp.auto.html
-#												can be checked with : gcc  -Xlinker -v
-__default_linker_search_path() {
-	local __arch="$1"
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		[ "$__arch" = "x64" ] && $__arch="-m64"
-		[ "$__arch" = "x86" ] && $__arch="-m32"
-		gcc $__arch -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		echo "/usr/local/lib:/usr/lib"
-	fi
-}
-
-
-# gcc hardcoded libraries search path when linking
-# gcc passes a few extra -L paths to the linker, which you can list with the following command:
-# https://stackoverflow.com/a/21610523/5027535
-__gcc_linker_search_path() {
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		gcc -print-search-dirs | sed '/^lib/b 1;d;:1;s,/[^/.][^/]*/\.\./,/,;t 1;s,:[^=]*=,:;,;s,;,;  ,g' | tr \; \\012
-	fi
-}
-
-# library search path during linking (-L flag) 
-# NOT AT RUNTIME ==> parse ld.so.conf to see search path at runtime
-# see __default_linker_search_path
-# ld not used on macos
-# https://stackoverflow.com/a/21610523/5027535
-__ld_linker_search_path() {
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		ld --verbose 2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1\n/g'  | grep -vE '^$'
-	fi
-}
-
-# pkg-config full search path
-# https://linux.die.net/man/1/pkg-config
-__pkgconfig_search_path() {
-	if $(type pkg-config &>/dev/null); then
-		echo ${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)
-	fi
-}
-
-# NOTE apple-clang-llvm versions are not synchronized with clang-llvm versions
-__clang_version() {
-	clang --version | head -n 1 | grep -o -E "[[:digit:]].[[:digit:]].[[:digit:]]" | head -1
-}
-
-# RUNTIME specific --------------------------------------------------------
+# ---------------------------------------- PYTHON RUNTIME  ----------------------------------------
 
 # PYTHON VERSION
 # get python version on 1 digits (2, 3, ...)
@@ -626,7 +504,7 @@ __python_get_pyconfig() {
 
 
 
-# PACKAGE SYSTEM ----------------------------
+# --------------------------------------------------- PACKAGE MANAGER ---------------------------------------------------
 # set a global proxy for yum
 # sample : __yum_proxy_set $STELLA_HTTP_PROXY
 __yum_proxy_set() {
@@ -723,7 +601,7 @@ __get_current_package_manager() {
 	esac
 
 	for p in $plist; do
-		if [[ -n `which $p 2> /dev/null` ]]; then
+		if type "${p}" >/dev/null 2>&1; then
 			_package_manager="$p"
 			break
 		fi
@@ -811,8 +689,9 @@ __use_package_manager() {
 	fi
 
 }
-# ----------- ANSIBLE -----------------------------------------------------
 
+
+# --------------------------------------------- ANSIBLE -----------------------------------------------------
 
 # ARG1 playbook yml file
 # ARG2 roles root folder
@@ -858,7 +737,7 @@ __ansible_play_localhost() {
 	local __opt="$3"
 
 	local __tags=
-	local __python="-e ansible_python_interpreter=$(which python)"
+	local __python="-e ansible_python_interpreter=$(command -v python 2>/dev/null)"
 	local __debug="-v"
 	for o in ${__opt}; do
 		[ "$__tags" = "1" ] && __tags="--tags=$o"
@@ -885,22 +764,7 @@ __ansible_play_localhost() {
 
 }
 
-#
-# __ansible_play_vagrant() {
-#   INFRA_NAME="$1"
-#   PLAYBOOK="$2"
-#   LIMIT="$3"
-#   [ -z $LIMIT ] && LIMIT=all
-#
-#   ANSIBLE_INVENTORY_FILE=$STELLA_APP_ROOT/infra/$INFRA_NAME/.vagrant/provisioners/ansible/inventory
-#   ANSIBLE_PLAYBOOK=$STELLA_APP_ROOT/infra/playbook/$PLAYBOOK.yml
-#
-#   ANSIBLE_EXTRA_VARS=\{\"infra_name\":\"$INFRA_NAME\",\"proxy_name\":\"sesame\"\}
-#   ANSIBLE_ROLES_PATH=$STELLA_APP_ROOT/infra/roles PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_HOST_KEY_CHECKING=false ANSIBLE_SSH_ARGS='-o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -o ControlMaster=auto -o ControlPersist=60s' ansible-playbook --connection=ssh --timeout=30 --inventory-file=$ANSIBLE_INVENTORY_FILE --limit=$LIMIT --extra-vars=$ANSIBLE_EXTRA_VARS -v $ANSIBLE_PLAYBOOK
-# }
-
-
-# --------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
+# ------------------------------------------- SYSTEM INSTALL/REMOVE RECIPES------------------------------------
 __sys_install() {
 	# _item package name
 	# other args : optionnal arguments
@@ -965,11 +829,11 @@ __sys_install_brew() {
 
 
 	echo " ** Check Homebrew"
-	if [[ -n `which brew 2> /dev/null` ]]; then
+	if type brew >/dev/null 2>&1; then
 		echo " ** brew doctor"
 		brew doctor
-		local _brewLocation=`which brew`
-		local _appLocation=`brew --prefix`
+		local _brewLocation="$(command -v brew 2>/dev/null)"
+		local _appLocation="$(brew --prefix)"
 		echo " ** -------------- **"
 		echo "Homebrew is installed in $_brewLocation"
 		echo "Homebrew apps are run from $_appLocation"
@@ -994,40 +858,42 @@ __sys_remove_brew() {
 __sys_install_build-chain-standard() {
 	local _package_manager=
 
-	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
-		echo " ** Install build-chain-standard on your system"
-		# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
-		# http://docs.python-guide.org/en/latest/starting/install/osx/
-		local PKGS=`pkgutil --pkgs`
-		if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
-			echo " ** Xcode detected"
-		else
-			echo " ** WARN Xcode not detected."
-			echo " It is NOT mandatory but you may want to install it from the Apple AppStore"
-			echo " or download it from https://developer.apple.com/downloads."
-			# difference between appstore and download site
-			# http://apple.stackexchange.com/questions/62201/download-xcode-from-developer-site-vs-install-from-app-store
+	case $STELLA_CURRENT_PLATFORM in
+		darwin)
+			echo " ** Install build-chain-standard on your system"
+			# from https://github.com/lockfale/msf-installer/blob/master/msf_install.sh
+			# http://docs.python-guide.org/en/latest/starting/install/osx/
+			local PKGS=`pkgutil --pkgs`
+			if [[ $PKGS =~ com.apple.pkg.Xcode ]]; then
+				echo " ** Xcode detected"
+			else
+				echo " ** WARN Xcode not detected."
+				echo " It is NOT mandatory but you may want to install it from the Apple AppStore"
+				echo " or download it from https://developer.apple.com/downloads."
+				# difference between appstore and download site
+				# http://apple.stackexchange.com/questions/62201/download-xcode-from-developer-site-vs-install-from-app-store
 
-			# TODO make a separate script to install xcode
-			# http://stackoverflow.com/questions/4081568/downloading-xcode-with-wget-or-curl
-		fi
-		if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
-			echo " ** Command Line Development Tools is already intalled"
-		else
-			echo " ** WARN Command Line Development Tools not intalled. See https://developer.apple.com/downloads"
-			xcode-select --install
-		fi
-
-	else
-		#bison util-linux build-essential gcc-multilib g++-multilib g++ pkg-config
-		# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
-		if [ "$STELLA_CURRENT_ARCH" = "aarch64" ]; then 
-			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
-		else
-			__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
-		fi
-	fi
+				# TODO make a separate script to install xcode
+				# http://stackoverflow.com/questions/4081568/downloading-xcode-with-wget-or-curl
+			fi
+			if [[ $PKGS =~ com.apple.pkg.DeveloperToolsCLI || $PKGS =~ com.apple.pkg.CLTools_Executables ]]; then
+				echo " ** Command Line Development Tools is already intalled"
+			else
+				echo " ** WARN Command Line Development Tools not intalled. See https://developer.apple.com/downloads"
+				xcode-select --install
+			fi
+		;;
+		linux)
+			# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
+			if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+			else
+				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+			fi
+		;;
+	esac
 }
+
 __sys_remove_build-chain-standard() {
 	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"

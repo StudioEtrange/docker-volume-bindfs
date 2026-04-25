@@ -6,7 +6,6 @@ feature_go() {
 
 	FEAT_NAME="go"
 	FEAT_LIST_SCHEMA="1_17_5:binary 1_12_4:binary 1_12_4:source 1_11_2:binary 1_11_2:source 1_10_2:binary 1_10_1:binary 1_9_2:binary 1_8_1:binary 1_6_3:binary 1_6_3:source 1_4_2:source 1_4_2:binary 1_4_3:source 1_4_3:binary 1_5_3:source 1_5_3:binary"
-	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 

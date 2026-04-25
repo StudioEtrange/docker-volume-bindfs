@@ -59,7 +59,7 @@ _OPENSSL_INCLUDED_=1
 feature_openssl() {
 	FEAT_NAME="openssl"
 	FEAT_LIST_SCHEMA="1_1_1k:source 1_0_2k:source 1_0_2d:source"
-	FEAT_DEFAULT_ARCH=""
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="OpenSSL is a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols."

@@ -6,7 +6,7 @@ _BOOSTBCP_INCLUDED_=1
 feature_boost-bcp() {
 	FEAT_NAME=boost-bcp
 	FEAT_LIST_SCHEMA="1_58_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

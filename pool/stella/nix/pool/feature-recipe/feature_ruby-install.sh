@@ -13,12 +13,36 @@ _RUBYINSTALL_INCLUDED_=1
 
 feature_ruby-install() {
 	FEAT_NAME=ruby-install
-	FEAT_LIST_SCHEMA="0_6_1:binary"
-	FEAT_DEFAULT_ARCH=
+	FEAT_LIST_SCHEMA="0_10_2:binary 0_6_1:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 
 
+
+feature_ruby-install_0_10_2() {
+	FEAT_VERSION=0_10_2
+
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL=
+	FEAT_SOURCE_URL_FILENAME=
+	FEAT_SOURCE_URL_PROTOCOL=
+
+	FEAT_BINARY_URL=https://github.com/postmodern/ruby-install/archive/v0.10.2.tar.gz
+	FEAT_BINARY_URL_FILENAME=ruby-install-v0.10.2.tar.gz
+	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
+
+	FEAT_SOURCE_CALLBACK=
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/ruby-install
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+
+}
 
 feature_ruby-install_0_6_1() {
 	FEAT_VERSION=0_6_1

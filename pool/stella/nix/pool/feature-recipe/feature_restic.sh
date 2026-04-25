@@ -3,17 +3,56 @@ _RESTIC_INCLUDED_=1
 
 
 
+
 feature_restic() {
 
 	FEAT_NAME="restic"
-	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA="0_12_0@x64:binary"
-	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="0_12_0@x64:binary 0_12_0@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA="0_18_1@x64:binary 0_12_0@x64:binary"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="0_18_1@x64:binary 0_18_1@x86:binary 0_12_0@x64:binary 0_12_0@x86:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	
 	FEAT_DESC="restic is a backup program that is fast, efficient and secure."
 	FEAT_LINK="https://github.com/restic/restic https://restic.readthedocs.io/"
+}
+
+feature_restic_0_18_1() {
+	FEAT_VERSION="0_18_1"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_darwin_amd64.bz2"
+			FEAT_BINARY_URL_FILENAME_x64="restic_0.18.1_darwin_amd64.bz2"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_darwin_arm64.bz2"
+			FEAT_BINARY_URL_FILENAME_x64="restic_0.18.1_darwin_arm64.bz2"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_amd64.bz2"
+			FEAT_BINARY_URL_FILENAME_x64="restic_0.18.1_linux_amd64.bz2"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_386.bz2"
+			FEAT_BINARY_URL_FILENAME_x86="restic_0.18.1_linux_386.bz2"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_arm64.bz2"
+			FEAT_BINARY_URL_FILENAME_x64="restic_0.18.1_linux_arm64.bz2"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_arm.bz2"
+			FEAT_BINARY_URL_FILENAME_x86="restic_0.18.1_linux_arm.bz2"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/restic
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 }
 
 feature_restic_0_12_0() {

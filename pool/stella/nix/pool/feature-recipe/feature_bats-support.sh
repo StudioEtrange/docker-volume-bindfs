@@ -6,7 +6,7 @@ _batssupport_INCLUDED_=1
 feature_bats-support() {
 	FEAT_NAME="bats-support"
 	FEAT_LIST_SCHEMA="0_3_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-support is a helper library providing common functions for bats"

@@ -7,7 +7,7 @@ _GOBUILD_INCLUDED_=1
 feature_go-build-chain() {
 	FEAT_NAME="go-build-chain"
 	FEAT_LIST_SCHEMA="1_12_4 1_11_2 1_8_1 1_5_3 1_4_3"
-	FEAT_DEFAULT_ARCH=
+	
 
 	FEAT_BUNDLE=NESTED
 }

@@ -4,8 +4,8 @@ _LAZYDOCKER_INCLUDED_=1
 
 feature_lazydocker() {
 	FEAT_NAME="lazydocker"
-	FEAT_LIST_SCHEMA="0_12@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	FEAT_LIST_SCHEMA="0_25_0@x64:binary 0_24_1@x64:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A simple terminal UI for both docker and docker-compose, written in Go with the gocui library."
@@ -15,20 +15,34 @@ feature_lazydocker() {
 
 
 
-feature_lazydocker_0_12() {
+feature_lazydocker_0_25_0() {
 
 
-	FEAT_VERSION="0_12"
+	FEAT_VERSION="0_25_0"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.12/lazydocker_0.12_Darwin_x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.12_Darwin_x86_64.tar.gz"
-		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.25.0/lazydocker_0.25.0_Darwin_x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="docker_0.25.0_Darwin_x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.25.0/lazydocker_0.25.0_Darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.25.0_Darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.12/lazydocker_0.12_Linux_x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.12_Linux_x86_64.tar.gz"
-		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.25.0/lazydocker_0.25.0_Linux_x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.25.0_Linux_x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.25.0/lazydocker_0.25.0_Linux_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.25.0_Linux_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
 	fi
 
 	# List of files to test if feature is installed
@@ -36,6 +50,43 @@ feature_lazydocker_0_12() {
 	# PATH to add to system PATH
 	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
 }
+
+feature_lazydocker_0_24_1() {
+
+
+	FEAT_VERSION="0_24_1"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.24.1/lazydocker_0.24.1_Darwin_x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="docker_0.24.1_Darwin_x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.24.1/lazydocker_0.24.1_Darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.24.1_Darwin_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.24.1/lazydocker_0.24.1_Linux_x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.24.1_Linux_x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "${STELLA_CURRENT_CPU_FAMILY}" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/jesseduffield/lazydocker/releases/download/v0.24.1/lazydocker_0.24.1_Linux_arm64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="lazydocker_0.24.1_Linux_arm64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	# List of files to test if feature is installed
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/lazydocker"
+	# PATH to add to system PATH
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+}
+
 
 
 

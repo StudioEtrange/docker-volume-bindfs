@@ -11,7 +11,7 @@ feature_qt() {
 	FEAT_NAME=qt
 
 	FEAT_LIST_SCHEMA="5_1_1:source 4_8_7:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

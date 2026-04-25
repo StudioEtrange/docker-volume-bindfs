@@ -6,6 +6,8 @@ _STELLA_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 
 # NOTE : use "env" with source (or .) command only
+#		source ./stella.sh env
+#		. ./stella.sh env
 # NOTE : warn : some env var (like PATH) are cumulative
 if [ "$1" = "env" ]; then
 	# https://stackoverflow.com/questions/2683279/how-to-detect-if-a-script-is-being-sourced
@@ -17,6 +19,7 @@ if [ "$1" = "env" ]; then
 	fi
 	__init_stella_env
 	echo "** Current env is setted/refreshed with stella env"
+
 else
 
 usage() {
@@ -32,7 +35,7 @@ usage() {
 	echo " L     app vendor <app-path> [--stellaroot=<path>] : vendorize stella (current or a specific one) into an app"
 	echo " L     app deploy <uri> [--cache] [--workspace] [--hidden] [--sudo] : deploy current app version to an uri. Could be to local filesystem, to ssh or to a vagrant machine. Vagrant use: vagrant://machine-name. [--cache] : include app cache folder. [--workspace] : include app workspace folder. [--sudo] : execute deploy as sudo. [--hidden] : exclude hidden files"
 	echo " o-- feature management :"
-	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] : install a feature. [--depforce] will force to reinstall all dependencies. [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
+	echo " L     feature install <feature schema> [--depforce] [--depignore] [--buildarch=x86|x64] [--export=<path>] [--portable=<path>] [-f] : install a feature. [--depforce] will force to reinstall all dependencies. [-f] will ignore files in cache, [--depignore] will ignore dependencies. schema = feature_name[#version][@arch][:binary|source][/os_restriction][\\os_exclusion]"
 	echo " L     feature remove <feature schema> : remove a feature"
 	echo " L     feature info <feature schema> : show some feature informations"
 	echo " L     feature list <all|feature name|active|full-active> : list all available feature OR available versions of a feature OR current active features OR full list of active features even hidden ones"
@@ -50,6 +53,7 @@ usage() {
 	echo " L     proxy bypass <host> : register a host that will not use proxy"
 	echo " L     proxy tunnel <proxy name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
+	echo " L     shell : launch an interactive new shell with all stella env var setted"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
 	echo " L     boot cmd <uri> -- <command> : execute a command inside an <uri> (use 'local' for current host)"
 	echo " L     boot script <uri> --script=<script_path> [-- script arg]"
@@ -71,34 +75,48 @@ usage() {
 
 # MAIN -----------------------------------------------------------------------------------
 
-# arguments
-PARAMETERS="
-DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot' '1'    										   				Action domain.
-ACTION=                         'action'   					a           'reset info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'  '1'       	Action to compute.
-ID=							 								''								s 						''	'1' 			A parameter
-"
-OPTIONS="
-FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
-APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
-WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
-CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
-STELLAROOT=''                   ''          'path'              s           0           ''                      Stella path to link.
-SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
-BRIDGE='' 						'' 			'uri'				s 			0			''					bridge uri in case of a web proxy tunnel
-PROXY='' 					'' 			'uri'				s 			0			''					proxy uri
-DEPFORCE=''						''    		''            		b     		0     		'1'           			Force reinstallation of all dependencies.
-DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
-EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
-PORTABLE=''                   ''          'path'              s           0           ''                      Make a portable version of this feature in this dir
-BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'
-CACHE=''                       	''    		''            		b     		0     		'1'           			Include cache folder when deploying.
-WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
-HIDDEN=''                       	''    		''            		b     		0     		'1'           			Exclude hidden files.
-SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
-SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
-"
-__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_ARG OTHERARG EXTRA_ARG_EVAL OTHERARG_EVAL" "$@"
+if [ "$1" = "shell" ]; then
+	DOMAIN="boot"
+	ACTION="shell"
+	ID="local"
+else
+	# arguments
+	PARAMETERS="
+	DOMAIN=                          'domain'     		a           'app feature stella proxy sys boot' '1'    										   				Action domain.
+	ACTION=                         'action'   					a           'reset info tunnel deploy script shell cmd version search remove on off register link vendor api install init get-data get-assets get-data-pack get-assets-pack delete-data delete-data-pack delete-assets delete-assets-pack update-data update-assets revert-data revert-assets update-data-pack update-assets-pack revert-data-pack revert-assets-pack get-feature install list'  '1'       	Action to compute.
+	ID=							 								''								s 						''	'1' 			A parameter
+	"
+	OPTIONS="
+	FORCE=''                       	'f'    		''            		b     		0     		'1'           			Force operation.
+	APPROOT=''						'' 			'path'				s 			0			'' 						App path (default current)
+	WORKROOT='' 					'' 			'path'				s 			0			''						Work app path (default equal to app path)
+	CACHEDIR=''						'' 			'path'				s 			0			''						Cache folder path
+	STELLAROOT=''                   ''          'path'              s           0           ''                      Stella path to link.
+	SAMPLES=''                      ''         ''                  b           0       '1'                     Generate app samples.
+	BRIDGE='' 						'' 			'uri'				s 			0			''					bridge uri in case of a web proxy tunnel
+	PROXY='' 					'' 			'uri'				s 			0			''					proxy uri
+	DEPFORCE=''						''    		''            		b     		0     		'1'           			Force reinstallation of all dependencies.
+	DEPIGNORE=''					''    		''            		b     		0     		'1'           		Will not process any dependencies.
+	EXPORT=''                     ''          'path'              s           0           ''                      	Export feature to this dir.
+	PORTABLE=''                   ''          'path'              s           0           ''                      Make a portable version of this feature in this dir
+	BUILDARCH=''				'a'				'arch'			a 			0 			 'x86 x64'
+	CACHE=''                       	''    		''            		b     		0     		'1'           			Include cache folder when deploying.
+	WORKSPACE=''                       	''    		''            		b     		0     		'1'           			Include workspace folder when deploying.
+	HIDDEN=''                       	''    		''            		b     		0     		'1'           			Exclude hidden files.
+	SUDO=''                       	''    		''            		b     		0     		'1'           			Execute as sudo.
+	SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
+	DEBUG=''                       	'd'    		''            		b     		0     		'1'           			Active log in debug mode.
+	"
+	__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_ARG OTHERARG EXTRA_ARG_EVAL OTHERARG_EVAL" "$@"
+fi
 
+# active debug mode
+if [ "$DEBUG" = "1" ]; then
+	STELLA_LOG_STATE="ON"
+	STELLA_LOG_LEVEL="DEBUG"
+	STELLA_APP_LOG_STATE="ON"
+	STELLA_APP_LOG_LEVEL="DEBUG"
+fi
 
 # --------------- APP ----------------------------
 if [ "$DOMAIN" = "app" ]; then
@@ -344,5 +362,4 @@ if [ "$DOMAIN" = "stella" ]; then
 fi
 
 
-__log "INFO" "** END **"
 fi

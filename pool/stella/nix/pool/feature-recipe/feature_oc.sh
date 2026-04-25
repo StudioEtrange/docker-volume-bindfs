@@ -5,7 +5,7 @@ _oc_INCLUDED_=1
 feature_oc() {
 	FEAT_NAME="oc"
 	FEAT_LIST_SCHEMA="latest@x64:binary 4_14_7@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="openshift client"

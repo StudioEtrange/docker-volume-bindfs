@@ -6,7 +6,7 @@ _icu4c_INCLUDED_=1
 feature_icu4c() {
 	FEAT_NAME=icu4c
 	FEAT_LIST_SCHEMA="55_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

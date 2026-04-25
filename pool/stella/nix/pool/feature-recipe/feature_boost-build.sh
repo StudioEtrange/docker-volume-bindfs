@@ -7,7 +7,7 @@ _BOOSTBUILD_INCLUDED_=1
 feature_boost-build() {
 	FEAT_NAME=boost-build
 	FEAT_LIST_SCHEMA="2014_10:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

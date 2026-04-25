@@ -83,7 +83,7 @@ elf_interp_readelf() {
 	# String dump of section '.interp':
 	#  [     0]  /lib/ld-musl-x86_64.so.1
 	#
-	readelf  -p .interp "$1" | sed -E -n '/\[\s*[0-9]\]/s/^\s*\[.*\]\s*(.*)/\1/p'
+	readelf  -p .interp "$1" | sed -E -n '/\[[[:space:]]*[0-9]\]/s/^[[:space:]]*\[.*\][[:space:]]*(.*)/\1/p'
 }
 
 elf_needed_readelf() {
@@ -382,9 +382,9 @@ shift $(( $OPTIND - 1))
 ${SET_X} && set -x
 
 if [ -z "${BACKEND}" ]; then
-	if which scanelf >/dev/null 2>&1; then
+	if type -P scanelf &>/dev/null; then
 		BACKEND=scanelf
-	elif which readelf >/dev/null 2>&1; then
+	elif type -P readelf &>/dev/null; then
 		BACKEND=readelf
 	else
 		error "This tool needs either scanelf or readelf"

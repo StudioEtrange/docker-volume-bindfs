@@ -6,7 +6,7 @@ _hfst_INCLUDED_=1
 feature_hfst() {
 	FEAT_NAME=hfst
 	FEAT_LIST_SCHEMA="3_9_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

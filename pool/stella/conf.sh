@@ -9,6 +9,9 @@ set -h
 #set -x
 #set -xv
 
+# pwd -L (and pwd) return logical path
+# pwd -P return physical path by resolving all symlink
+# NOTE : in windows, WSL use mount, it will return real path (/mnt/c/Users instead of /home/user)
 _STELLA_CONF_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$STELLA_CURRENT_RUNNING_DIR" = "" ]; then
 	#STELLA_CURRENT_RUNNING_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" && pwd )"
@@ -43,6 +46,8 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 # /pool/nix/artefact
 # /dist
 
+STELLA_ORIGINAL_SYSTEM_PATH="$PATH"
+
 # STELLA INCLUDE ---------------------------------------------
 
 #shellcheck source=nix/common/common-algorithm.sh
@@ -53,6 +58,8 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 . $STELLA_COMMON/common-platform.sh
 #shellcheck source=nix/common/common.sh
 . $STELLA_COMMON/common.sh
+#shellcheck source=nix/common/common-search-path.sh
+. $STELLA_COMMON/common-search-path.sh
 #shellcheck source=nix/common/common-feature.sh
 . $STELLA_COMMON/common-feature.sh
 #shellcheck source=nix/common/common-app.sh
@@ -79,22 +86,31 @@ STELLA_DIST_URL="$STELLA_URL/dist"
 . $STELLA_COMMON/common-boot.sh
 
 # STELLA ARTEFACT INCLUDE ---------------------------------------------
-
-#. $STELLA_ARTEFACT/bash_ini_parser/read_ini_next.sh
 . $STELLA_ARTEFACT/bash_ini_parser/read_ini.sh
 
-# LOG ---------------------------
-# Before include stella-link.sh, you can override log state
-# 	STELLA_LOG_STATE="OFF" ==> Disable log
-# STELLA_LOG_STATE : ON|OFF
-STELLA_LOG_STATE_DEFAULT="ON"
-STELLA_LOG_LEVEL_DEFAULT="1"
-[ "$STELLA_LOG_STATE" = "" ] && __set_log_state "$STELLA_LOG_STATE_DEFAULT"
-[ "$STELLA_LOG_LEVEL" = "" ] && __set_log_level "$STELLA_LOG_LEVEL_DEFAULT"
+# disable output color with STELLA_TERMINAL_COLOR="OFF"
+[ "$STELLA_TERMINAL_COLOR" = "" ] && STELLA_TERMINAL_COLOR="ON"
+if [ "$STELLA_TERMINAL_COLOR" = "ON" ]; then
+	. $STELLA_ARTEFACT/bash-colors/bash_colors.sh
+fi
 
+
+# LOG ---------------------------
+# Before include stella-link.sh, you can override log state of stella framework
+# 	STELLA_LOG_STATE : ON|OFF
+# 	STELLA_LOG_STATE="OFF" ==> Disable log
+# filter log
+# 	STELLA_LOG_LEVEL : INFO|WARN|ERROR|DEBUG
+[ "$STELLA_LOG_STATE" = "" ] && STELLA_LOG_STATE="ON"
+[ "$STELLA_LOG_LEVEL" = "" ] && STELLA_LOG_LEVEL="INFO"
+[ "$STELLA_APP_LOG_STATE" = "" ] && STELLA_APP_LOG_STATE="ON"
+[ "$STELLA_APP_LOG_LEVEL" = "" ] && STELLA_APP_LOG_LEVEL="INFO"
 
 # GATHER PLATFORM INFO ---------------------------------------------
 __set_current_platform_info
+
+#shellcheck source=nix/common/lib-dmg.sh
+. $STELLA_COMMON/lib-dmg.sh
 
 # GATHER CURRENT APP INFO ---------------------------------------------
 # Before include stella-link.sh, you can override file properties file
@@ -106,18 +122,20 @@ STELLA_APP_IS_STELLA=0
 
 # default app root folder is stella root folder
 if [ "$STELLA_APP_ROOT" = "" ]; then
-	# STELLA_APP_ROOT is define in stella-link file
+	# STELLA_APP_ROOT is defined in stella-link file
 	STELLA_APP_ROOT="$STELLA_ROOT"
 	STELLA_APP_IS_STELLA=1
 	STELLA_APP_NAME=stella
 else
 	STELLA_APP_NAME=
 	_STELLA_APP_PROPERTIES_FILE="$(__select_app $STELLA_APP_ROOT)"
+	__log_stella "DEBUG" "Load stella app properties file : $_STELLA_APP_PROPERTIES_FILE"
 	__get_all_properties $_STELLA_APP_PROPERTIES_FILE
 
-	[ "$STELLA_APP_NAME" = "" ] && STELLA_APP_NAME=default-app
+	[ "$STELLA_APP_NAME" = "" ] && STELLA_APP_NAME="default-app"
 fi
 
+__log_stella "DEBUG" "Current stella app name : $STELLA_APP_NAME"
 
 # you can override STELLA_ARGPARSE_GETOPT in properties file
 # STELLA_ARGPARSE_GETOPT : getopt command instead of "getopt"
@@ -131,7 +149,7 @@ fi
 
 # APP PATH ---------------------------------------------
 STELLA_APP_ROOT=$(__rel_to_abs_path "$STELLA_APP_ROOT" "$STELLA_CURRENT_RUNNING_DIR")
-
+__log_stella "DEBUG" "Current stella app root : $STELLA_APP_ROOT"
 [ "$STELLA_APP_WORK_ROOT" = "" ] && STELLA_APP_WORK_ROOT="$STELLA_APP_ROOT/workspace"
 STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_ROOT")
 
@@ -139,17 +157,17 @@ STELLA_APP_WORK_ROOT=$(__rel_to_abs_path "$STELLA_APP_WORK_ROOT" "$STELLA_APP_RO
 STELLA_APP_CACHE_DIR=$(__rel_to_abs_path "$STELLA_APP_CACHE_DIR" "$STELLA_APP_ROOT")
 
 STELLA_APP_TEMP_DIR="$STELLA_APP_WORK_ROOT/temp"
-STELLA_APP_FEATURE_ROOT="$STELLA_APP_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_ARCH/$STELLA_CURRENT_OS"
+STELLA_APP_FEATURE_ROOT="$STELLA_APP_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_CPU_ARCH/$STELLA_CURRENT_OS"
 ASSETS_ROOT="$STELLA_APP_WORK_ROOT/assets"
 ASSETS_REPOSITORY=$(__rel_to_abs_path "../assets_repository" "$STELLA_APP_WORK_ROOT")
 
 # for internal features
 STELLA_INTERNAL_WORK_ROOT=$STELLA_ROOT/workspace
-STELLA_INTERNAL_FEATURE_ROOT=$STELLA_INTERNAL_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_ARCH/$STELLA_CURRENT_OS
+STELLA_INTERNAL_FEATURE_ROOT=$STELLA_INTERNAL_WORK_ROOT/feature_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_CPU_ARCH/$STELLA_CURRENT_OS
 STELLA_INTERNAL_CACHE_DIR=$STELLA_ROOT/cache
 STELLA_INTERNAL_TEMP_DIR=$STELLA_INTERNAL_WORK_ROOT/temp
 
-STELLA_INTERNAL_TOOLSET_ROOT=$STELLA_INTERNAL_WORK_ROOT/toolset_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_ARCH/$STELLA_CURRENT_OS
+STELLA_INTERNAL_TOOLSET_ROOT=$STELLA_INTERNAL_WORK_ROOT/toolset_$STELLA_CURRENT_PLATFORM_SUFFIX/$STELLA_CURRENT_CPU_ARCH/$STELLA_CURRENT_OS
 
 
 # current config env
@@ -161,11 +179,18 @@ if [ "$STELLA_APP_ENV_FILE" = "" ]; then
 	if [ -f "$STELLA_APP_ROOT/.stella-env" ]; then
 		STELLA_APP_ENV_FILE="$STELLA_APP_ROOT/.stella-env"
 		STELLA_ENV_FILE=$STELLA_APP_ENV_FILE
+		__log_stella "DEBUG" "Current stella env file : $STELLA_ENV_FILE"
 	else
-		STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
+		[ -f "$STELLA_ROOT/.stella-env" ] && STELLA_ENV_FILE="$STELLA_ROOT/.stella-env"
 	fi
 else
-	STELLA_ENV_FILE=$STELLA_APP_ENV_FILE
+	if [ -f "$STELLA_APP_ENV_FILE" ]; then
+		STELLA_ENV_FILE="$STELLA_APP_ENV_FILE"
+		__log_stella "DEBUG" "Current stella env file : $STELLA_ENV_FILE"
+	else
+		STELLA_ENV_FILE="$STELLA_APP_ENV_FILE"
+		__log_stella "WARN" "Current selected stella app env file does not exist : $STELLA_APP_ENV_FILE"
+	fi
 fi
 
 
@@ -256,22 +281,28 @@ __reset_build_env
 # linked libs we do not want to tweak (change link to)
 STELLA_BINARY_DEFAULT_LIB_IGNORED='^/System/Library|^/usr/lib|^/lib'
 
+# where to check if a system dynamic lib is in cache :
+#		cache-list : in known list of dyld-cache  (default mode and faster mode)
+#		dyld-cache : scan dyld cache (needs ipsw tool)
+#	see : __darwin_dynamic_library_exists_in_cache
+STELLA_LINKED_LIB_CACHE_MODE_DARWIN="cache-list"
 
 # API ---------------------------------------------
+STELLA_API_ALGORITHM_PUBLIC="stack_init stack_push stack_pop"
+STELLA_API_API_PUBLIC="api_connect api_disconnect"
+STELLA_API_APP_PUBLIC="transfer_app get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features remove_features install_features uninstall_features generate_app_link_files init_app"
+STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check_binary_file tweak_binary_file"
+STELLA_API_BOOT_PUBLIC="boot_stella_shell boot_stella_cmd boot_stella_script boot_app_shell boot_app_cmd boot_app_script"
+STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
+STELLA_API_FEATURE_PUBLIC="feature_add_repo feature_info list_feature_version feature_remove feature_remove_list feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
+STELLA_API_LOG_PUBLIC="log_app set_log_state_stella set_log_level_stella set_log_state_app set_log_level_app"
+STELLA_API_NETWORK_PUBLIC="get_stable_ip_from_default_interface find_free_port get_ip_external check_tcp_port_open ssh_execute get_ip_from_host get_ip_from_interface proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
+STELLA_API_PLATFORM_PUBLIC="brew_get_archive_url ansible_play ansible_play_localhost python_get_lib_dir python_get_include_dir python_get_bin_dir python_get_site_packages_global_path python_get_site_packages_user_path python_get_standard_packages_path yum_proxy_unset yum_proxy_unset_repo yum_proxy_set yum_proxy_set_repo yum_add_extra_repositories yum_remove_extra_repositories python_build_get_libs python_build_get_includes python_build_get_ldflags python_build_get_clags python_build_get_prefix python_major_version python_short_version sys_install sys_remove require"
 STELLA_API_COMMON_PUBLIC="uri_parse_stream crontab_add crontab_remove filter_version_list string_contains htpasswd_md5 htpasswd_sha1 htpasswd_crypt list_contains filter_list_with_list is_dir_empty list_filter_duplicate abs_to_rel_path symlink_abs_to_rel_path random_number_list_from_range format_table generate_password generate_machine_id sha256 is_logical_equalpath is_logical_subpath sort_version transfer_stella filter_list uri_build_path uri_get_path uri_parse find_folder_up get_active_path uncompress daemonize rel_to_abs_path is_abs argparse get_filename_from_string \
 get_resource delete_resource update_resource revert_resource download_uncompress copy_folder_content_into del_folder \
 get_key get_keys add_key del_key mercurial_project_version git_project_version get_stella_version \
-make_sevenzip_sfx_bin make_targz_sfx_shell compress trim transfer_stella transfer_folder_rsync transfer_file_rsync md5"
-STELLA_API_API_PUBLIC="api_connect api_disconnect"
-STELLA_API_APP_PUBLIC="transfer_app get_app_property link_app get_data get_assets get_data_pack get_assets_pack delete_data delete_assets delete_data_pack delete_assets_pack update_data update_assets revert_data revert_assets update_data_pack update_assets_pack revert_data_pack revert_assets_pack get_feature get_features remove_features install_features uninstall_features"
-STELLA_API_FEATURE_PUBLIC="feature_add_repo feature_info list_feature_version feature_remove feature_remove_list feature_catalog_info feature_install feature_install_list feature_init list_active_features feature_reinit_installed feature_inspect"
-STELLA_API_BINARY_PUBLIC="tweak_linked_lib get_rpath add_rpath check_rpath check_binary_file tweak_binary_file"
-STELLA_API_BUILD_PUBLIC="toolset_info set_toolset start_build_session set_build_mode auto_build"
-STELLA_API_PLATFORM_PUBLIC="ansible_play ansible_play_localhost python_get_lib_dir python_get_include_dir python_get_bin_dir python_get_site_packages_global_path python_get_site_packages_user_path python_get_standard_packages_path yum_proxy_unset yum_proxy_unset_repo yum_proxy_set yum_proxy_set_repo yum_add_extra_repositories yum_remove_extra_repositories python_build_get_libs python_build_get_includes python_build_get_ldflags python_build_get_clags python_build_get_prefix python_major_version python_short_version sys_install sys_remove require"
-STELLA_API_NETWORK_PUBLIC="find_free_port get_ip_external check_tcp_port_open ssh_execute get_ip_from_hostname get_ip_from_interface proxy_tunnel enable_proxy disable_proxy no_proxy_for register_proxy register_no_proxy"
-STELLA_API_BOOT_PUBLIC="boot_stella_shell boot_stella_cmd boot_stella_script boot_app_shell boot_app_cmd boot_app_script"
-STELLA_API_LOG_PUBLIC="log set_log_level set_log_state"
-STELLA_API_ALGORITHM_PUBLIC="stack_init stack_push stack_pop"
+make_sevenzip_sfx_bin make_targz_sfx_shell compress trim transfer_stella transfer_folder_rsync transfer_file_rsync md5 select_official_schema"
+
 
 # SAMPLE : to test a function that return an exit code :
 # 		if $($STELLA_API "is_dir_empty" "/bin"); then

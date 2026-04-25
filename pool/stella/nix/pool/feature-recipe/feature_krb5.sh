@@ -8,7 +8,7 @@ feature_krb5() {
 	FEAT_NAME=krb5
 
 	FEAT_LIST_SCHEMA="1_15_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

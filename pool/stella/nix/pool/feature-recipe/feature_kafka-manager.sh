@@ -11,7 +11,7 @@ _kafkamanager_INCLUDED_=1
 feature_kafka-manager() {
 	FEAT_NAME="kafka-manager"
 	FEAT_LIST_SCHEMA="1_3_3_14:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

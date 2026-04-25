@@ -6,7 +6,7 @@ _SDL_INCLUDED_=1
 feature_sdl() {
 	FEAT_NAME=sdl
 	FEAT_LIST_SCHEMA="2_0_10:source 2_0_3:source 1_2_15:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D."

@@ -7,7 +7,7 @@ _wildfly_INCLUDED_=1
 feature_wildfly() {
 	FEAT_NAME=wildfly
 	FEAT_LIST_SCHEMA="7_1_1_FINAL:binary 8_2_1_FINAL 9_0_2_FINAL 10_0_0_FINAL:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

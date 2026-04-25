@@ -5,7 +5,7 @@ _cpptest_INCLUDED_=1
 feature_cpptest() {
 	FEAT_NAME=cpptest
 	FEAT_LIST_SCHEMA="1_1_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -7,7 +7,7 @@ _kalibratertl_INCLUDED_=1
 feature_kalibrate-rtl() {
 	FEAT_NAME=kalibrate-rtl
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

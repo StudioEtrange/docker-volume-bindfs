@@ -5,7 +5,7 @@ _sqlite_INCLUDED_=1
 feature_sqlite() {
 	FEAT_NAME="sqlite"
 	FEAT_LIST_SCHEMA="3_35_5:source 3_23_1:source 3_18_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="SQLite is an in-process library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine."

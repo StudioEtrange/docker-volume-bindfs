@@ -7,7 +7,7 @@ _readline_INCLUDED_=1
 feature_readline() {
 	FEAT_NAME=readline
 	FEAT_LIST_SCHEMA="6_3_8:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

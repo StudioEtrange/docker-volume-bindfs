@@ -7,7 +7,7 @@ _iprange_INCLUDED_=1
 feature_iprange() {
 	FEAT_NAME=iprange
 	FEAT_LIST_SCHEMA="1_0_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 }

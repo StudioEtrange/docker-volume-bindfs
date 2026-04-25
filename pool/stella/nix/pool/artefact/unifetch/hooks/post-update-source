@@ -1,0 +1,3 @@
+#!/bin/bash
+
+baz_run_hook 'pre-install'

@@ -6,7 +6,7 @@ _bats_INCLUDED_=1
 feature_bats() {
 	FEAT_NAME="bats"
 	FEAT_LIST_SCHEMA="2 1"
-	FEAT_DEFAULT_ARCH=
+	
 
 	FEAT_BUNDLE="NESTED"
 
@@ -47,10 +47,10 @@ feature_bats_1() {
 
 feature_bats_setenv() {
 	export BATS_BUNDLE_HOME="${FEAT_INSTALL_ROOT}"
-	__log "INFO" "-- Bats is installed in [$BATS_BUNDLE_HOME] (see BATS_BUNDLE_HOME env var)."
-	__log "INFO" "-- Bats helper are installed in folders listed in [$BATS_LIB_PATH] (see BATS_LIB_PATH env var)."
-	__log "INFO" "-- To load an installed helper use bats_load_library 'bats-assert', it will search bats-assert folder inside those folders list"
-	__log "INFO" "-- see https://bats-core.readthedocs.io/en/stable/writing-tests.html#bats-load-library-load-system-wide-libraries"
+	__log "INFO" "Bats is installed in [$BATS_BUNDLE_HOME] (see BATS_BUNDLE_HOME env var)."
+	__log "INFO" "Bats helper are installed in folders listed in [$BATS_LIB_PATH] (see BATS_LIB_PATH env var)."
+	__log "INFO" "To load an installed helper use bats_load_library 'bats-assert', it will search bats-assert folder inside those folders list"
+	__log "INFO" "see https://bats-core.readthedocs.io/en/stable/writing-tests.html#bats-load-library-load-system-wide-libraries"
 }
 
 

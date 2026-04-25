@@ -5,7 +5,7 @@ _libiconv_INCLUDED_=1
 feature_libiconv() {
 	FEAT_NAME=libiconv
 	FEAT_LIST_SCHEMA="1_14:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

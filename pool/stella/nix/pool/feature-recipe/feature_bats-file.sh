@@ -6,7 +6,7 @@ _batsfile_INCLUDED_=1
 feature_bats-file() {
 	FEAT_NAME="bats-file"
 	FEAT_LIST_SCHEMA="0_3_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="bats-file is a helper library providing common filesystem related assertions and helpers for bats"

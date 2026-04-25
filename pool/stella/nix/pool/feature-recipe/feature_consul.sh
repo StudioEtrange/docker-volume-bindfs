@@ -6,7 +6,7 @@ _consul_INCLUDED_=1
 feature_consul() {
 	FEAT_NAME=consul
 	FEAT_LIST_SCHEMA="1_4_4@x64:binary 1_4_4@x86:binary 1_4_0@x64:binary 1_4_0@x86:binary 0_6_3@x64:binary 0_6_3@x86:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

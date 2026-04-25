@@ -6,7 +6,7 @@ feature_protobuf() {
 	FEAT_NAME=protobuf
 
 	FEAT_LIST_SCHEMA="3_1_0:source 3_0_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

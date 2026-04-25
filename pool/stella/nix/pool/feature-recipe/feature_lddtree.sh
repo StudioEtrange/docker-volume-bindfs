@@ -9,7 +9,7 @@ _lddtreesh_INCLUDED_=1
 feature_lddtree() {
 	FEAT_NAME=lddtree
 	FEAT_LIST_SCHEMA="SNAPSHOT:source SNAPSHOT-SE:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

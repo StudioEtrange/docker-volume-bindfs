@@ -6,7 +6,7 @@ feature_ngrok() {
 	FEAT_NAME=ngrok
 	# version stable is considered in order the one to choose by default
 	FEAT_LIST_SCHEMA="stable@x86:binary\macos stable@x64:binary 2_3_40@x86:binary\macos 2_3_40@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="ngrok is the programmable network edge that adds connectivity, security, and observability to your apps with no code changes"

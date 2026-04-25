@@ -12,7 +12,7 @@ feature_angband() {
 	FEAT_NAME=angband
 
 	FEAT_LIST_SCHEMA="4_1_3:source 4_0_5:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="A free, single-player roguelike dungeon exploration game - NCurses only"

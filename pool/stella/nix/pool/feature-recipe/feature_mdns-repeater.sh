@@ -5,7 +5,7 @@ _mdnsrepeater_INCLUDED_=1
 feature_mdns-repeater() {
 	FEAT_NAME=mdns-repeater
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

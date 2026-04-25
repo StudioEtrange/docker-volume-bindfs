@@ -6,7 +6,7 @@ _MAVEN_INCLUDED_=1
 feature_maven() {
 	FEAT_NAME=maven
 	FEAT_LIST_SCHEMA="3_5_2:binary 3_3_9:binary 3_3_3:binary 3_3_1:binary 3_0_5:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

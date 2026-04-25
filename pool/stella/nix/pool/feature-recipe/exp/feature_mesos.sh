@@ -11,7 +11,7 @@ feature_mesos() {
 
 	FEAT_NAME=mesos
 	FEAT_LIST_SCHEMA="1_2_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="http://mesos.apache.org/"

@@ -13,7 +13,7 @@ _R_INCLUDED_=1
 feature_r() {
 	FEAT_NAME=r
 	FEAT_LIST_SCHEMA="3_2_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

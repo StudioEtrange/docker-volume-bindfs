@@ -5,7 +5,7 @@ _SHC_INCLUDED_=1
 feature_shc() {
 	FEAT_NAME=shc
 	FEAT_LIST_SCHEMA="4_0_3:source 4_0_1:source studioetrange-fork:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Shell script compiler"

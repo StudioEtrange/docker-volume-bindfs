@@ -6,7 +6,7 @@ feature_goaccess() {
 	FEAT_NAME=goaccess
 
 	FEAT_LIST_SCHEMA="1_0_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

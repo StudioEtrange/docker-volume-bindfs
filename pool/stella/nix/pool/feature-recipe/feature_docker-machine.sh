@@ -4,14 +4,41 @@ _DOCKERMACHINE_INCLUDED_=1
 
 feature_docker-machine() {
 	FEAT_NAME=docker-machine
-	FEAT_LIST_SCHEMA="0_16_1@x64:binary 0_16_0@x64:binary 0_14_0@x64:binary 0_13_0@x64:binary 0_10_0@x64:binary 0_8_2@x64:binary 0_2_0@x64:binary 0_2_0@x86:binary 0_4_0@x86:binary 0_4_0@x64:binary 0_5_6@x64:binary 0_6_0@x64:binary 0_7_0@x64:binary"
-	FEAT_DEFAULT_ARCH=x64
+	FEAT_LIST_SCHEMA="0_16_2@x64:binary 0_16_1@x64:binary 0_16_0@x64:binary 0_14_0@x64:binary 0_13_0@x64:binary 0_10_0@x64:binary 0_8_2@x64:binary 0_2_0@x64:binary 0_2_0@x86:binary 0_4_0@x86:binary 0_4_0@x64:binary 0_5_6@x64:binary 0_6_0@x64:binary 0_7_0@x64:binary"
+	
 	FEAT_DEFAULT_FLAVOUR=binary
 }
 
 
 
 
+
+feature_docker-machine_0_16_2() {
+	FEAT_VERSION="0_16_2"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_x86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
+		FEAT_BINARY_URL_x64="https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-Darwin-x86_64"
+		FEAT_BINARY_URL_FILENAME_x64="docker-machine-Darwin-x86_64-$FEAT_VERSION"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x86=
+		FEAT_BINARY_URL_FILENAME_x86=
+		FEAT_BINARY_URL_PROTOCOL_x86=
+		FEAT_BINARY_URL_x64="https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-Linux-x86_64"
+		FEAT_BINARY_URL_FILENAME_x64="docker-machine-Linux-x86_64-$FEAT_VERSION"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP"
+	fi
+
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/docker-machine
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+
+}
 
 feature_docker-machine_0_16_1() {
 	FEAT_VERSION="0_16_1"

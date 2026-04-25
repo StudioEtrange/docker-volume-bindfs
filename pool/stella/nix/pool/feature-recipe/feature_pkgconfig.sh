@@ -7,7 +7,7 @@ _pkgconfig_INCLUDED_=1
 feature_pkgconfig() {
 	FEAT_NAME="pkgconfig"
 	FEAT_LIST_SCHEMA="0_29_2:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="pkg-config is a helper tool used when compiling applications and libraries"

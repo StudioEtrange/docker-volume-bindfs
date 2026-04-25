@@ -19,7 +19,6 @@ _TEMPLATE_INCLUDED_=1
 feature_template() {
 	FEAT_NAME=template
 	FEAT_LIST_SCHEMA="1_0_0:binary"
-	FEAT_DEFAULT_ARCH=
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_ENV_CALLBACK="feature_template_env"

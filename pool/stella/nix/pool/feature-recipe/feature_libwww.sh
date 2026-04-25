@@ -6,7 +6,7 @@ _libwww_INCLUDED_=1
 feature_libwww() {
 	FEAT_NAME=libwww
 	FEAT_LIST_SCHEMA="5_4_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

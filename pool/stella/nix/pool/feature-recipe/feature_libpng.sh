@@ -6,7 +6,7 @@ _LIBPNG_INCLUDED_=1
 feature_libpng() {
 	FEAT_NAME="libpng"
 	FEAT_LIST_SCHEMA="1_6_17:source 1_6_37:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="Reference library for supporting the Portable Network Graphics (PNG) format."
@@ -17,7 +17,7 @@ feature_libpng() {
 feature_libpng_1_6_37() {
 	FEAT_VERSION="1_6_37"
 
-	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2"
+	#FEAT_SOURCE_DEPENDENCIES="zlib#^1_2"
 	FEAT_BINARY_DEPENDENCIES=
 	FEAT_SOURCE_URL="http://downloads.sourceforge.net/project/libpng/libpng16/1.6.37/libpng-1.6.37.tar.xz"
 	FEAT_SOURCE_URL_FILENAME="libpng-1.6.37.tar.xz"
@@ -27,7 +27,7 @@ feature_libpng_1_6_37() {
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK="feature_libpng_link"
+	#FEAT_SOURCE_CALLBACK="feature_libpng_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 

@@ -211,7 +211,7 @@ __prepare_build() {
 	echo "====> Build Link path mode : $STELLA_BUILD_LINK_PATH"
 	echo "====> Linked libs from stella features : $STELLA_LINKED_LIBS_LIST"
 	echo "====> Linked libs from system : $STELLA_LINKED_LIBS_SYSTEM_LIST"
-	echo "====> pkg-config tool : $(which pkg-config)"
+	echo "====> pkg-config tool : $(command -v pkg-config 2>/dev/null)"
 	echo "====> env PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
 	echo "====> pkg-config full search path : $(__pkgconfig_search_path)"
 	echo "** FOLDERS"
@@ -227,11 +227,10 @@ __prepare_build() {
 	echo "====> CMAKE_LIBRARY_PATH : $CMAKE_LIBRARY_PATH"
 	echo "====> CMAKE_INCLUDE_PATH : $CMAKE_INCLUDE_PATH"
 	echo "====> STELLA_CMAKE_EXTRA_FLAGS : $STELLA_CMAKE_EXTRA_FLAGS"
-	echo "** SOME ENV"
-	echo "====> LIBRARY_PATH (search path at link time) : $LIBRARY_PATH"
-	echo "====> LD_LIBRARY_PATH (search path at run time linux): $LD_LIBRARY_PATH"
-	echo "====> DYLD_LIBRARY_PATH (search path at run time darwin): $DYLD_LIBRARY_PATH"
-
+	echo "** SOME environment variables"
+	echo "====> LIBRARY_PATH (additional search path at LINK/BUILD time for linux and darwin) : $LIBRARY_PATH"
+	echo "====> LD_LIBRARY_PATH (additional search path at RUNTIME for linux): $LD_LIBRARY_PATH"
+	echo "====> DYLD_LIBRARY_PATH (additional search path at RUNTIME for darwin): $DYLD_LIBRARY_PATH"
 
 }
 
@@ -317,7 +316,6 @@ __auto_build() {
 	[ "$_opt_configure" = "ON" ] && __launch_configure "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
 	[ "$_opt_build" = "ON" ] && __launch_build "$SOURCE_DIR" "$INSTALL_DIR" "$BUILD_DIR" "$OPT"
 
-
 	cd "$INSTALL_DIR"
 
 	# clean workspace
@@ -384,6 +382,10 @@ __launch_configure() {
 	case $STELLA_BUILD_CONFIG_TOOL_BIN_FAMILY in
 
 		configure)
+			if [ ! -f "$AUTO_SOURCE_DIR/configure" ]; then
+				echo "** ERROR : configure script not found in $AUTO_SOURCE_DIR"
+				return 1
+			fi
 			chmod +x "$AUTO_SOURCE_DIR/configure"
 
 			if [ "$AUTO_INSTALL_CONF_FLAG_PREFIX" = "" ]; then

@@ -4,12 +4,76 @@ _fastfetch_INCLUDED_=1
 
 feature_fastfetch() {
 	FEAT_NAME="fastfetch"
-	FEAT_LIST_SCHEMA="2_5_0@x64:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	FEAT_LIST_SCHEMA="2_61_0@x64:binary 2_53_0@x64:binary 2_5_0@x64:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="Print a screen describing the system. Like neofetch, but much faster because written mostly in C"
 	FEAT_LINK="https://github.com/fastfetch-cli/fastfetch"
+}
+
+feature_fastfetch_2_61_0() {
+	FEAT_VERSION="2_61_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.61.0/fastfetch-macos-amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-macos-amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.61.0/fastfetch-macos-aarch64.zip"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-macos-aarch64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.61.0/fastfetch-linux-amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-linux-amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.61.0/fastfetch-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/usr/bin/fastfetch"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/usr/bin"
+}
+
+feature_fastfetch_2_53_0() {
+	FEAT_VERSION="2_53_0"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.53.0/fastfetch-macos-amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-macos-amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.53.0/fastfetch-macos-aarch64.zip"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-macos-aarch64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.53.0/fastfetch-linux-amd64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-linux-amd64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/fastfetch-cli/fastfetch/releases/download/2.53.0/fastfetch-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="fastfetch-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/usr/bin/fastfetch"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/usr/bin"
 }
 
 

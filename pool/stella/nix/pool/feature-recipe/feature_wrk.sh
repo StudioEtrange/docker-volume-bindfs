@@ -7,7 +7,7 @@ _wrk_INCLUDED_=1
 feature_wrk() {
 	FEAT_NAME=wrk
 	FEAT_LIST_SCHEMA="4_0_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -8,7 +8,7 @@ feature_nifi() {
 
 	FEAT_NAME=nifi
 	FEAT_LIST_SCHEMA="0_3_0:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

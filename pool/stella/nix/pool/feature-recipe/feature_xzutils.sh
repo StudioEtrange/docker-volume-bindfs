@@ -5,7 +5,7 @@ _xzutils_INCLUDED_=1
 feature_xzutils() {
 	FEAT_NAME=xzutils
 	FEAT_LIST_SCHEMA="5_2_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

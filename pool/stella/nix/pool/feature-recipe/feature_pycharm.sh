@@ -9,7 +9,7 @@ feature_pycharm() {
 	FEAT_NAME=pycharm
 	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="2018_1_0_community:binary 2017_2_3_community:binary"
 	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA=
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

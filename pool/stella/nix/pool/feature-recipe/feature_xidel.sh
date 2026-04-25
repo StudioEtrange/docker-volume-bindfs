@@ -5,7 +5,7 @@ feature_xidel() {
 	FEAT_NAME="xidel"
 	[ "${STELLA_CURRENT_PLATFORM}" = "linux" ] && FEAT_LIST_SCHEMA="0_9_8@x64:binary 0_9_8@x86:binary"
 	[ "${STELLA_CURRENT_PLATFORM}" = "darwin" ] && FEAT_LIST_SCHEMA=""
-	FEAT_DEFAULT_ARCH="x64"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A command line tool to download and extract data from HTML/XML pages or JSON-APIs, using CSS, XPath 3.0, XQuery 3.0, JSONiq or pattern templates. It can also create new or transformed XML/HTML/JSON documents."

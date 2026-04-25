@@ -5,7 +5,7 @@ _nms_INCLUDED_=1
 feature_nms() {
 	FEAT_NAME=nms
 	FEAT_LIST_SCHEMA="0_3_3:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="A command line tool that recreates the famous data decryption effect seen in the 1992 movie Sneakers."

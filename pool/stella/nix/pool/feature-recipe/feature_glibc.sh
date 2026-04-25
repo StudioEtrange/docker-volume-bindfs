@@ -6,7 +6,7 @@ _glibc_INCLUDED_=1
 feature_glibc() {
 	FEAT_NAME=glibc
 	FEAT_LIST_SCHEMA="2_18:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

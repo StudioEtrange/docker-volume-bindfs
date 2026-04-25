@@ -14,11 +14,14 @@ _augeas_INCLUDED_=1
 #print /files
 
 feature_augeas() {
-	FEAT_NAME=augeas
+	FEAT_NAME="augeas"
 
 	FEAT_LIST_SCHEMA="1_6_0:source 1_5_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="Augeas is a configuration editing tool. It parses configuration files in their native formats and transforms them into a tree. Configuration changes are made by manipulating this tree and saving it back into the lens-specific format."
+	FEAT_LINK="http://augeas.net/"
 }
 
 

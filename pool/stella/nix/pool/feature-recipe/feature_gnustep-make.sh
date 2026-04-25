@@ -5,7 +5,7 @@ feature_gnustep-make() {
 	FEAT_NAME=gnustep-make
 
 	FEAT_LIST_SCHEMA="2_6_7:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

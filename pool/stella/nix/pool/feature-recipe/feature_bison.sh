@@ -10,7 +10,7 @@ feature_bison() {
 	FEAT_NAME=bison
 
 	FEAT_LIST_SCHEMA="3_0_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_LINK="https://www.gnu.org/software/bison/"

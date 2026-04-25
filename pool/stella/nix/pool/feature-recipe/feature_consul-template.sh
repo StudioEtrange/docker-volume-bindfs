@@ -6,7 +6,7 @@ _consultemplate_INCLUDED_=1
 feature_consul-template() {
 	FEAT_NAME=consul-template
 	FEAT_LIST_SCHEMA="0_19_4@x64:binary 0_19_4@x86:binary"
-	FEAT_DEFAULT_ARCH=x64
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

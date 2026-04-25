@@ -7,7 +7,7 @@ feature_libogg() {
 	FEAT_NAME=libogg
 	# CMakeList.txt are not yet present in official release
 	FEAT_LIST_SCHEMA="DEV20150926:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

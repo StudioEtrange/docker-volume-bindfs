@@ -11,7 +11,7 @@ _sdlimage_INCLUDED_=1
 feature_sdl-image() {
 	FEAT_NAME=sdl-image
 	FEAT_LIST_SCHEMA="2_0_5:source 2_0_0:source 1_2_12:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="SDL_image is an image loading library that is used with the SDL library, and almost as portable. It allows a programmer to use multiple image formats without having to code all the loading and conversion algorithms themselves."

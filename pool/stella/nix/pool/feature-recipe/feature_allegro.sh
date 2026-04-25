@@ -23,14 +23,17 @@ _ALLEGRO_INCLUDED_=1
 
 
 feature_allegro() {
-	FEAT_NAME=allegro
+	FEAT_NAME="allegro"
 	FEAT_LIST_SCHEMA="5_0_11:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="A cross-platform library mainly aimed at video game and multimedia programming."
+	FEAT_LINK="https://liballeg.org/ https://github.com/liballeg/allegro5"
 }
 
 feature_allegro_5_0_11() {
-	FEAT_VERSION=5_0_11
+	FEAT_VERSION="5_0_11"
 	FEAT_SOURCE_DEPENDENCIES="zlib#^1_2 freetype#2_6_0 libpng#1_6_17 jpeg#9_0_0 vorbis#1_3_5 libogg#DEV20150926 physfs#2_0_3 dumb#0_9_3 flac#1_3_1"
 	FEAT_BINARY_DEPENDENCIES=
 

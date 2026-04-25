@@ -7,7 +7,7 @@ _ZLIB_INCLUDED_=1
 feature_zlib() {
 	FEAT_NAME=zlib
 	FEAT_LIST_SCHEMA="1_2_8:source 1_2_11:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="A massively spiffy yet delicately unobtrusive compression library."

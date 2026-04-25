@@ -7,7 +7,7 @@ _httrack_INCLUDED_=1
 feature_httrack() {
 	FEAT_NAME=httrack
 	FEAT_LIST_SCHEMA="3_48_22:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

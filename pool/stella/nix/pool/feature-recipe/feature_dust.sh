@@ -5,13 +5,88 @@ _dust_INCLUDED_=1
 
 feature_dust() {
 	FEAT_NAME="dust"
-	FEAT_LIST_SCHEMA="1_0_0@x64:binary 1_0_0@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	FEAT_LIST_SCHEMA="1_2_4@x64:binary 1_2_3@x64:binary 1_2_4@x86:binary 1_2_3@x86:binary 1_1_1@x64:binary 1_1_1@x86:binary 1_0_0@x64:binary 1_0_0@x86:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="A more intuitive version of du in rust"
 	FEAT_LINK="https://github.com/bootandy/dust"
 }
+
+feature_dust_1_2_4() {
+
+	FEAT_VERSION="1_2_4"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/bootandy/dust/releases/download/v1.2.4/dust-v1.2.4-i686-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x86="dust-v1.2.4-i686-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/bootandy/dust/releases/download/v1.2.4/dust-v1.2.4-aarch64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="dust-v1.2.4-aarch64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/bootandy/dust/releases/download/v1.2.4/dust-v1.2.4-arm-unknown-linux-gnueabihf.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x86="dust-v1.2.4-arm-unknown-linux-gnueabihf.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/dust"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+}
+
+feature_dust_1_2_3() {
+
+	FEAT_VERSION="1_2_3"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.3-i686-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x86="dust-v1.2.3-i686-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.3-aarch64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x64="dust-v1.2.3-aarch64-unknown-linux-gnu.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.3-arm-unknown-linux-gnueabihf.tar.gz"
+			FEAT_BINARY_URL_FILENAME_x86="dust-v1.2.3-arm-unknown-linux-gnueabihf.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/dust"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+}
+
+
+
+
+feature_dust_1_1_1() {
+
+	FEAT_VERSION="1_1_1"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		FEAT_BINARY_URL_x64="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz"
+		FEAT_BINARY_URL_FILENAME_x64="dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz"
+		FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		FEAT_BINARY_URL_x86="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-i686-unknown-linux-gnu.tar.gz"
+		FEAT_BINARY_URL_FILENAME_x86="dust-v1.1.1-i686-unknown-linux-gnu.tar.gz"
+		FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/dust"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+}
+
 
 
 

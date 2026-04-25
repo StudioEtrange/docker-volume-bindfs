@@ -7,7 +7,7 @@ _paxutils_INCLUDED_=1
 feature_pax-utils() {
 	FEAT_NAME=pax-utils
 	FEAT_LIST_SCHEMA="1_1_6:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

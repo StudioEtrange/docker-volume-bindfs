@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 _STELLA_LINK_CURRENT_FILE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [ -f "$_STELLA_LINK_CURRENT_FILE_DIR/.stella-id" ] && . $_STELLA_LINK_CURRENT_FILE_DIR/.stella-id
-[ ! "$1" = "chaining" ] && export STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
+[ ! "$1" = "chaining" ] && [ "$STELLA_APP_ROOT" = "" ] && export STELLA_APP_ROOT=$_STELLA_LINK_CURRENT_FILE_DIR
 
 if [ ! "$1" = "nothing" ]; then
 	if [ ! "$1" = "bootstrap" ]; then
@@ -22,6 +22,7 @@ case $ACTION in
 	include)
 		. "$STELLA_ROOT/conf.sh"
 		__init_stella_env
+		__log_stella "DEBUG" "stella" "Loaded STELLA framework from $STELLA_ROOT"
 		;;
 	bootstrap)
 		cd "$_STELLA_LINK_CURRENT_FILE_DIR"

@@ -4,7 +4,7 @@ _CURSEOFWAR_INCLUDED_=1
 feature_curseofwar() {
 	FEAT_NAME=curseofwar
 	FEAT_LIST_SCHEMA="1_2_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

@@ -6,7 +6,7 @@ _luajit_INCLUDED_=1
 feature_luajit() {
 	FEAT_NAME=luajit
 	FEAT_LIST_SCHEMA="2_0_4:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

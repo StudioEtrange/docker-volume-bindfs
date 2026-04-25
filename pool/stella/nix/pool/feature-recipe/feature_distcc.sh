@@ -5,8 +5,11 @@ _distcc_INCLUDED_=1
 feature_distcc() {
 	FEAT_NAME=distcc
 	FEAT_LIST_SCHEMA="3_2_1rc1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_DESC="distcc is a program to distribute compilation of C or C++ code across several machines on a network."
+	FEAT_LINK="https://github.com/distcc/distcc https://distcc.github.io"
 }
 
 feature_distcc_3_2_1rc1() {

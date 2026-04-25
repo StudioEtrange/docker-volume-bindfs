@@ -3,11 +3,127 @@ _CMAKE_INCLUDED_=1
 
 feature_cmake() {
 
-	FEAT_NAME=cmake
-	FEAT_LIST_SCHEMA="3_12_4:source 3_12_4:binary 3_11_4:source 3_11_4:binary 3_11_1:source 3_11_1:binary 3_6_2:source 3_6_2:binary 2_8_12:source 2_8_12:binary 3_2_3:binary 3_2_3:source 3_3_1:binary 3_3_1:source"
-	FEAT_DEFAULT_ARCH=
+	FEAT_NAME="cmake"
+	FEAT_LIST_SCHEMA="4_0_4:source 4_3_1:binary 4_0_4:binary 3_31_9:source 3_31_9:binary 3_12_4:source 3_12_4:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
+
+	FEAT_LINK="https://cmake.org/ https://github.com/Kitware/CMake https://gitlab.kitware.com/cmake/cmake"
+	FEAT_DESC="CMake, the cross-platform, open-source build system."
 }
+
+
+
+feature_cmake_4_3_1() {
+	FEAT_VERSION="4_3_1"
+	# TODO  needed dependencies
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="cmake-4.3.1.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-macos-universal.dmg"
+		FEAT_BINARY_URL_FILENAME="cmake-4.3.1-macos-universal.dmg"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-4.3.1-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.3.1/cmake-4.3.1-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-4.3.1-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/cmake"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		CMAKE_FILE_APP="CMake.app"
+	fi
+}
+
+feature_cmake_4_0_4() {
+	FEAT_VERSION="4_0_4"
+	# TODO  needed dependencies
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/Kitware/CMake/releases/download/v4.0.4/cmake-4.0.4.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="cmake-4.0.4.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.0.4/cmake-4.0.4-macos-universal.dmg"
+		FEAT_BINARY_URL_FILENAME="cmake-4.0.4-macos-universal.dmg"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.0.4/cmake-4.0.4-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-4.0.4-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v4.0.4/cmake-4.0.4-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-4.0.4-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/cmake"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		CMAKE_FILE_APP="CMake.app"
+	fi
+}
+
+
+
+feature_cmake_3_31_9() {
+	FEAT_VERSION="3_31_9"
+	# TODO  needed dependencies
+	FEAT_SOURCE_DEPENDENCIES=
+	FEAT_BINARY_DEPENDENCIES=
+
+	FEAT_SOURCE_URL="https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="cmake-3.31.9.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9-macos-universal.dmg"
+		FEAT_BINARY_URL_FILENAME="cmake-3.31.9-macos-universal.dmg"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-3.31.9-linux-x86_64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_FILENAME="cmake-3.31.9-linux-aarch64.tar.gz"
+			FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/cmake"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		CMAKE_FILE_APP="CMake.app"
+	fi
+}
+
 
 
 feature_cmake_3_12_4() {
@@ -16,50 +132,23 @@ feature_cmake_3_12_4() {
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=https://cmake.org/files/v3.12/cmake-3.12.4.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.12.4.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="https://github.com/Kitware/CMake/releases/download/v3.12.4/cmake-3.12.4.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="cmake-3.12.4.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.12/cmake-3.12.4-Darwin-x86_64.dmg"
-		FEAT_BINARY_URL_FILENAME=cmake-3.12.4-Darwin-x86_64.tar.gz
+		FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v3.12.4/cmake-3.12.4-Darwin-x86_64.dmg"
+		FEAT_BINARY_URL_FILENAME="cmake-3.12.4-Darwin-x86_64.dmg"
+		FEAT_BINARY_URL_PROTOCOL="HTTP"
 	fi
 	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.12.4-Linux-x86_64.tar.gz
+		FEAT_BINARY_URL="https://github.com/Kitware/CMake/releases/download/v3.12.4/cmake-3.12.4-Linux-x86_64.tar.gz"
+		FEAT_BINARY_URL_FILENAME="cmake-3.12.4-Linux-x86_64.tar.gz"
+		FEAT_BINARY_URL_PROTOCOL="HTTP_ZIP"
 	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		CMAKE_FILE_APP="CMake.app"
-	fi
-}
-
-feature_cmake_3_11_4() {
-	FEAT_VERSION=3_11_4
-	# TODO  ** NEED : cURL, libarchive and expat
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=https://cmake.org/files/v3.11/cmake-3.11.4.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.11.4.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.11/cmake-3.11.4-Darwin-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.11.4-Darwin-x86_64.tar.gz
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.11/cmake-3.11.4-Linux-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.11.4-Linux-x86_64.tar.gz
-	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/cmake"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		CMAKE_FILE_APP="CMake.app"
@@ -67,148 +156,6 @@ feature_cmake_3_11_4() {
 }
 
 
-feature_cmake_3_11_1() {
-	FEAT_VERSION=3_11_1
-	# TODO  ** NEED : cURL, libarchive and expat
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=https://cmake.org/files/v3.11/cmake-3.11.1.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.11.1.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Darwin-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.11.1-Darwin-x86_64.tar.gz
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.11.1-Linux-x86_64.tar.gz
-	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		CMAKE_FILE_APP="CMake.app"
-	fi
-}
-
-feature_cmake_3_6_2() {
-	FEAT_VERSION=3_6_2
-	# TODO  ** NEED : cURL, libarchive and expat
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=https://cmake.org/files/v3.6/cmake-3.6.2.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.6.2.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.6/cmake-3.6.2-Darwin-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.6.2-Darwin-x86_64.tar.gz
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL="https://cmake.org/files/v3.6/cmake-3.6.2-Linux-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.6.2-Linux-x86_64.tar.gz
-	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		CMAKE_FILE_APP="CMake.app"
-	fi
-}
-
-feature_cmake_2_8_12() {
-	FEAT_VERSION=2_8_12
-	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-2.8.12.2.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Darwin64-universal.tar.gz
-		FEAT_BINARY_URL_FILENAME=cmake-2.8.12.2-Darwin64-universal.tar.gz
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL=http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz
-		FEAT_BINARY_URL_FILENAME=cmake-2.8.12.2-Linux-i386.tar.gz
-	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		CMAKE_FILE_APP="CMake 2.8-12.app"
-	fi
-
-}
-
-
-feature_cmake_3_2_3() {
-	FEAT_VERSION=3_2_3
-	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=http://www.cmake.org/files/v3.2/cmake-3.2.3.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.2.3.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.3-Darwin-x86_64.tar.gz
-		FEAT_BINARY_URL_FILENAME=cmake-3.2.3-Darwin-x86_64.tar.gz
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL=http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz
-		FEAT_BINARY_URL_FILENAME=cmake-3.2.3-Linux-x86_64.tar.gz
-	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		CMAKE_FILE_APP="CMake.app"
-	fi
-}
-
-
-feature_cmake_3_3_1() {
-	FEAT_VERSION=3_3_1
-	# TODO  ** NEED : cURL-7.32.0, libarchive-3.1.2 and expat-2.1.0
-	FEAT_SOURCE_DEPENDENCIES=
-	FEAT_BINARY_DEPENDENCIES=
-
-	FEAT_SOURCE_URL=http://www.cmake.org/files/v3.3/cmake-3.3.1.tar.gz
-	FEAT_SOURCE_URL_FILENAME=cmake-3.3.1.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		FEAT_BINARY_URL=http://www.cmake.org/files/v3.3/cmake-3.3.1-Darwin-x86_64.tar.gz
-		FEAT_BINARY_URL_FILENAME=cmake-3.3.1-Darwin-x86_64.tar.gz
-	fi
-	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
-		FEAT_BINARY_URL="http://www.cmake.org/files/v3.3/cmake-3.3.1-Linux-x86_64.tar.gz"
-		FEAT_BINARY_URL_FILENAME=cmake-3.3.1-Linux-x86_64.tar.gz
-	fi
-	FEAT_BINARY_URL_PROTOCOL=HTTP_ZIP
-
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/cmake
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
-
-	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
-		CMAKE_FILE_APP="CMake.app"
-	fi
-}
 
 
 feature_cmake_install_source() {
@@ -246,9 +193,12 @@ feature_cmake_install_source() {
 
 
 feature_cmake_install_binary() {
-	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE STRIP"
+	__get_resource "$FEAT_NAME" "$FEAT_BINARY_URL" "$FEAT_BINARY_URL_PROTOCOL" "$FEAT_INSTALL_ROOT" "DEST_ERASE"
 
 	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		__uncompress_dmg "$FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME" "$FEAT_INSTALL_ROOT"
+		rm -Rf "$FEAT_INSTALL_ROOT/$FEAT_BINARY_URL_FILENAME"
+
 		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/bin" "$FEAT_INSTALL_ROOT/bin"
 		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/doc" "$FEAT_INSTALL_ROOT/doc"
 		ln -s "$FEAT_INSTALL_ROOT/$CMAKE_FILE_APP/Contents/man" "$FEAT_INSTALL_ROOT/man"

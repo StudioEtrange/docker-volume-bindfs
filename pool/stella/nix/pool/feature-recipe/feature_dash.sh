@@ -6,7 +6,7 @@ feature_dash() {
 	FEAT_NAME=dash
 
 	FEAT_LIST_SCHEMA="0_5_10_2:source 0_5_8:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 

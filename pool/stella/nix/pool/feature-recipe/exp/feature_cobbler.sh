@@ -4,7 +4,7 @@ _cobbler_INCLUDED_=1
 feature_cobbler() {
 	FEAT_NAME=cobbler
 	FEAT_LIST_SCHEMA="2_6_11:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

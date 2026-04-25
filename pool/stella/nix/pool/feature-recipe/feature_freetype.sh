@@ -13,7 +13,7 @@ _FREETYPE_INCLUDED_=1
 feature_freetype() {
 	FEAT_NAME=freetype
 	FEAT_LIST_SCHEMA="2_6_0:source 2_6_1:source 2_10_1:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="A free, high-quality, and portable font engine"

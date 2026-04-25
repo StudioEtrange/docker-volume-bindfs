@@ -8,7 +8,7 @@ feature_geoip() {
 	FEAT_NAME=geoip
 
 	FEAT_LIST_SCHEMA="1_6_12:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="GeoIP Legacy C API"

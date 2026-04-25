@@ -2,37 +2,63 @@ if [ ! "$_pv_INCLUDED_" = "1" ]; then
 _pv_INCLUDED_=1
 
 
-# http://www.ivarch.com/programs/pv.shtml
-# https://github.com/icetee/pv
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/pv.rb
 
 feature_pv() {
-	FEAT_NAME=pv
-	FEAT_LIST_SCHEMA="1_6_0:source"
-	FEAT_DEFAULT_ARCH=
+	FEAT_NAME="pv"
+	FEAT_LIST_SCHEMA="1_9_44:source 1_6_0:source"
+	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_LINK="https://github.com/icetee/pv https://www.ivarch.com/programs/pv.shtml"
+	FEAT_DESC="pv - Pipe Viewer - is a terminal-based tool for monitoring the progress of data through a pipeline and modifying its flow."
 }
 
-feature_pv_1_6_0() {
-	FEAT_VERSION=1_6_0
+
+
+feature_pv_1_9_44() {
+	FEAT_VERSION="1_9_44"
 
 
 	FEAT_SOURCE_DEPENDENCIES="gettext#0_19_4"
 	FEAT_BINARY_DEPENDENCIES=
-	FEAT_SOURCE_URL=http://www.ivarch.com/programs/sources/pv-1.6.0.tar.gz
-	FEAT_SOURCE_URL_FILENAME=pv-1.6.0.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="https://www.ivarch.com/s/pv-1.9.44.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="pv-1.9.44.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
 	FEAT_BINARY_URL_PROTOCOL=
 
-	FEAT_SOURCE_CALLBACK=feature_pv_link
+	FEAT_SOURCE_CALLBACK="feature_pv_link"
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/pv
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/pv"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
+
+}
+
+feature_pv_1_6_0() {
+	FEAT_VERSION="1_6_0"
+
+
+	FEAT_SOURCE_DEPENDENCIES="gettext#0_19_4"
+	FEAT_BINARY_DEPENDENCIES=
+	FEAT_SOURCE_URL="http://www.ivarch.com/programs/sources/pv-1.6.0.tar.gz"
+	FEAT_SOURCE_URL_FILENAME="pv-1.6.0.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
+
+	FEAT_BINARY_URL=
+	FEAT_BINARY_URL_FILENAME=
+	FEAT_BINARY_URL_PROTOCOL=
+
+	FEAT_SOURCE_CALLBACK="feature_pv_link"
+	FEAT_BINARY_CALLBACK=
+	FEAT_ENV_CALLBACK=
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/pv"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 
 }
 

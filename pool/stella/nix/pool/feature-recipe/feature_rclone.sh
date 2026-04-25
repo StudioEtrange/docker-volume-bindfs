@@ -6,15 +6,54 @@ _RCLONE_INCLUDED_=1
 feature_rclone() {
 
 	FEAT_NAME="rclone"
-	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA="1_54_0@x64:binary"
-	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="1_54_0@x64:binary 1_54_0@x86:binary"
-	FEAT_DEFAULT_ARCH="x64"
+	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && FEAT_LIST_SCHEMA="1_71_1@x64:binary 1_67_0@x64:binary 1_54_0@x64:binary"
+	[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && FEAT_LIST_SCHEMA="1_71_1@x64:binary 1_71_1@x86:binary 1_67_0@x64:binary 1_67_0@x86:binary 1_54_0@x64:binary 1_54_0@x86:binary"
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	
 	FEAT_DESC="Rclone rsync for cloud storage is a command line program to sync files and directories to and from different cloud storage providers."
 	FEAT_LINK="https://github.com/rclone/rclone"
 }
+
+feature_rclone_1_71_1() {
+	FEAT_VERSION="1_71_1"
+
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/rclone/rclone/releases/download/v1.71.1/rclone-v1.71.1-osx-amd64.zip"
+			FEAT_BINARY_URL_FILENAME_x64="rclone-v1.71.1-osx-amd64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/rclone/rclone/releases/download/v1.71.1/rclone-v1.71.1-osx-arm64.zip"
+			FEAT_BINARY_URL_FILENAME_x64="rclone-v1.71.1-osx-arm64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+		fi
+	fi
+	if [ "$STELLA_CURRENT_PLATFORM" = "linux" ]; then
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "intel" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/rclone/rclone/releases/download/v1.71.1/rclone-v1.71.1-linux-amd64.zip"
+			FEAT_BINARY_URL_FILENAME_x64="rclone-v1.71.1-linux-amd64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/rclone/rclone/releases/download/v1.71.1/rclone-v1.71.1-linux-386.zip"
+			FEAT_BINARY_URL_FILENAME_x86="rclone-v1.71.1-linux-386.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+		if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
+			FEAT_BINARY_URL_x64="https://github.com/rclone/rclone/releases/download/v1.71.1/rclone-v1.71.1-linux-arm64.zip"
+			FEAT_BINARY_URL_FILENAME_x64="rclone-v1.71.1-linux-arm64.zip"
+			FEAT_BINARY_URL_PROTOCOL_x64="HTTP_ZIP"
+			FEAT_BINARY_URL_x86="https://github.com/rclone/rclone/releases/download/v1.71.1/rclone-v1.71.1-linux-arm.zip"
+			FEAT_BINARY_URL_FILENAME_x86="rclone-v1.71.1-linux-arm.zip"
+			FEAT_BINARY_URL_PROTOCOL_x86="HTTP_ZIP"
+		fi
+	fi
+
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/rclone"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"
+}
+
 
 feature_rclone_1_54_0() {
 	FEAT_VERSION="1_54_0"

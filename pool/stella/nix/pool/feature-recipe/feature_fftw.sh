@@ -5,7 +5,7 @@ _fftw_INCLUDED_=1
 feature_fftw() {
 	FEAT_NAME=fftw
 	FEAT_LIST_SCHEMA="3_3_6:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

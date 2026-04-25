@@ -5,7 +5,7 @@ _fasttext_INCLUDED_=1
 feature_fasttext() {
 	FEAT_NAME=fasttext
 	FEAT_LIST_SCHEMA="SNAPSHOT:source 0_1_0:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR=source
 }
 

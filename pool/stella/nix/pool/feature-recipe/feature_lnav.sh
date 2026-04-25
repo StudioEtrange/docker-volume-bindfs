@@ -7,7 +7,7 @@ feature_lnav() {
 
 	FEAT_NAME=lnav
 	FEAT_LIST_SCHEMA="0_8_5:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="An advanced log file viewer for the small-scale"

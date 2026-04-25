@@ -6,7 +6,7 @@ _ioninja_INCLUDED_=1
 feature_ioninja() {
 	FEAT_NAME=ioninja
 	FEAT_LIST_SCHEMA="3_6_5:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 }
 

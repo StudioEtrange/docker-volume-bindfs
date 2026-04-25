@@ -9,7 +9,7 @@ _GEKKO_INCLUDED_=1
 feature_gekko() {
 	FEAT_NAME=gekko
 	FEAT_LIST_SCHEMA="0_6_8:source 0_5_11:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="A bitcoin trading bot written in node"

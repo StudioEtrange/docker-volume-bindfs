@@ -14,7 +14,7 @@ _tinyproxy_INCLUDED_=1
 feature_tinyproxy() {
 	FEAT_NAME=tinyproxy
 	FEAT_LIST_SCHEMA="SNAPSHOT:source"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="source"
 }
 

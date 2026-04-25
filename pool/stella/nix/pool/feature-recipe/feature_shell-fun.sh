@@ -5,7 +5,7 @@ _shellfun_INCLUDED_=1
 feature_shell-fun() {
 	FEAT_NAME="shell-fun"
 	FEAT_LIST_SCHEMA="1_0"
-	FEAT_DEFAULT_ARCH=
+	
 
 	FEAT_BUNDLE=LIST
 }

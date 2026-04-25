@@ -5,7 +5,7 @@ _rabbitmq_INCLUDED_=1
 feature_rabbitmq() {
 	FEAT_NAME=rabbitmq
 	FEAT_LIST_SCHEMA="3_7_3:binary"
-	FEAT_DEFAULT_ARCH=
+	
 	FEAT_DEFAULT_FLAVOUR="binary"
 
 	FEAT_DESC="message broker"
