@@ -46,7 +46,8 @@
     {
       "destination": "/mnt/host",
       "options": [
-        "rbind"
+        "rbind",
+        "rslave"
       ],
       "name": "host-root",
       "source": "/",
