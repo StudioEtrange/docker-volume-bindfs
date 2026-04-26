@@ -884,21 +884,22 @@ __sys_install_build-chain-standard() {
 			fi
 		;;
 		linux)
+			# tool readelf is inside binutils
 			# NOTE : The gcc-multilib g++-multilib package are not available for arm64/aarch64 architecture
 			if [ "$STELLA_CURRENT_CPU_FAMILY" = "arm" ]; then
-				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential patch | yum gcc gcc-c++ make kernel-devel patch binutils | apk gcc g++ make patch binutils"
 			else
-				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+				__use_package_manager "INSTALL" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib patch | yum gcc gcc-c++ make kernel-devel patch binutils | apk gcc g++ make patch binutils"
 			fi
 		;;
 	esac
 }
 
 __sys_remove_build-chain-standard() {
-	if [ "$STELLA_CURRENT_OS" = "macos" ]; then
+	if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 		echo " ** Remove Xcode and Command Line Development Tools by hand"
 	else
-		__use_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib | yum gcc gcc-c++ make kernel-devel | apk gcc g++ make"
+		__use_package_manager "REMOVE" "build-chain-standard" "apt-get build-essential gcc-multilib g++-multilib patch | yum gcc gcc-c++ make kernel-devel patch | apk gcc g++ make patch"
 	fi
 }
 

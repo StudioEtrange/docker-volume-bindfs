@@ -11,17 +11,20 @@ feature_gettext() {
 	FEAT_LIST_SCHEMA="0_19_4:source"
 	
 	FEAT_DEFAULT_FLAVOUR="source"
+
+	FEAT_LINK="https://www.gnu.org/software/gettext https://github.com/autotools-mirror/gettext"
+	FEAT_DESC="This package offers to programmers, translators, and even users, a well integrated set of tools and documentation."
 }
 
 feature_gettext_0_19_4() {
-	FEAT_VERSION=0_19_4
+	FEAT_VERSION="0_19_4"
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
-	FEAT_SOURCE_URL=http://ftpmirror.gnu.org/gettext/gettext-0.19.4.tar.xz
-	FEAT_SOURCE_URL_FILENAME=gettext-0.19.4.tar.xz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL="http://ftpmirror.gnu.org/gettext/gettext-0.19.4.tar.xz"
+	FEAT_SOURCE_URL_FILENAME="gettext-0.19.4.tar.xz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=
@@ -31,8 +34,8 @@ feature_gettext_0_19_4() {
 	FEAT_BINARY_CALLBACK=
 	FEAT_ENV_CALLBACK=
 
-	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT"/bin/gettext
-	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT"/bin
+	FEAT_INSTALL_TEST="$FEAT_INSTALL_ROOT/bin/gettext"
+	FEAT_SEARCH_PATH="$FEAT_INSTALL_ROOT/bin"
 }
 
 

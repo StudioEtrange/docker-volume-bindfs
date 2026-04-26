@@ -15,7 +15,7 @@ feature_autoconf() {
 	
 	FEAT_DEFAULT_FLAVOUR="source"
 
-	FEAT_LINK="https://www.gnu.org/software/autoconf"
+	FEAT_LINK="https://www.gnu.org/software/autoconf https://github.com/autotools-mirror/autoconf"
 	FEAT_DESC="Autoconf is an extensible package of M4 macros that produce shell scripts to automatically configure software source code packages."
 }
 

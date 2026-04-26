@@ -11,7 +11,7 @@ feature_pkgconfig() {
 	FEAT_DEFAULT_FLAVOUR="source"
 
 	FEAT_DESC="pkg-config is a helper tool used when compiling applications and libraries"
-	FEAT_LINK="https://www.freedesktop.org/wiki/Software/pkg-config/"
+	FEAT_LINK="https://www.freedesktop.org/wiki/Software/pkg-config https://gitlab.freedesktop.org/pkg-config/pkg-config"
 }
 
 
@@ -32,7 +32,7 @@ feature_pkgconfig_0_29_2() {
 
 
 # add aclocal macro
-#http://askubuntu.com/questions/567813/automake-does-not-find-pkg-config-macros
+# http://askubuntu.com/questions/567813/automake-does-not-find-pkg-config-macros
 feature_pkgconfig_env(){
 	export AL_OPTS="-I $FEAT_INSTALL_ROOT/share/aclocal"
 	export ACLOCAL="aclocal -I $FEAT_INSTALL_ROOT/share/aclocal"
@@ -53,12 +53,14 @@ feature_pkgconfig_install_source() {
 	AUTO_INSTALL_BUILD_FLAG_PREFIX=
 	AUTO_INSTALL_BUILD_FLAG_POSTFIX=
 
+	# various configure flags :
+	# https://gitlab.freedesktop.org/pkg-config/pkg-config/-/blob/pkg-config-0.29.2/configure.ac#L87
+	# --with-system-library-path : allow to define system lib path hardcoded in pkg-config (i.e "/usr/lib:/lib")
+	# https://gitlab.freedesktop.org/pkg-config/pkg-config/-/blob/pkg-config-0.29.2/configure.ac#L55
+	# --with-pc-path : allow to define pkg-config default search path hardcoded in pkg-config (i.e "${libdir}/pkgconfig:${datadir}/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig")
 	# to build blib on darwin
 	[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && STELLA_LINK_FLAGS="-framework Carbon $STELLA_LINK_FLAGS"
-
-
 	__auto_build "$FEAT_NAME" "$SRC_DIR" "$INSTALL_DIR" "NO_OUT_OF_TREE_BUILD"
-
 
 
 }

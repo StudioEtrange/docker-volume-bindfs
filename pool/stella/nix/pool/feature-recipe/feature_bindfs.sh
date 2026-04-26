@@ -8,7 +8,7 @@ _bindfs_INCLUDED_=1
 
 
 feature_bindfs() {
-	FEAT_NAME=bindfs
+	FEAT_NAME="bindfs"
 
 	FEAT_LIST_SCHEMA="1_18_4:source 1_17_6:source 1_17_2:source 1_16_1:source 1_15_1:source 1_14_9:source 1_14_1:source 1_13_11:source 1_13_10:source"
 	

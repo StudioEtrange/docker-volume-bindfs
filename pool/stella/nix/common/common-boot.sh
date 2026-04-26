@@ -120,6 +120,8 @@ __boot_app_script() {
 __boot() {
   local _opt="$1"
   local _uri="$2"
+
+
   local _arg="$3"
   local _arg2="$4"
 
@@ -229,8 +231,8 @@ __boot() {
             __bootstrap_stella_env
             ;;
           CMD )
-              eval "$_arg"
-              eval "$@"
+            eval "$_arg"
+            "$@"
             ;;
           SCRIPT )
               eval "$_arg2"

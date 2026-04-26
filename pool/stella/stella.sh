@@ -54,8 +54,9 @@ usage() {
 	echo " L     proxy tunnel <proxy name> --bridge=<user:password@host> : set a ssh tunnel from localhost to registered proxy <name> through a bridge, and set web traffic to use this tunnel as web proxy"
 	echo " o-- bootstrap management :"
 	echo " L     shell : launch an interactive new shell with all stella env var setted"
+	echo " L     exec -- <command> : execute a command in local current shell with all stella env var setted"
 	echo " L     boot shell <uri> : launch an interactive new shell with all stella env var setted inside an <uri> (use 'local' for current host)"
-	echo " L     boot cmd <uri> -- <command> : execute a command inside an <uri> (use 'local' for current host)"
+	echo " L     boot cmd <uri> -- <command> : execute a command inside an <uri> (use 'local' for current host) (i.e ./stella.sh boot cmd local -- ls -al)"
 	echo " L     boot script <uri> --script=<script_path> [-- script arg]"
 	echo " o-- system management : "
 	echo " L     sys install <package name> : install  a system package -- WARN This will affect your system"
@@ -79,6 +80,11 @@ if [ "$1" = "shell" ]; then
 	DOMAIN="boot"
 	ACTION="shell"
 	ID="local"
+elif [ "$1" = "exec" ]; then
+	DOMAIN="boot"
+	ACTION="cmd"
+	ID="local"
+	__argparse "${BASH_SOURCE[0]}" "" "" "Stella" "$(usage)" "EXTRA_PARAMETER OTHER_PARAMETER EXTRA_ARG OTHER_ARG EXTRA_ARG_EVAL OTHER_ARG_EVAL" "$@"
 else
 	# arguments
 	PARAMETERS="
@@ -107,7 +113,9 @@ else
 	SCRIPT=''                   ''          'path'              s           0           ''                      Script path.
 	DEBUG=''                       	'd'    		''            		b     		0     		'1'           			Active log in debug mode.
 	"
-	__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_ARG OTHERARG EXTRA_ARG_EVAL OTHERARG_EVAL" "$@"
+	
+	
+	__argparse "${BASH_SOURCE[0]}" "$OPTIONS" "$PARAMETERS" "Stella" "$(usage)" "EXTRA_PARAMETER OTHER_PARAMETER EXTRA_ARG OTHER_ARG EXTRA_ARG_EVAL OTHER_ARG_EVAL" "$@"
 fi
 
 # active debug mode
@@ -270,9 +278,9 @@ if [ "$DOMAIN" = "boot" ]; then
 
 	if [ "$ACTION" = "cmd" ]; then
 		if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
-			__boot_stella_cmd "$ID" "$OTHERARG_EVAL" "$_options"
+			__boot_stella_cmd "$ID" "$OTHER_ARG_EVAL" "$_options"
 		else
-			__boot_app_cmd "$ID" "$OTHERARG_EVAL" "$_options"
+			__boot_app_cmd "$ID" "$OTHER_ARG_EVAL" "$_options"
 		fi
 	fi
 	if [ "$ACTION" = "shell" ]; then
@@ -288,9 +296,9 @@ if [ "$DOMAIN" = "boot" ]; then
 			exit 1
 		fi
 		if [ "$STELLA_APP_IS_STELLA" = "1" ]; then
-			__boot_stella_script "$ID" "$SCRIPT" "$OTHERARG_EVAL" "$_options"
+			__boot_stella_script "$ID" "$SCRIPT" "$OTHER_ARG_EVAL" "$_options"
 		else
-			__boot_app_script "$ID" "$SCRIPT" "$OTHERARG_EVAL" "$_options"
+			__boot_app_script "$ID" "$SCRIPT" "$OTHER_ARG_EVAL" "$_options"
 		fi
 	fi
 fi

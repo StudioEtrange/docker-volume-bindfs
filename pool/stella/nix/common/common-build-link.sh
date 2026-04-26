@@ -18,7 +18,7 @@ __link_feature_library() {
 	# GET_FOLDER <prefix> -- get prefix_ROOT, prefix_LIB, prefix_BIN, prefix_INCLUDE with correct path
 	# NO_SET_FLAGS -- do not set stella build system flags (by default, flags will be generated) AND do not add RPATH values
 	# LIBS_NAME -- libraries name to use with -l arg -- you can specify several libraries. If you do not use LIBS_NAME -l flag will not be setted, only -L will be setted. If you use LIBS_NAME both -l and -L flags will be setted
-  	# USE_PKG_CONFIG -- use of pkg-config
+  	# USE_PKG_CONFIG -- use of pkg-config - will install it if not present on system
 
 	local _ROOT=
 	local _BIN=
@@ -33,43 +33,45 @@ __link_feature_library() {
 	local _opt_flavour=
 	local _opt_use_pkg_config=OFF
 	local _flag_lib_folder=OFF
-	local _lib_folder=lib
+	local _lib_folder="lib"
 	local _flag_bin_folder=OFF
-	local _bin_folder=bin
+	local _bin_folder="bin"
 	local _flag_include_folder=OFF
-	local _include_folder=include
+	local _include_folder="include"
 	local _opt_set_flags=ON
 	local _flag_libs_name=OFF
 	local _libs_name=
 
 	# default mode
 	case "$STELLA_BUILD_LINK_MODE" in
-		DEFAULT)
-			_opt_flavour="DEFAULT"
-			;;
-		DYNAMIC)
+		"DYNAMIC")
 			_opt_flavour="FORCE_DYNAMIC"
 			;;
-		STATIC)
+		"STATIC")
 			_opt_flavour="FORCE_STATIC"
+			;;
+		"DEFAULT"|"")
+			_opt_flavour="DEFAULT"
+			;;
+		*)	_opt_flavour="DEFAULT"
 			;;
 	esac
 
 	for o in $_link_OPT; do
 		[ "$o" = "USE_PKG_CONFIG" ] && _opt_use_pkg_config=ON && _flag_libs_name=OFF
-		[ "$o" = "FORCE_STATIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
-		[ "$o" = "FORCE_DYNAMIC" ] && _opt_flavour=$o && _flag_libs_name=OFF
+		[ "$o" = "FORCE_STATIC" ] && _opt_flavour="$o" && _flag_libs_name=OFF
+		[ "$o" = "FORCE_DYNAMIC" ] && _opt_flavour="$o" && _flag_libs_name=OFF
 
-		[ "$_flag_lib_folder" = "ON" ] && _lib_folder=$o && _flag_lib_folder=OFF
+		[ "$_flag_lib_folder" = "ON" ] && _lib_folder="$o" && _flag_lib_folder=OFF
 		[ "$o" = "FORCE_LIB_FOLDER" ] && _flag_lib_folder=ON && _flag_libs_name=OFF
-		[ "$_flag_bin_folder" = "ON" ] && _bin_folder=$o && _flag_bin_folder=OFF
+		[ "$_flag_bin_folder" = "ON" ] && _bin_folder="$o" && _flag_bin_folder=OFF
 		[ "$o" = "FORCE_BIN_FOLDER" ] && _flag_bin_folder=ON && _flag_libs_name=OFF
-		[ "$_flag_include_folder" = "ON" ] && _include_folder=$o && _flag_include_folder=OFF
+		[ "$_flag_include_folder" = "ON" ] && _include_folder="$o" && _flag_include_folder=OFF
 		[ "$o" = "FORCE_INCLUDE_FOLDER" ] && _flag_include_folder=ON && _flag_libs_name=OFF
 
-		[ "$_flags" = "ON" ] && _var_flags=$o && _flags=OFF
+		[ "$_flags" = "ON" ] && _var_flags="$o" && _flags=OFF
 		[ "$o" = "GET_FLAGS" ] && _flags=ON && _flag_libs_name=OFF
-		[ "$_folders" = "ON" ] && _var_folders=$o && _folders=OFF
+		[ "$_folders" = "ON" ] && _var_folders="$o" && _folders=OFF
 		[ "$o" = "GET_FOLDER" ] && _folders=ON && _flag_libs_name=OFF
 
 		[ "$o" = "NO_SET_FLAGS" ] && _opt_set_flags=OFF && _flag_libs_name=OFF
@@ -83,30 +85,31 @@ __link_feature_library() {
 	case "$SCHEMA" in
 		FORCE_ORIGIN_STELLA*)
 				_origin="STELLA"
-				SCHEMA=${SCHEMA#FORCE_ORIGIN_STELLA}
+				SCHEMA="${SCHEMA#FORCE_ORIGIN_STELLA}"
 				;;
 		FORCE_ORIGIN_SYSTEM*)
 				_origin="SYSTEM"
-				SCHEMA=${SCHEMA#FORCE_ORIGIN_SYSTEM}
+				SCHEMA="${SCHEMA#FORCE_ORIGIN_SYSTEM}"
 				;;
 		*)
 				_origin="$(__feature_choose_origin $SCHEMA)"
 				;;
 	esac
 
-	# NOTE when linking to a system lib, we do not have control over things and all options are disabled
+	# NOTE when linking to a system lib, we do not have control over things and all options are not processed
+	#	   except _opt_use_pkg_config
 	if [ "$_origin" = "SYSTEM" ]; then
 		STELLA_LINKED_LIBS_SYSTEM_LIST="$STELLA_LINKED_LIBS_SYSTEM_LIST [ ${SCHEMA} options: ${_link_OPT} ]"
 		echo "We do not link against STELLA version of $SCHEMA, but from SYSTEM."
 		if [ "$_opt_use_pkg_config" = "ON" ]; then
-			__add_toolset "pkgconfig"
-			# we need to add some defaut seach into path, because pkgconfig have default values from its install path
-			# pkgconfig is installed inside stella and do not have correct default values when we want to link against SYSTEM libraries
-			echo "** WARN : adding some system lib search path to pkg-config, because we use pkg-config for a SYSTEM lib"
-			__def_path=$(__search_library_paths_at_buildtime)
-			for _p in $__def_path; do
-				STELLA_BUILD_PKG_CONFIG_PATH="${STELLA_BUILD_PKG_CONFIG_PATH}:${_p}/pkgconfig"
-			done
+			# check pkg-config available on current system
+			if ! PATH="$STELLA_ORIGINAL_SYSTEM_PATH" command -v pkg-config >/dev/null 2>&1; then
+				__add_toolset "pkgconfig"
+				# we need to add some defaut search into path, because pkgconfig default values for .pc files search path 
+				# because it depends on compilation configuration instruction
+				# when pkgconfig is installed with stella it do not have correct default values for linking against SYSTEM libraries
+				STELLA_BUILD_PKG_CONFIG_PATH="$STELLA_BUILD_PKG_CONFIG_PATH:$(__pkgconfig_get_system_default_search_path)"
+			fi
 		fi
 		return
 	fi
@@ -141,36 +144,49 @@ __link_feature_library() {
 	# ISOLATE STATIC OR DYNAMIC LIBS
 	# if we want specific static or dynamic linking, we isolate specific version
 	# by default, linker use dynamic version first and then static version if dynamic is not found
-	local _flag_lib_isolation=FALSE
-	[ "$_opt_flavour" = "FORCE_STATIC" ] && _flag_lib_isolation=TRUE
-	[ "$_opt_flavour" = "FORCE_DYNAMIC" ] && _flag_lib_isolation=TRUE
-
+	local _flag_lib_isolation="FALSE"
 	local LIB_TARGET_FOLDER=
 	local LIB_EXTENSION=
 
-	case $_opt_flavour in
-		FORCE_STATIC)
+	case "$_opt_flavour" in
+		"FORCE_STATIC")
+			_flag_lib_isolation="TRUE"
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/stella-dep-static"
 			LIB_EXTENSION=".a"
 			;;
-		FORCE_DYNAMIC)
+		"FORCE_DYNAMIC")
+			_flag_lib_isolation="TRUE"
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/stella-dep-dynamic"
 			[ "$STELLA_CURRENT_PLATFORM" = "linux" ] && LIB_EXTENSION=".so"
 			[ "$STELLA_CURRENT_PLATFORM" = "darwin" ] && LIB_EXTENSION=".dylib"
 			;;
-		DEFAULT)
+		"DEFAULT")
 			LIB_TARGET_FOLDER="$REQUIRED_LIB_ROOT/$_lib_folder"
 			;;
 	esac
+
+	local _lp="$(__get_library_and_share_search_paths_from_prefix "${REQUIRED_LIB_ROOT}")"
 
 	# TODO do not base lib isolation on file extension but on result of __is_*__bin from lib-parse-bin
 	if [ "$_flag_lib_isolation" = "TRUE" ]; then
 
 		echo "*** Isolate dependencies into $LIB_TARGET_FOLDER"
-		__del_folder "$LIB_TARGET_FOLDER"
-		echo "*** Copying items from $REQUIRED_LIB_ROOT/$_lib_folder to $LIB_TARGET_FOLDER"
-		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder" "$LIB_TARGET_FOLDER" "*"$LIB_EXTENSION"*"
-		__copy_folder_content_into "$REQUIRED_LIB_ROOT"/"$_lib_folder/pkgconfig" "$LIB_TARGET_FOLDER/pkgconfig"
+		rm -Rf "$LIB_TARGET_FOLDER"
+		mkdir -p "$LIB_TARGET_FOLDER"
+		echo "*** Copying items from ${REQUIRED_LIB_ROOT}/${_lib_folder} to ${LIB_TARGET_FOLDER}"
+		
+		local _lpi
+		local _old_ifs="$IFS"
+		IFS=":"
+		# copy libs and .pc files from standard folder
+		for _lpi in $_lp; do
+			__copy_folder_content_into "${_lpi}" "${LIB_TARGET_FOLDER}" "*"${LIB_EXTENSION}"*"
+			__copy_folder_content_into "${_lpi}/pkgconfig" "${LIB_TARGET_FOLDER}/pkgconfig"
+		done
+		IFS="$_old_ifs"
+		# copy from requested folder ($_lib_folder)
+		__copy_folder_content_into "${REQUIRED_LIB_ROOT}/${_lib_folder}" "${LIB_TARGET_FOLDER}" "*"${LIB_EXTENSION}"*"
+		__copy_folder_content_into "${REQUIRED_LIB_ROOT}/${_lib_folder}/pkgconfig" "${LIB_TARGET_FOLDER}/pkgconfig"
 
 		if [ "$STELLA_CURRENT_PLATFORM" = "darwin" ]; then
 			[ "$STELLA_BUILD_RELOCATE" = "ON" ] && __tweak_install_name_darwin "$LIB_TARGET_FOLDER" "RPATH"
@@ -180,17 +196,25 @@ __link_feature_library() {
 
 
 
-
 	# manage pkg-config ----
 	if [ "$_opt_use_pkg_config" = "ON" ]; then
-		__add_toolset "pkgconfig"
-		STELLA_BUILD_PKG_CONFIG_PATH=$LIB_TARGET_FOLDER/pkgconfig:$STELLA_BUILD_PKG_CONFIG_PATH
+		# check pkg-config available on current system
+		if ! PATH="$STELLA_ORIGINAL_SYSTEM_PATH" command -v pkg-config >/dev/null 2>&1; then
+			__add_toolset "pkgconfig"
+		fi
+
 		if [ "$_flag_lib_isolation" = "TRUE" ]; then
-			for f in $LIB_TARGET_FOLDER/pkgconfig/*.pc; do
+			for f in "$LIB_TARGET_FOLDER"/pkgconfig/*.pc; do
+				[ -e "$f" ] || continue
 				#ed -i .bak "s,^prefix=.*,prefix=$LIB_TARGET_FOLDER," "$f"
 				sed -i .bak "s,^libdir=.*,libdir=$LIB_TARGET_FOLDER," "$f"
 			done
 		fi
+
+		echo "add ${SCHEMA} folders to pkg-config .pc files search path"
+		local _pcp="$(__pkgconfig_search_paths_from_prefix "${REQUIRED_LIB_ROOT}")"
+		STELLA_BUILD_PKG_CONFIG_PATH="$LIB_TARGET_FOLDER/pkgconfig:${_pcp}:$STELLA_BUILD_PKG_CONFIG_PATH"
+		STELLA_BUILD_PKG_CONFIG_PATH="$(__list_filter_duplicate $STELLA_BUILD_PKG_CONFIG_PATH)"
 	fi
 
 
@@ -200,7 +224,7 @@ __link_feature_library() {
 	# root folder
 	_ROOT="$REQUIRED_LIB_ROOT"
 	# bin folder
-	_BIN="$REQUIRED_LIB_ROOT/bin"
+	_BIN="$REQUIRED_LIB_ROOT/$_bin_folder"
 	# include folder
 	_INCLUDE="$REQUIRED_LIB_ROOT/$_include_folder"
 	# lib folder

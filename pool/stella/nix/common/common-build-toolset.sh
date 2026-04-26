@@ -332,6 +332,7 @@ __enable_current_toolset() {
 
 	echo "** Require build toolset : $STELLA_BUILD_TOOLSET [ config tool schema : $STELLA_BUILD_CONFIG_TOOL_SCHEMA build tool schema : $STELLA_BUILD_BUILD_TOOL_SCHEMA compil frontend schema : $STELLA_BUILD_COMPIL_FRONTEND_SCHEMA ]"
 
+	STELLA_BUILD_EXTRA_TOOLSET="$(__list_filter_duplicate "$STELLA_BUILD_EXTRA_TOOLSET")"
 	echo "** Require extra toolset : $STELLA_BUILD_EXTRA_TOOLSET"
 	for s in $STELLA_BUILD_EXTRA_TOOLSET; do
 		__toolset_install "$s"
@@ -389,8 +390,8 @@ __enable_current_toolset() {
 			__gcc_extra_search_library_paths_at_buildtime
 	esac
 	if $(type pkg-config >/dev/null 2>&1); then
-		echo "===> pkg-config default search path"
-		__pkgconfig_search_path
+		echo "===> pkg-config current search path"
+		__pkgconfig_current_search_path
 	fi
 
 

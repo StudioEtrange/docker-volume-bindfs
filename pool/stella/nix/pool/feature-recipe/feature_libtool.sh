@@ -11,7 +11,7 @@ feature_libtool() {
 	
 	FEAT_DEFAULT_FLAVOUR="source"
 
-	FEAT_LINK="https://www.gnu.org/software/libtool/"
+	FEAT_LINK="https://www.gnu.org/software/libtool https://github.com/autotools-mirror/libtool"
 	FEAT_DESC="GNU Libtool is a generic library support script that hides the complexity of using shared libraries behind a consistent, portable interface."
 }
 

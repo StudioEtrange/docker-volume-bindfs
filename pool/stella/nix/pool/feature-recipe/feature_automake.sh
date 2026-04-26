@@ -13,7 +13,7 @@ feature_automake() {
 	
 	FEAT_DEFAULT_FLAVOUR="source"
 
-	FEAT_LINK="https://www.gnu.org/software/automake/"
+	FEAT_LINK="https://www.gnu.org/software/automake https://github.com/autotools-mirror/automake"
 	FEAT_DESC="GNU Automake is a tool for automatically generating Makefile.in files compliant with the GNU Coding Standards."
 }
 

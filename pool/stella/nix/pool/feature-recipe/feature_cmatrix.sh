@@ -15,14 +15,14 @@ feature_cmatrix() {
 }
 
 feature_cmatrix_2_0() {
-	FEAT_VERSION=2_0
+	FEAT_VERSION="2_0"
 
 	FEAT_SOURCE_DEPENDENCIES=
 	FEAT_BINARY_DEPENDENCIES=
 
 	FEAT_SOURCE_URL="https://github.com/abishekvashok/cmatrix/archive/v2.0.tar.gz"
-	FEAT_SOURCE_URL_FILENAME=cmatrix-v2.0.tar.gz
-	FEAT_SOURCE_URL_PROTOCOL=HTTP_ZIP
+	FEAT_SOURCE_URL_FILENAME="cmatrix-v2.0.tar.gz"
+	FEAT_SOURCE_URL_PROTOCOL="HTTP_ZIP"
 
 	FEAT_BINARY_URL=
 	FEAT_BINARY_URL_FILENAME=

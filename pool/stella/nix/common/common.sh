@@ -1900,9 +1900,10 @@ __list_contains() {
 }
 
 # remove duplicate values in list and return it sorted
+# keep first occurences of a duplicated item
 # result="$(__list_filter_duplicate "aa b bb aa ddd aaa cc bb aa")"
 # echo $result
-# aa aaa b bb cc ddd
+# aa b bb ddd aaa cc
 __list_filter_duplicate() {
 	local _list="$1"
 	# this alter order do not use :s

@@ -19,13 +19,186 @@ __darwin_get_sdkroot() {
   return 1
 }
 
+
+# notation used by autoconf
+# i.e : x86_64-pc-linux-gnu
+__get_system_canonical_triplet() {
+	"$STELLA_ARTEFACT/autoconf-scripts/config.guess"
+}
+
+# notation used by ebian multiarch / pkg-config / toolchain practical tuple
+# i.e : x86_64-linux-gnu
+__get_system_non_canonical_triplet() {
+	local _result=""
+	local _name=""
+	if command -v gcc >/dev/null 2>&1; then
+		_result="$(gcc -dumpmachine 2>/dev/null)"
+	else
+		# specific debian like multiarch
+		if command -v dpkg-architecture >/dev/null 2>&1; then
+			_result="$(dpkg-architecture -qDEB_HOST_MULTIARCH 2>/dev/null)"
+		else
+			# try by using pkg-config
+			if [ -z "$_result" ]; then
+				local _old_ifs _p
+				local _original_default_search_path="$(__pkgconfig_original_default_search_path)"
+				if [ -n "$_original_default_search_path" ]; then
+					_old_ifs="$IFS"
+					IFS=':'
+					for _p in $_original_default_search_path; do
+						case "$_p" in
+							*/lib/*/pkgconfig)
+								_name="${_p%/pkgconfig}"
+								_name="${_name##*/}"
+								case "$_name" in
+									*-linux-gnu|*-linux-gnueabi|*-linux-gnueabihf|*-linux-musl)
+										_result="$_name"
+										break
+										;;
+								esac
+								;;
+						esac
+					done
+					IFS="$_old_ifs"
+				fi
+			fi
+			if [ -z "$_result" ]; then
+				# try to guess exploring libs folder
+				# specific debian like multiarch
+				local _base _dir
+				for _base in /usr/local/lib /usr/lib /lib; do
+					[ -d "$_base" ] || continue
+					for _dir in "$_base"/*-linux-gnu "$_base"/*-linux-gnueabi "$_base"/*-linux-gnueabihf "$_base"/*-linux-musl; do
+						[ -d "$_dir" ] || continue
+						_name="${_dir##*/}"
+						case "$_name" in
+							*-linux-gnu|*-linux-gnueabi|*-linux-gnueabihf|*-linux-musl)
+								_result="$_name"
+								break
+								;;
+						esac
+					done
+					[ -n "$_result" ] && break
+				done
+			fi
+		fi
+	fi
+	echo -n "$_result"
+}
+#t0TSX77tZbt0AZ3V
+
 # pkg-config full search path
 # https://linux.die.net/man/1/pkg-config
-__pkgconfig_search_path() {
-	if $(type pkg-config >/dev/null 2>&1); then
-		echo ${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)
+# get search path, including PKG_CONFIG_PATH, used by pkg-config
+__pkgconfig_current_search_path() {
+	if command -v pkg-config >/dev/null 2>&1; then
+		[ -z "${PKG_CONFIG_PATH}" ] && \
+			echo "$(pkg-config --variable pc_path pkg-config)" || \
+			echo "${PKG_CONFIG_PATH}:$(pkg-config --variable pc_path pkg-config)"
 	fi
 }
+
+# get default search path used on the current host by system pkg-config
+# because if we build it ourself with feature_bindfs, it does not contains
+# the default search path accordingly to the current host
+__pkgconfig_original_default_search_path() {
+	if PATH="$STELLA_ORIGINAL_SYSTEM_PATH" command -v pkg-config >/dev/null 2>&1; then
+		PATH="$STELLA_ORIGINAL_SYSTEM_PATH" pkg-config --variable pc_path pkg-config
+	fi
+}
+
+# pkgconfig system default search path to find .pc files for library
+# try to several method or try to build list
+# informations :
+# default value extracted from pkg-config source code, configure script : https://gitlab.freedesktop.org/pkg-config/pkg-config/-/blob/pkg-config-0.29.2/configure.ac#L55
+	# ${libdir}/pkgconfig:${datadir}/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+	# 	${libdir} : files depending on architectures (often /usr/lib)
+	#	${datadir} : architecture-independent data files (often /usr/share)
+	#   /usr/lib/pkgconfig:/usr/share/pkgconfig : default hardcoded values in pkg-config when there is no PREFIX value used at pkg-config build time
+# default behaviour for .pc files location :
+# .pc files which might be architecture-specific 
+#	go in /usr/lib 
+# .pc files which are sure to be architecture-independent 
+#	can go in /usr/share
+# EXCEPTIONS are analysed below :
+#	distributions analysis using "pkg-config --variable pc_path pkg-config"
+#	on debian and ubuntu: /usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+#			libdir : /usr/local/lib/<triplet target compilation>, /usr/local/lib, /usr/lib/<triplet target compilation>, /usr/lib
+#				/usr/local/lib, /usr/lib are for pre-multiarch packages
+# 				/usr/local/lib/<triplet>, /usr/lib/<triplet> are for multiarch packages
+#			datadir : /usr/local/share, /usr/share
+#	on fedora and almalinux : /usr/lib64/pkgconfig:/usr/share/pkgconfig
+#			libdir : /usr/lib<arch>
+#			datadir : /usr/share
+#	on alpine : /usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+#			libdir : /usr/local/lib, /usr/lib
+#			datadir : /usr/local/share, /usr/share
+#	on almalinux : /usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+#			libdir : /usr/local/lib, /usr/lib
+#			datadir : /usr/local/share, /usr/share
+#	on freebsd (partial results) :
+#			datadur : /usr/libdata
+__pkgconfig_get_system_default_search_path() {
+	
+	local _original_default_search_path="$(__pkgconfig_original_default_search_path)"
+	if [ -n "$_original_default_search_path" ]; then
+		echo -n "$_original_default_search_path"
+		return 0
+	else
+
+		local _result=""
+		_result="$(__pkgconfig_search_paths_from_prefix "/usr/local")"
+		[ -n "${_result}" ] && _result="${_result}:"
+		_result="$(__pkgconfig_search_paths_from_prefix "/usr")"
+	fi
+
+	echo -n "$_result"
+}
+
+
+# return standard libraries and shared-data search paths for a system prefix (default /usr)
+# Example:
+# i.e : /usr/local/lib64:/usr/local/share:/usr/lib64:/usr/share
+__pkgconfig_search_paths_from_prefix() {
+	local _prefix="${1:-/usr}"
+
+	local _result="$(__get_library_and_share_search_paths_from_prefix "${_prefix}")"
+
+	local _filtered=""
+	local _p
+	local _old_ifs="$IFS"
+
+	IFS=':'
+	for _p in $_result; do
+		# NOTE : check only if root folder exist, not pkgconfig folder itself
+		if [ -d "$_p" ]; then
+			if [ -n "$_filtered" ]; then
+				_filtered="${_filtered}:${_p}/pkgconfig"
+			else
+				_filtered="${_p}/pkgconfig"
+			fi
+		fi
+	done
+	IFS="$_old_ifs"
+
+	echo -n "$_filtered"
+}
+
+
+# return standard libraries and shared-data search paths for a system prefix (default /usr)
+# Example:
+# i.e : /usr/local/lib64:/usr/local/share:/usr/lib64:/usr/share
+__get_library_and_share_search_paths_from_prefix() {
+	local _prefix="${1:-/usr}"
+	local _current_triplet_non_canonical="$(__get_system_non_canonical_triplet)"
+
+	local _result=""
+	[ -n "${_current_triplet_non_canonical}" ] && _result="${_result}${_prefix}/lib/${_current_triplet_non_canonical}:"
+	_result="${_result}${_prefix}/lib64:${_prefix}/lib:${_prefix}/share"
+
+	echo -n "${_result}"
+}
+
 
 # search a dynamic library into dyld cache
 # 	either in known list of files in cache (default mode and faster mode)

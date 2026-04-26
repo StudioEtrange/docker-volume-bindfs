@@ -25,6 +25,17 @@ update_macos-link-analyse() {
   chmod +x "${_CURRENT_FILE_DIR}/macos-link-analyse.sh"
 }
 
+update_autoconf_scripts() {
+  rm -Rf "${_CURRENT_FILE_DIR}/autoconf-scripts"
+  mkdir -p "${_CURRENT_FILE_DIR}/autoconf-scripts"
+  # config.guess
+  curl -fksL "https://raw.githubusercontent.com/autotools-mirror/autoconf/refs/heads/master/build-aux/config.guess" -o "${_CURRENT_FILE_DIR}/autoconf-scripts/config.guess"
+  chmod +x "${_CURRENT_FILE_DIR}/autoconf-scripts/config.guess"
+  # config.sub
+  curl -fksL "https://raw.githubusercontent.com/autotools-mirror/autoconf/refs/heads/master/build-aux/config.sub" -o "${_CURRENT_FILE_DIR}/autoconf-scripts/config.sub"
+  chmod +x "${_CURRENT_FILE_DIR}/autoconf-scripts/config.sub"
+}
+
 # https://gist.github.com/StudioEtrange/5b0eac67f8917d7bc69e01d262854b5b
 update_homebrew-get-bottle() {
   rm -f "${_CURRENT_FILE_DIR}/homebrew-get-bottle.sh"
@@ -86,6 +97,9 @@ update_pure-getopt() {
 }
 
 case $1 in
+  autoconf-scripts)
+    update_autoconf_scripts
+    ;;
   bash-colors )
     update_bash-colors
     ;;
@@ -117,6 +131,6 @@ case $1 in
 	update_macos-dyld-cache-list
 	;;
   * )
-    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list>"
+    echo "Usage : ${_CURRENT_FILE_DIR}/update.sh <autoconf-scripts|bash-colors|bash_ini_parser|pure-getopt|neofetch|unifetch|lddtree|homebrew-get-bottle|macos-link-analyse|macos-dyld-cache-analyse|macos-dyld-cache-list>"
     ;;
 esac

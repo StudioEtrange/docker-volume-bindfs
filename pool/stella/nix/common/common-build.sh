@@ -157,7 +157,7 @@ __prepare_build() {
 
 
 	# pkg-config
-	export PKG_CONFIG_PATH=$STELLA_BUILD_PKG_CONFIG_PATH
+	export PKG_CONFIG_PATH="$STELLA_BUILD_PKG_CONFIG_PATH"
 
 	# set env
 	__set_build_env ARCH $STELLA_BUILD_ARCH
@@ -212,8 +212,9 @@ __prepare_build() {
 	echo "====> Linked libs from stella features : $STELLA_LINKED_LIBS_LIST"
 	echo "====> Linked libs from system : $STELLA_LINKED_LIBS_SYSTEM_LIST"
 	echo "====> pkg-config tool : $(command -v pkg-config 2>/dev/null)"
-	echo "====> env PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
-	echo "====> pkg-config full search path : $(__pkgconfig_search_path)"
+	echo "====> env var PKG_CONFIG_PATH (additional search path for pkg-config): $PKG_CONFIG_PATH"
+	echo "====> pkg-config current full search path : $(__pkgconfig_current_search_path)"
+	echo "====> pkg-config original default search path from system pkg-config : $(__pkgconfig_original_default_search_path)"
 	echo "** FOLDERS"
 	echo "====> Install directory : $INSTALL_DIR"
 	echo "====> Source directory : $SOURCE_DIR"

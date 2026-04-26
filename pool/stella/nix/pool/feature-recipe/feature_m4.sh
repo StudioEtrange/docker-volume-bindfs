@@ -12,7 +12,7 @@ feature_m4() {
 	
 	FEAT_DEFAULT_FLAVOUR="source"
 
-	FEAT_LINK="https://www.gnu.org/software/m4/"
+	FEAT_LINK="https://www.gnu.org/software/m4 https://github.com/autotools-mirror/m4"
 	FEAT_DESC="GNU M4 is an implementation of the traditional Unix macro processor."
 	
 }
