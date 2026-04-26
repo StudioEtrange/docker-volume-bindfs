@@ -33,7 +33,7 @@ The original project was maintained here https://github.com/clecherbauer/docker-
 
     ```
     docker plugin install ghcr.io/studioetrange/bindfs:latest-arm64
-    docker plugin install ghcr.io/studioetrange/bindfs:2.3a-arm64
+    docker plugin install ghcr.io/studioetrange/bindfs:2.4-arm64
     docker plugin install ghcr.io/studioetrange/bindfs:latest-amd64
     ```
     NOTE : By default this is an amd64 image, when no arch is specified the tag name. (i.e : ghcr.io/studioetrange/bindfs:latest is an amd64 image)
@@ -133,10 +133,10 @@ volumes:
 
 * Options : you can choose the tag name for the plugin version with PLUGIN_TAG and select a bindfs version with BINDFS_VERSION (default is 1_18_4)
     ```
-    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
+    make PLUGIN_TAG=2.4 BINDFS_VERSION=1_18_4 all
     
     # without using docker cache :
-    make PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all-nocache 
+    make PLUGIN_TAG=2.4 BINDFS_VERSION=1_18_4 all-nocache 
     ```
 
 
@@ -146,10 +146,10 @@ volumes:
 * Available supported platforms : `linux/amd64` and `linux/arm64`. By default, the current host platform is used.
 * You can force to select a supported platforms using any make target by setting `PLATFORM` variable with `amd64` or `arm64`
     ```
-    make PLATFORM=amd64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
-    make PLATFORM=arm64 PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
+    make PLATFORM=amd64 PLUGIN_TAG=2.4 BINDFS_VERSION=1_18_4 all
+    make PLATFORM=arm64 PLUGIN_TAG=2.4 BINDFS_VERSION=1_18_4 all
     ```
-* The build target will generate an image tag joining `PLUGIN_TAG` and `PLATFORM` : `2.3-amd64`. If no `PLATFORM` is setted, then the image will be : `2.3`
+* The build target will generate an image tag joining `PLUGIN_TAG` and `PLATFORM` : `2.4-amd64`. If no `PLATFORM` is setted, then the image tag will be : `2.4`
 * If you select a platform different from the host, you have to use qemu emulators (see https://gist.github.com/StudioEtrange/ab9b118b778fac8e815c872826ed2cd8#run-multiplatorm-images)
     ```
     docker run --privileged --rm tonistiigi/binfmt -install linux/arm64
@@ -168,7 +168,7 @@ volumes:
 * Choose the version to enable
 
     ```
-    make enable PLUGIN_TAG=2.3
+    make enable PLUGIN_TAG=2.4
     ```
 
 ## Use built plugin
@@ -226,8 +226,8 @@ volumes:
 * Publish a built plugin to docker hub
 
     ```
-    make DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.3 push
-    make PLATFORM=arm64 DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.3a push
+    make DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.4 push
+    make PLATFORM=arm64 DOCKER_LOGIN='studioetrange' DOCKER_PASSWORD='password' PLUGIN_TAG=2.4rc1 push
     ```
 
 
