@@ -11,9 +11,9 @@ This plugin use bindfs tool to managed mounted folders. https://bindfs.org/
 * resolve bindfs defunct process each time a volume is destroyed
 * isolate bindfs-state.json state file for each plugin version
 * make concurrent usage of the plugin more robust to be used in a context with a lot operation of volume
-* when building can choose a version of bindfs to build (consult available version from [here](https://github.com/StudioEtrange/stella/blob/d1d1536ab99492a9fb7f925c75e77bab3a7a2d90/nix/pool/feature-recipe/feature_bindfs.sh#L13)).
-* available plugin versions for linux/amd64 and linux/arm64 platform
-* support multi platform build for linux/amd64 and linux/arm64
+* when building plugin you can choose a bindfs to build (consult available versions from [here](https://github.com/StudioEtrange/docker-volume-bindfs/blob/main/pool/stella/nix/pool/feature-recipe/feature_bindfs.sh))
+* support multi platform for linux/amd64 and linux/arm64
+
 
 ## Project History
 
@@ -131,7 +131,7 @@ volumes:
 
     This will build plugin, tagged as latest, delete plugin if he already exists and install it
 
-* Options : you can fix a TAG for the plugin version and choose a bindfs version (default is 1_18_4)
+* Options : you can choose the tag name for the plugin version with PLUGIN_TAG and select a bindfs version with BINDFS_VERSION (default is 1_18_4)
     ```
     make PLUGIN_TAG=2.3 BINDFS_VERSION=1_18_4 all
     
@@ -219,15 +219,15 @@ volumes:
 ### GO update version and dependency management
 
 * GO VERSION UPDATE :
-    * Edit Dockerfile and change FROM image with one from dockerhub https://hub.docker.com/_/golang/tags?page=1&name=bullseye based on debian bullseye (i.e : `FROM golang:1.22.1-bullseye as builder`)
+    * Edit Dockerfile and change FROM image with one from dockerhub https://hub.docker.com/_/golang/tags?page=1&name=bullseye based on debian bullseye (i.e : `FROM golang:1.24.6-bullseye as gobuilder`)
     * Use this version in dependencies management step   
 
-* DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor) (project tag =>2.0)
+* DEPENDENCIES MANAGEMEMENT : For go 1.20+ using standard Go Modules (without govendor)
 
     ```
     git clone https://github.com/StudioEtrange/docker-volume-bindfs
     cd docker-volume-bindfs
-    docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.22.1-bullseye bash
+    docker run -it --rm --volume=$(pwd):/go/src/github.com/StudioEtrange/docker-volume-bindfs golang:1.24.6-bullseye bash
 
     # FROM INSIDE CONTAINER
     cd /go/src/github.com/StudioEtrange/docker-volume-bindfs
@@ -248,7 +248,7 @@ volumes:
     sudo chown -R $(id -u):$(id -g) go.sum
     ```
 
-## Things to think to do
+## TODO
 
 * [ ] migrate logrus to zerolog like in docker-volume-rclone for logging purpose
     * https://github.com/rs/zerolog
