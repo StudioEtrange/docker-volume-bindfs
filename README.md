@@ -171,6 +171,21 @@ volumes:
     make enable PLUGIN_TAG=2.3
     ```
 
+## Use built plugin
+
+* This will use the plugin, use it, and remove it
+
+    ```
+    docker volume create -d studioetrange/bindfs:latest -o sourcePath=$(pwd) -o map=$(id -u)/0:@$(id -g)/@0 test_bindfs_volume
+
+    docker run --rm -it --name test_bindfs -v test_bindfs_volume:/test alpine:latest ls /test
+
+    docker volume rm test_bindfs_volume
+
+    make remove
+    docker plugin ls
+    ```
+
 ### Debug
 
 

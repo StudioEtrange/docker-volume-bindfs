@@ -232,7 +232,7 @@ __boot() {
             ;;
           CMD )
             eval "$_arg"
-            "$@"
+            eval "$@"
             ;;
           SCRIPT )
               eval "$_arg2"

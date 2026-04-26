@@ -1,4 +1,4 @@
-FROM golang:1.22.1-bullseye as gobuilder
+FROM golang:1.24.6-bullseye AS gobuilder
 # https://docs.docker.com/reference/dockerfile/#automatic-platform-args-in-the-global-scope
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -26,7 +26,7 @@ ARG BINDFS_VERSION
 
 RUN echo "Hello. I'm packaging all the docker plugin stuff (go docker plugin, bindfs utility, config,...) (target platform : $TARGETPLATFORM -- current build platform : $BUILDPLATFORM)"
 
-RUN apt-get update && apt-get install sudo wget git libfuse-dev -y \
+RUN apt-get update && apt-get install sudo git wget libfuse-dev -y \
     && mkdir -p /run/docker/plugins /mnt/state /mnt/volumes /mnt/host /work
 
 
@@ -34,13 +34,14 @@ RUN [ "${TARGETARCH}" = "arm64" ] && DUMB_INIT_ARCH="aarch64" || DUMB_INIT_ARCH=
     && wget -O /dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_${DUMB_INIT_ARCH} \
     && chmod +x /dumb-init
 
+#COPY ./pool/stella /work/stella
 RUN cd /work \
     && git clone https://github.com/StudioEtrange/stella \
     && cd /work/stella \
-    && git checkout 5d876ca717efd5503e43b7738112cbfa4358561c \
+    && git checkout 2efd8e46d44295be15377d75998627a6ba32dfda \
     && /work/stella/stella.sh sys install build-chain-standard \
     && /work/stella/stella.sh feature install bindfs#${BINDFS_VERSION} \
-    && export BINDFS_PATH=$(STELLA_LOG_STATE=OFF /work/stella/stella.sh boot cmd local -- '$STELLA_API feature_info "bindfs" "BINDFS" && echo $BINDFS_FEAT_INSTALL_ROOT') \
+    && export BINDFS_PATH=$(STELLA_LOG_STATE=OFF /work/stella/stella.sh exec -- '$STELLA_API feature_info "bindfs" "BINDFS" && echo $BINDFS_FEAT_INSTALL_ROOT') \
     && echo copy bindfs from $BINDFS_PATH \
     && cp $BINDFS_PATH/bin/bindfs /bin/ \
     && cd / \

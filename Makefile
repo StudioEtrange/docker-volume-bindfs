@@ -1,12 +1,12 @@
 PLUGIN_NAME = studioetrange/bindfs
 # plugin version
 PLUGIN_TAG ?= latest
-BINDFS_VERSION ?=1_17_6
+BINDFS_VERSION ?=1_18_4
 DOCKER_LOGIN ?=
 DOCKER_PASSWORD ?=
 
 # DOC : docker multiplatform : https://gist.github.com/StudioEtrange/ab9b118b778fac8e815c872826ed2cd8
-# NOTE : we cannot use docker buildx to build simultaneous arch because building a docker plugin is not possible with docker buildx
+# NOTE : we cannot use docker buildx to build simultaneous arch because building a docker "PLUGIN" is not possible with docker buildx
 
 ifdef PLATFORM
 	ifeq (${PLATFORM},amd64)
@@ -100,6 +100,12 @@ enable-debug:
 	@docker plugin disable ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} 2>/dev/null || true
 	@docker plugin set studioetrange/bindfs:latest DEBUG=1
 	@docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG}
+
+remove:
+	@echo "### disable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG}"
+	@docker plugin disable ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG} 2>/dev/null || true
+	@echo "### remove plugin ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG}"
+	@docker plugin rm ${PLUGIN_NAME}:${PLUGIN_TAG}${PLATFORM_TAG}
 
 # push to docker hub
 push:
