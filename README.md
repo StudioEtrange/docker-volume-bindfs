@@ -48,6 +48,7 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 
 |PLUGIN NAME|BINDFS VERSION|GO VERSION|NOTES|GHCR|DOCKER HUB|AMD64|ARM64|
 |---|---|---|---|---|---|---|---|
+|studioetrange/bindfs:2.4|1.18.4|1.24.6|upgrade bindfs versions and change mount propagation|YES|YES|YES|YES|
 |studioetrange/bindfs:2.3|1.17.6|1.22.1|support of arm64/amd64 build|YES|YES|YES|YES|
 |studioetrange/bindfs:2.3a|1.17.6|1.22.1|first support of arm64 build|-|YES|-|YES|
 |studioetrange/bindfs:2.2|1.17.6|1.22.1|update bindfs version|YES|YES|YES|-|
@@ -64,6 +65,8 @@ and in docker hub [studioetrange/bindfs](https://hub.docker.com/r/studioetrange/
 * Github worflow will built and publish versions for Github Container Registry and docker hub when a git tag is created
 
 * ARM64/AMD64 versions are identified with "-arm64" and "-amd64"  in tag name. When there is no arch in tag name, this is an amd64 version
+
+* Versions ending with a letter (i.e : `a`) or `rc` are test and prerelease versions. Do not use them in production.
 
 ### Create a volume
 
