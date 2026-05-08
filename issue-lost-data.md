@@ -1,6 +1,7 @@
-# Loss data issue !
+# Loss data issue : Issue FIXED !
 
-    * in some scenario, the mounted folder is completely removed
+    * in some scenario, the mounted folder was completely removed
+    * Issue is fixed since versions 2.X
 
 ## Related issues
 
